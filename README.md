@@ -1,45 +1,78 @@
-# Model CLI Autocomplete
+#🚀 Zsh LLM CLI Autocomplete Tool
 
-A intelligent command-line autocompletion tool powered by local LLMs through Ollama.
+> AI-powered Zsh plugin for intelligent command line completion using local LLMs
 
-## Features
+![Zsh](https://img.shields.io/badge/Shell-Zsh-blue)
+![AI](https://img.shields.io/badge/AI-Ollama-green)
+![Python](https://img.shields.io/badge/Python-3.8%2B-yellow)
 
-- 🤖 AI-powered command completion using local LLMs
-- ⚡ Fast and responsive with caching
-- 🔧 Configurable through YAML files
-- 🐚 Zsh plugin integration
-- 💾 Context-aware suggestions (Git, directory, history)
+## ✨ Features
 
-## Installation
+- **🤖 AI Command Completion**: Get smart command suggestions as you type
+- **⚡ Real-time Processing**: Local LLM inference with Ollama
+- **🎯 Zsh Optimized**: Built specifically for Zsh workflows
+- **⌨️ Tab Integration**: Use familiar Tab key for completions
+- **🔧 One-Click Setup**: Run `./install.sh` and you're ready
+- **💾 100% Local**: No data leaves your machine
 
-1. Install Ollama and pull a model:
-   ```bash
-   curl -fsSL https://ollama.ai/install.sh | sh
-   ollama pull llama2
+## 🚀 Quick Start
 
-## Keyboard Navigation
+```bash
+# 1. Clone and install
+git clone https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool.git
+cd zsh-llm-cli-autocomplete-tool
+./install.sh
 
-The enhanced UI provides full keyboard navigation:
+# 2. Reload your shell
+source ~/.zshrc
 
-- **Tab**: First press activates AI completion, subsequent presses cycle through suggestions
-- **↑/↓ Arrow Keys**: Navigate through the suggestion list
-- **Enter**: Accept the currently selected suggestion
-- **Escape**: Cancel the UI and return to original input
-- **Any other key**: Cancel UI and continue normal editing
+# 3. Start using AI completions!
+git comm[Tab]        # → git commit -m "message"
+docker run[Tab]      # → docker run -it --name container
+npm run[Tab]         # → npm run dev
+python -m[Tab]       # → python -m http.server 8000
+```
+## 🛠️ Installation
 
-## UI Features
+```bash
+# Clone the repository
+git clone https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool.git
+cd zsh-llm-cli-autocomplete-tool
 
-- **Visual highlighting** of the selected suggestion
-- **Multi-suggestion display** (3-5 suggestions depending on context)
-- **Auto-dismissal** when continuing to type
-- **Context-aware** suggestions based on current directory, Git status, and command history
+# Run the one-click installer
+./install.sh
+```
+This script automatically:
 
-## Configuration
+Sets up Ollama and downloads models
 
-Enable/disable the UI feature:
-```zsh
-# Disable UI (fall back to simple tab completion)
-model-completion-toggle-ui
+Installs Python dependencies
 
-# Enable UI (default)
-model-completion-toggle-ui
+Configures Zsh plugin
+
+Ready to use immediately
+
+## 🔧 Usage
+Just use Tab key as normal - AI completions will appear automatically.
+**Utility Commands**
+```bash
+zsh-llm-autocomplete-test     # Test the system
+zsh-llm-autocomplete-status   # Check status
+zsh-llm-autocomplete-help     # Show help
+```
+
+## 🏗️ How It Works
+Your Zsh Terminal → AI Plugin → Ollama Server → Smart Completions
+
+Zsh Plugin: Intercepts Tab key and shows AI suggestions
+
+Python Backend: Communicates with Ollama server
+
+Ollama: Runs local LLMs for command completion
+
+Fine-tuned Models: Optimized for CLI command patterns
+
+## 💡 About
+This tool brings AI-powered command completion to your Zsh terminal using local LLMs. Everything runs on your machine for complete privacy.
+
+Star this repo if you find it useful! ⭐
