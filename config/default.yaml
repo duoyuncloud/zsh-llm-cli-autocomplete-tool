@@ -1,0 +1,23 @@
+# Model Completer Configuration
+
+ollama:
+  url: "http://localhost:11434"
+  timeout: 10
+
+model: "llama2"  # Default model to use
+
+cache:
+  enabled: true
+  ttl: 3600  # Cache time-to-live in seconds
+
+logging:
+  level: "INFO"
+  file: "~/.cache/model-completer/logs.txt"
+
+# Command blacklist (commands that won't be completed)
+blacklist:
+  - "rm -rf"
+  - "dd if="
+  - ":(){:|:&};:"
+  - "mkfs"
+  - "fdisk"

@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+setup.py
+src/model_cli_autocomplete.egg-info/PKG-INFO
+src/model_cli_autocomplete.egg-info/SOURCES.txt
+src/model_cli_autocomplete.egg-info/dependency_links.txt
+src/model_cli_autocomplete.egg-info/requires.txt
+src/model_cli_autocomplete.egg-info/top_level.txt
+src/model_completer/__init__.py
+src/model_completer/cache.py
+src/model_completer/cli.py
+src/model_completer/client.py
+src/model_completer/completer.py
+src/model_completer/utils.py
+tests/test_client.py

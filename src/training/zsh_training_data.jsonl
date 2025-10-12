@@ -1,0 +1,15 @@
+{"input": "git comm", "output": "git commit -m \"commit message\""}
+{"input": "docker run", "output": "docker run -it --name container image:tag"}
+{"input": "npm run", "output": "npm run dev"}
+{"input": "python -m", "output": "python -m http.server 8000"}
+{"input": "kubectl get", "output": "kubectl get pods"}
+{"input": "ls -", "output": "ls -la"}
+{"input": "cd ", "output": "cd ~/projects"}
+{"input": "mkdir ", "output": "mkdir new-project"}
+{"input": "rm -", "output": "rm -rf directory/"}
+{"input": "cp ", "output": "cp file.txt destination/"}
+{"input": "mv ", "output": "mv oldname newname"}
+{"input": "curl ", "output": "curl -X GET https://api.example.com"}
+{"input": "ssh ", "output": "ssh user@hostname"}
+{"input": "ps aux", "output": "ps aux | grep process"}
+{"input": "systemctl ", "output": "systemctl status service"}
