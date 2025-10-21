@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class OllamaClient:
     """Client for communicating with Ollama server."""
     
-    def __init__(self, base_url: str = "http://localhost:11434", timeout: int = 10):
+    def __init__(self, base_url: str = "http://localhost:11434", timeout: int = 30):
         self.base_url = base_url.rstrip('/')
         self.timeout = timeout
         self.cache = CacheManager()

@@ -1,15 +1,15 @@
 import yaml
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
     """Load configuration from YAML file."""
     default_config = {
         'ollama': {
             'url': 'http://localhost:11434',
-            'timeout': 10
+            'timeout': 30
         },
-        'model': 'llama2',
+        'model': 'tinyllama',
         'cache': {
             'enabled': True,
             'ttl': 3600
@@ -21,7 +21,12 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
     }
     
     if config_path is None:
-        config_path = os.path.expanduser('~/.config/model-completer/config.yaml')
+        # Try project config first, then user config
+        project_config = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'default.yaml')
+        if os.path.exists(project_config):
+            config_path = project_config
+        else:
+            config_path = os.path.expanduser('~/.config/model-completer/config.yaml')
     
     if os.path.exists(config_path):
         try:

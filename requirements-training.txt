@@ -1,0 +1,16 @@
+# Training dependencies for LoRA fine-tuning
+# Install with: pip install -r requirements-training.txt
+
+# Core ML libraries
+torch>=2.0.0
+transformers>=4.30.0
+accelerate>=0.20.0
+datasets>=2.12.0
+peft>=0.4.0
+
+# Axolotl for LoRA training
+axolotl>=0.3.0
+
+# Additional training utilities
+psutil>=5.9.0
+wandb>=0.15.0  # Optional: for experiment tracking

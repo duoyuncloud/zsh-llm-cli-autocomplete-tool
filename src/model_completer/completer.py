@@ -11,9 +11,10 @@ class ModelCompleter:
     
     def __init__(self, ollama_url: str = "http://localhost:11434", 
                  model: str = "llama2", config: Optional[Dict] = None):
-        self.client = OllamaClient(ollama_url)
-        self.model = model
         self.config = config or {}
+        timeout = self.config.get('ollama', {}).get('timeout', 30)
+        self.client = OllamaClient(ollama_url, timeout=timeout)
+        self.model = model
         self.history: List[str] = []
         
     def build_prompt(self, command: str, context: Optional[Dict] = None, 
@@ -43,18 +44,11 @@ Input: {command}
 
 Provide only the completion commands, one per line, without numbers or explanations."""
         else:
-            prompt_template = """As a command line expert, please provide completion suggestions for:
+            prompt_template = """Complete this command:
 
-Environment:
-- User: {username}
-- Host: {hostname}
-- Directory: {current_dir}
-{git_info}
-- Recent: {recent_commands}
+{command}
 
-Input: {command}
-
-Provide only the most likely completion command without explanation."""
+Provide only the completed command, nothing else."""
         
         prompt = prompt_template.format(
             username=username,

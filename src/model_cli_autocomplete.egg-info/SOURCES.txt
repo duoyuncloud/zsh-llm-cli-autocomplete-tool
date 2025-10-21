@@ -11,5 +11,9 @@ src/model_completer/cache.py
 src/model_completer/cli.py
 src/model_completer/client.py
 src/model_completer/completer.py
+src/model_completer/ollama_manager.py
+src/model_completer/simple_training.py
+src/model_completer/training.py
+src/model_completer/ui.py
 src/model_completer/utils.py
 tests/test_client.py
