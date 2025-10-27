@@ -57,8 +57,13 @@ def get_advanced_completion(command: str, config: Optional[Dict] = None) -> str:
     )
     
     ui = create_ui(completer, "zsh", config)
-    completion, confidence = ui.show_confidence_completion(command)
-    return f"{completion}|{int(confidence * 100)}"
+    if hasattr(ui, 'show_confidence_completion'):
+        completion, confidence = ui.show_confidence_completion(command)
+        return f"{completion}|{int(confidence * 100)}"
+    else:
+        # Fallback for ZshCompletionUI
+        completion = completer.get_completion(command)
+        return f"{completion}|80"
 
 def main():
     parser = argparse.ArgumentParser(description='AI Command Completion with Navigatable UI')

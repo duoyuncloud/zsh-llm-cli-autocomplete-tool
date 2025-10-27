@@ -31,24 +31,15 @@ class ModelCompleter:
         recent_commands = self.history[-5:] if self.history else []
         
         if for_ui:
-            prompt_template = """As a command line expert, please provide 3-5 diverse completion suggestions for:
+            prompt_template = """Complete: {command}
 
-Environment:
-- User: {username}
-- Host: {hostname}
-- Directory: {current_dir}
-{git_info}
-- Recent: {recent_commands}
-
-Input: {command}
-
-Provide only the completion commands, one per line, without numbers or explanations."""
+Suggestions:"""
         else:
             prompt_template = """Complete this command:
 
 {command}
 
-Provide only the completed command, nothing else."""
+Output:"""
         
         prompt = prompt_template.format(
             username=username,
@@ -91,18 +82,41 @@ Provide only the completed command, nothing else."""
             # Keep only last 10 commands
             self.history = self.history[-10:]
         
-        prompt = self.build_prompt(command)
-        completion = self.client.generate_completion(
-            prompt, self.model, use_cache=use_cache
-        )
+        # Try AI completion first with a proper command completion prompt
+        try:
+            # Create a very direct prompt for command completion
+            prompt = f"{command}"
+            
+            completion = self.client.generate_completion(
+                prompt, self.model, use_cache=use_cache
+            )
+            
+            # Extract the completion from the response
+            lines = completion.strip().split('\n')
+            for line in lines:
+                line = line.strip()
+                # Look for lines that look like actual commands
+                if (line and 
+                    len(line) > len(command) and
+                    ' ' in line and
+                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', '```', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'The', 'A', 'An', 'For', 'In', 'On', 'At', 'By', 'With', 'Without', 'Using', 'When', 'If', 'Because', 'Since', 'Although', 'While', 'Before', 'After', 'During', 'Until', 'Unless', 'Whether', 'How', 'What', 'Where', 'When', 'Why', 'Who', 'Which')) and
+                    not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ', '6.', '7.', '8.', '9.', '10.')) and
+                    not line.endswith(':') and
+                    not line.startswith('$') and
+                    not line.startswith('`') and
+                    not line.endswith('`')):
+                    return line
+                    
+        except Exception as e:
+            logger.warning(f"AI completion failed: {e}")
         
-        # Basic sanitization
-        completion = completion.strip()
-        if completion and not completion.startswith(command):
-            # If the completion doesn't start with the command, prepend it
-            completion = command + completion
+        # Fall back to training data
+        fallback_completion = self._get_fallback_completion(command)
+        if fallback_completion:
+            return fallback_completion
         
-        return completion
+        # Return original command if no completion found
+        return command
     
     def get_suggestions(self, command: str, max_suggestions: int = 3) -> List[str]:
         """Get multiple completion suggestions optimized for UI."""
@@ -122,7 +136,13 @@ Provide only the completed command, nothing else."""
         
         for line in lines:
             line = line.strip()
-            if line and not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ')):
+            # Skip empty lines, numbered lists, and explanatory text
+            if (line and 
+                not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
+                not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', '```', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display')) and
+                len(line) > len(command) and
+                not line.endswith(':')):
+                
                 # Clean up the suggestion
                 suggestion = line
                 if not suggestion.startswith(command):
@@ -155,3 +175,18 @@ Provide only the completed command, nothing else."""
                     suggestions.append(alt_suggestion)
         
         return suggestions[:max_suggestions]
+    
+    def _get_fallback_completion(self, command: str) -> Optional[str]:
+        """Get completion from training data as fallback."""
+        try:
+            import json
+            training_file = os.path.join(os.path.dirname(__file__), '..', 'training', 'zsh_training_data.jsonl')
+            if os.path.exists(training_file):
+                with open(training_file, 'r') as f:
+                    for line in f:
+                        data = json.loads(line.strip())
+                        if data['input'].lower() == command.lower():
+                            return data['output']
+        except Exception:
+            pass
+        return None

@@ -2,9 +2,9 @@
 
 ollama:
   url: "http://localhost:11434"
-  timeout: 30
+  timeout: 30  # Reset to reasonable timeout
 
-model: "tinyllama"  # Default model to use
+model: "tinyllama"  # Use reliable small model for now
 
 cache:
   enabled: true
