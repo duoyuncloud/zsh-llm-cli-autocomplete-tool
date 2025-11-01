@@ -13,36 +13,47 @@ from typing import List, Dict, Optional
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from model_completer.completer import ModelCompleter
+from model_completer.enhanced_completer import EnhancedCompleter
 from model_completer.client import OllamaClient
 from model_completer.ui import create_ui
 from model_completer.utils import load_config, setup_logging
 from model_completer.training import create_trainer
 
-def get_ai_completion(command: str, config: Optional[Dict] = None) -> str:
-    """Get AI completion using the existing completer module."""
+def get_ai_completion(command: str, config: Optional[Dict] = None, enhanced: bool = True) -> str:
+    """Get AI completion using enhanced completer with developer features."""
     if config is None:
         config = load_config()
     
-    # Initialize completer with config
-    completer = ModelCompleter(
-        ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
-        model=config.get('model', 'zsh-assistant'),
-        config=config
-    )
+    # Use EnhancedCompleter for better developer experience
+    if enhanced:
+        completer = EnhancedCompleter(
+            ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
+            model=config.get('model', 'zsh-assistant'),
+            config=config
+        )
+    else:
+        completer = ModelCompleter(
+            ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
+            model=config.get('model', 'zsh-assistant'),
+            config=config
+        )
     
     return completer.get_completion(command)
 
 def get_suggestions(command: str, count: int = 3, config: Optional[Dict] = None) -> List[str]:
-    """Get multiple completion suggestions using the existing completer."""
+    """Get multiple completion suggestions with personalization."""
     if config is None:
         config = load_config()
     
-    completer = ModelCompleter(
+    completer = EnhancedCompleter(
         ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
         model=config.get('model', 'zsh-assistant'),
         config=config
     )
     
+    # Use personalized suggestions if available
+    if hasattr(completer, 'get_personalized_suggestions'):
+        return completer.get_personalized_suggestions(command, count)
     return completer.get_suggestions(command, count)
 
 def get_advanced_completion(command: str, config: Optional[Dict] = None) -> str:
@@ -50,7 +61,7 @@ def get_advanced_completion(command: str, config: Optional[Dict] = None) -> str:
     if config is None:
         config = load_config()
     
-    completer = ModelCompleter(
+    completer = EnhancedCompleter(
         ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
         model=config.get('model', 'zsh-assistant'),
         config=config
@@ -74,6 +85,7 @@ def main():
     parser.add_argument('--advanced', action='store_true', help='Get completion with confidence score')
     parser.add_argument('--train', action='store_true', help='Start LoRA training')
     parser.add_argument('--generate-data', action='store_true', help='Generate training data')
+    parser.add_argument('--commit-message', action='store_true', help='Generate smart commit message from git changes')
     parser.add_argument('--config', help='Path to config file')
     
     args = parser.parse_args()
@@ -112,6 +124,20 @@ def main():
         data_manager = TrainingDataManager()
         data_file = data_manager.generate_training_data()
         print(f"✅ Training data generated: {data_file}")
+    elif args.commit_message:
+        completer = EnhancedCompleter(
+            ollama_url=config.get('ollama', {}).get('url', 'http://localhost:11434'),
+            model=config.get('model', 'zsh-assistant'),
+            config=config
+        )
+        commit_msg = completer.get_smart_commit_message()
+        if commit_msg:
+            print(f"📝 Smart commit message: {commit_msg}")
+            print()
+            print("Use it with:")
+            print(f'  git commit -m "{commit_msg}"')
+        else:
+            print("⚠️  No staged changes found. Stage your changes first with 'git add'")
     elif args.test:
         print("Testing AI completions:")
         test_commands = ["git comm", "docker run", "npm run", "python -m", "kubectl get"]

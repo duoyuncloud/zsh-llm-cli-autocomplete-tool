@@ -13,3 +13,266 @@
 {"input": "ssh ", "output": "ssh user@hostname"}
 {"input": "ps aux", "output": "ps aux | grep process"}
 {"input": "systemctl ", "output": "systemctl status service"}
+{"input": "ls -l", "output": "ls -la"}
+{"input": "ls -a", "output": "ls -la"}
+{"input": "git add", "output": "git add ."}
+{"input": "git push", "output": "git push origin main"}
+{"input": "git pull", "output": "git pull origin main"}
+{"input": "git status", "output": "git status"}
+{"input": "git log", "output": "git log --oneline"}
+{"input": "docker ps", "output": "docker ps -a"}
+{"input": "docker images", "output": "docker images"}
+{"input": "docker build", "output": "docker build -t image-name ."}
+{"input": "npm install", "output": "npm install"}
+{"input": "npm start", "output": "npm start"}
+{"input": "python -c", "output": "python -c \"print('hello')\""}
+{"input": "pip install", "output": "pip install package-name"}
+{"input": "pip list", "output": "pip list"}
+{"input": "kubectl apply", "output": "kubectl apply -f file.yaml"}
+{"input": "kubectl delete", "output": "kubectl delete pod pod-name"}
+{"input": "curl -X", "output": "curl -X POST https://api.example.com"}
+{"input": "systemctl start", "output": "systemctl start service-name"}
+{"input": "systemctl stop", "output": "systemctl stop service-name"}
+{"input": "systemctl restart", "output": "systemctl restart service-name"}
+{"input": "systemctl enable", "output": "systemctl enable service-name"}
+{"input": "systemctl disable", "output": "systemctl disable service-name"}
+{"input": "ps aux", "output": "ps aux | grep process"}
+{"input": "top", "output": "top"}
+{"input": "htop", "output": "htop"}
+{"input": "df -", "output": "df -h"}
+{"input": "du -", "output": "du -h"}
+{"input": "find ", "output": "find . -name \"*.txt\""}
+{"input": "grep ", "output": "grep -r \"pattern\" ."}
+{"input": "sed ", "output": "sed 's/old/new/g' file.txt"}
+{"input": "awk ", "output": "awk '{print $1}' file.txt"}
+{"input": "sort ", "output": "sort file.txt"}
+{"input": "uniq ", "output": "uniq file.txt"}
+{"input": "wc -", "output": "wc -l file.txt"}
+{"input": "head ", "output": "head -n 10 file.txt"}
+{"input": "tail ", "output": "tail -n 10 file.txt"}
+{"input": "cat ", "output": "cat file.txt"}
+{"input": "less ", "output": "less file.txt"}
+{"input": "more ", "output": "more file.txt"}
+{"input": "vim ", "output": "vim file.txt"}
+{"input": "nano ", "output": "nano file.txt"}
+{"input": "chmod ", "output": "chmod 755 file.txt"}
+{"input": "chown ", "output": "chown user:group file.txt"}
+{"input": "tar -", "output": "tar -czf archive.tar.gz directory/"}
+{"input": "zip ", "output": "zip -r archive.zip directory/"}
+{"input": "unzip ", "output": "unzip archive.zip"}
+{"input": "wget ", "output": "wget https://example.com/file.txt"}
+{"input": "scp ", "output": "scp file.txt user@host:/path/"}
+{"input": "rsync ", "output": "rsync -av source/ dest/"}
+{"input": "ssh ", "output": "ssh user@hostname"}
+{"input": "ping ", "output": "ping google.com"}
+{"input": "traceroute ", "output": "traceroute google.com"}
+{"input": "netstat ", "output": "netstat -tulpn"}
+{"input": "ss ", "output": "ss -tulpn"}
+{"input": "lsof ", "output": "lsof -i :8080"}
+{"input": "kill ", "output": "kill -9 pid"}
+{"input": "killall ", "output": "killall process-name"}
+{"input": "nohup ", "output": "nohup command &"}
+{"input": "screen ", "output": "screen -S session-name"}
+{"input": "tmux ", "output": "tmux new-session -s session-name"}
+{"input": "crontab ", "output": "crontab -e"}
+{"input": "at ", "output": "at now + 1 hour"}
+{"input": "date ", "output": "date"}
+{"input": "uptime", "output": "uptime"}
+{"input": "whoami", "output": "whoami"}
+{"input": "id ", "output": "id"}
+{"input": "groups ", "output": "groups"}
+{"input": "passwd ", "output": "passwd username"}
+{"input": "su ", "output": "su - username"}
+{"input": "sudo ", "output": "sudo command"}
+{"input": "which ", "output": "which command"}
+{"input": "whereis ", "output": "whereis command"}
+{"input": "type ", "output": "type command"}
+{"input": "alias ", "output": "alias name='command'"}
+{"input": "export ", "output": "export VAR=value"}
+{"input": "env ", "output": "env"}
+{"input": "history", "output": "history"}
+{"input": "jobs", "output": "jobs"}
+{"input": "fg ", "output": "fg %1"}
+{"input": "bg ", "output": "bg %1"}
+{"input": "disown ", "output": "disown %1"}
+{"input": "wait ", "output": "wait %1"}
+{"input": "trap ", "output": "trap 'command' SIGNAL"}
+{"input": "exec ", "output": "exec command"}
+{"input": "eval ", "output": "eval 'command'"}
+{"input": "source ", "output": "source file.sh"}
+{"input": "bash ", "output": "bash script.sh"}
+{"input": "sh ", "output": "sh script.sh"}
+{"input": "zsh ", "output": "zsh script.sh"}
+{"input": "python ", "output": "python script.py"}
+{"input": "node ", "output": "node script.js"}
+{"input": "ruby ", "output": "ruby script.rb"}
+{"input": "perl ", "output": "perl script.pl"}
+{"input": "php ", "output": "php script.php"}
+{"input": "go ", "output": "go run main.go"}
+{"input": "rustc ", "output": "rustc main.rs"}
+{"input": "cargo ", "output": "cargo run"}
+{"input": "make ", "output": "make"}
+{"input": "cmake ", "output": "cmake ."}
+{"input": "gcc ", "output": "gcc -o output source.c"}
+{"input": "g++ ", "output": "g++ -o output source.cpp"}
+{"input": "clang ", "output": "clang -o output source.c"}
+{"input": "ld ", "output": "ld -o output object.o"}
+{"input": "ar ", "output": "ar rcs lib.a object.o"}
+{"input": "nm ", "output": "nm binary"}
+{"input": "objdump ", "output": "objdump -d binary"}
+{"input": "strings ", "output": "strings binary"}
+{"input": "file ", "output": "file filename"}
+{"input": "hexdump ", "output": "hexdump -C file"}
+{"input": "xxd ", "output": "xxd file"}
+{"input": "base64 ", "output": "base64 file"}
+{"input": "md5sum ", "output": "md5sum file"}
+{"input": "sha1sum ", "output": "sha1sum file"}
+{"input": "sha256sum ", "output": "sha256sum file"}
+{"input": "diff ", "output": "diff file1 file2"}
+{"input": "cmp ", "output": "cmp file1 file2"}
+{"input": "comm ", "output": "comm file1 file2"}
+{"input": "join ", "output": "join file1 file2"}
+{"input": "paste ", "output": "paste file1 file2"}
+{"input": "cut ", "output": "cut -d',' -f1 file"}
+{"input": "tr ", "output": "tr 'a-z' 'A-Z'"}
+{"input": "fold ", "output": "fold -w 80 file"}
+{"input": "fmt ", "output": "fmt file"}
+{"input": "pr ", "output": "pr file"}
+{"input": "column ", "output": "column -t file"}
+{"input": "expand ", "output": "expand file"}
+{"input": "unexpand ", "output": "unexpand file"}
+{"input": "nl ", "output": "nl file"}
+{"input": "od ", "output": "od -c file"}
+{"input": "split ", "output": "split -l 1000 file"}
+{"input": "csplit ", "output": "csplit file /pattern/"}
+{"input": "dd ", "output": "dd if=input of=output"}
+{"input": "cpio ", "output": "cpio -o < filelist"}
+{"input": "pax ", "output": "pax -w -f archive.tar file1 file2"}
+{"input": "mt ", "output": "mt -f /dev/tape status"}
+{"input": "mtx ", "output": "mtx -f /dev/changer status"}
+{"input": "cdrecord ", "output": "cdrecord -v dev=/dev/cdrom image.iso"}
+{"input": "wodim ", "output": "wodim -v dev=/dev/cdrom image.iso"}
+{"input": "mkisofs ", "output": "mkisofs -o image.iso directory/"}
+{"input": "genisoimage ", "output": "genisoimage -o image.iso directory/"}
+{"input": "isoinfo ", "output": "isoinfo -l -i image.iso"}
+{"input": "isodump ", "output": "isodump -i image.iso"}
+{"input": "isovfy ", "output": "isovfy -i image.iso"}
+{"input": "isosize ", "output": "isosize /dev/cdrom"}
+{"input": "cdrdao ", "output": "cdrdao write --device /dev/cdrom image.toc"}
+{"input": "cdparanoia ", "output": "cdparanoia -B"}
+{"input": "flac ", "output": "flac -d file.flac"}
+{"input": "lame ", "output": "lame input.wav output.mp3"}
+{"input": "oggenc ", "output": "oggenc input.wav -o output.ogg"}
+{"input": "ffmpeg ", "output": "ffmpeg -i input.mp4 output.avi"}
+{"input": "mplayer ", "output": "mplayer video.mp4"}
+{"input": "vlc ", "output": "vlc video.mp4"}
+{"input": "xine ", "output": "xine video.mp4"}
+{"input": "totem ", "output": "totem video.mp4"}
+{"input": "gstreamer ", "output": "gst-launch-1.0 filesrc location=video.mp4 ! decodebin ! autovideosink"}
+{"input": "imagemagick ", "output": "convert input.jpg output.png"}
+{"input": "gimp ", "output": "gimp image.jpg"}
+{"input": "inkscape ", "output": "inkscape image.svg"}
+{"input": "blender ", "output": "blender model.blend"}
+{"input": "meshlab ", "output": "meshlab model.obj"}
+{"input": "openscad ", "output": "openscad model.scad -o model.stl"}
+{"input": "freecad ", "output": "freecad model.fcstd"}
+{"input": "libreoffice ", "output": "libreoffice document.odt"}
+{"input": "abiword ", "output": "abiword document.doc"}
+{"input": "gnumeric ", "output": "gnumeric spreadsheet.xls"}
+{"input": "evince ", "output": "evince document.pdf"}
+{"input": "okular ", "output": "okular document.pdf"}
+{"input": "xpdf ", "output": "xpdf document.pdf"}
+{"input": "ghostscript ", "output": "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf input.ps"}
+{"input": "pdftk ", "output": "pdftk input1.pdf input2.pdf cat output output.pdf"}
+{"input": "qpdf ", "output": "qpdf input.pdf output.pdf"}
+{"input": "poppler ", "output": "pdftotext input.pdf output.txt"}
+{"input": "tesseract ", "output": "tesseract image.png output"}
+{"input": "gocr ", "output": "gocr image.png"}
+{"input": "ocrad ", "output": "ocrad image.pbm"}
+{"input": "cuneiform ", "output": "cuneiform image.png -o output.txt"}
+{"input": "gscan2pdf ", "output": "gscan2pdf"}
+{"input": "xsane ", "output": "xsane"}
+{"input": "simple-scan ", "output": "simple-scan"}
+{"input": "sane ", "output": "scanimage -d scanner --resolution 300 --mode Color --format tiff > output.tiff"}
+{"input": "gphoto2 ", "output": "gphoto2 --auto-detect"}
+{"input": "digikam ", "output": "digikam"}
+{"input": "shotwell ", "output": "shotwell"}
+{"input": "f-spot ", "output": "f-spot"}
+{"input": "darktable ", "output": "darktable"}
+{"input": "rawtherapee ", "output": "rawtherapee"}
+{"input": "ufraw ", "output": "ufraw image.raw"}
+{"input": "dcraw ", "output": "dcraw -c image.raw"}
+{"input": "exiv2 ", "output": "exiv2 image.jpg"}
+{"input": "exiftool ", "output": "exiftool image.jpg"}
+{"input": "jhead ", "output": "jhead image.jpg"}
+{"input": "jpegtran ", "output": "jpegtran -optimize -progressive -copy none input.jpg output.jpg"}
+{"input": "pngcrush ", "output": "pngcrush input.png output.png"}
+{"input": "optipng ", "output": "optipng input.png"}
+{"input": "advpng ", "output": "advpng -z -4 input.png"}
+{"input": "pngquant ", "output": "pngquant input.png"}
+{"input": "gifsicle ", "output": "gifsicle -O3 input.gif -o output.gif"}
+{"input": "webp ", "output": "cwebp input.png -o output.webp"}
+{"input": "avif ", "output": "avifenc input.png output.avif"}
+{"input": "heif ", "output": "heif-enc input.png output.heic"}
+{"input": "jpeg-xl ", "output": "cjxl input.png output.jxl"}
+{"input": "bpg ", "output": "bpgenc input.png -o output.bpg"}
+{"input": "flif ", "output": "flif -e input.png output.flif"}
+{"input": "qoi ", "output": "qoienc input.png output.qoi"}
+{"input": "jbig2 ", "output": "jbig2 -b output input.pbm"}
+{"input": "jbig2enc ", "output": "jbig2enc input.pbm output.jb2"}
+{"input": "jbig2dec ", "output": "jbig2dec input.jb2 output.pbm"}
+{"input": "jbig2arith ", "output": "jbig2arith input.pbm output.jb2"}
+{"input": "jbig2sym ", "output": "jbig2sym input.pbm output.jb2"}
+{"input": "jbig2text ", "output": "jbig2text input.jb2 output.txt"}
+{"input": "jbig2topbm ", "output": "jbig2topbm input.jb2 output.pbm"}
+{"input": "jbig2topng ", "output": "jbig2topng input.jb2 output.png"}
+{"input": "jbig2togif ", "output": "jbig2togif input.jb2 output.gif"}
+{"input": "jbig2tojpg ", "output": "jbig2tojpg input.jb2 output.jpg"}
+{"input": "jbig2totiff ", "output": "jbig2totiff input.jb2 output.tiff"}
+{"input": "jbig2topdf ", "output": "jbig2topdf input.jb2 output.pdf"}
+{"input": "jbig2tops ", "output": "jbig2tops input.jb2 output.ps"}
+{"input": "jbig2toeps ", "output": "jbig2toeps input.jb2 output.eps"}
+{"input": "jbig2tosvg ", "output": "jbig2tosvg input.jb2 output.svg"}
+{"input": "jbig2toxpm ", "output": "jbig2toxpm input.jb2 output.xpm"}
+{"input": "jbig2toxbm ", "output": "jbig2toxbm input.jb2 output.xbm"}
+{"input": "jbig2toxwd ", "output": "jbig2toxwd input.jb2 output.xwd"}
+{"input": "jbig2tox11 ", "output": "jbig2tox11 input.jb2 output.x11"}
+{"input": "jbig2tox12 ", "output": "jbig2tox12 input.jb2 output.x12"}
+{"input": "jbig2tox13 ", "output": "jbig2tox13 input.jb2 output.x13"}
+{"input": "jbig2tox14 ", "output": "jbig2tox14 input.jb2 output.x14"}
+{"input": "jbig2tox15 ", "output": "jbig2tox15 input.jb2 output.x15"}
+{"input": "jbig2tox16 ", "output": "jbig2tox16 input.jb2 output.x16"}
+{"input": "jbig2tox17 ", "output": "jbig2tox17 input.jb2 output.x17"}
+{"input": "jbig2tox18 ", "output": "jbig2tox18 input.jb2 output.x18"}
+{"input": "jbig2tox19 ", "output": "jbig2tox19 input.jb2 output.x19"}
+{"input": "jbig2tox20 ", "output": "jbig2tox20 input.jb2 output.x20"}
+{"input": "jbig2tox21 ", "output": "jbig2tox21 input.jb2 output.x21"}
+{"input": "jbig2tox22 ", "output": "jbig2tox22 input.jb2 output.x22"}
+{"input": "jbig2tox23 ", "output": "jbig2tox23 input.jb2 output.x23"}
+{"input": "jbig2tox24 ", "output": "jbig2tox24 input.jb2 output.x24"}
+{"input": "jbig2tox25 ", "output": "jbig2tox25 input.jb2 output.x25"}
+{"input": "jbig2tox26 ", "output": "jbig2tox26 input.jb2 output.x26"}
+{"input": "jbig2tox27 ", "output": "jbig2tox27 input.jb2 output.x27"}
+{"input": "jbig2tox28 ", "output": "jbig2tox28 input.jb2 output.x28"}
+{"input": "jbig2tox29 ", "output": "jbig2tox29 input.jb2 output.x29"}
+{"input": "jbig2tox30 ", "output": "jbig2tox30 input.jb2 output.x30"}
+{"input": "jbig2tox31 ", "output": "jbig2tox31 input.jb2 output.x31"}
+{"input": "jbig2tox32 ", "output": "jbig2tox32 input.jb2 output.x32"}
+{"input": "jbig2tox33 ", "output": "jbig2tox33 input.jb2 output.x33"}
+{"input": "jbig2tox34 ", "output": "jbig2tox34 input.jb2 output.x34"}
+{"input": "jbig2tox35 ", "output": "jbig2tox35 input.jb2 output.x35"}
+{"input": "jbig2tox36 ", "output": "jbig2tox36 input.jb2 output.x36"}
+{"input": "jbig2tox37 ", "output": "jbig2tox37 input.jb2 output.x37"}
+{"input": "jbig2tox38 ", "output": "jbig2tox38 input.jb2 output.x38"}
+{"input": "jbig2tox39 ", "output": "jbig2tox39 input.jb2 output.x39"}
+{"input": "jbig2tox40 ", "output": "jbig2tox40 input.jb2 output.x40"}
+{"input": "jbig2tox41 ", "output": "jbig2tox41 input.jb2 output.x41"}
+{"input": "jbig2tox42 ", "output": "jbig2tox42 input.jb2 output.x42"}
+{"input": "jbig2tox43 ", "output": "jbig2tox43 input.jb2 output.x43"}
+{"input": "jbig2tox44 ", "output": "jbig2tox44 input.jb2 output.x44"}
+{"input": "jbig2tox45 ", "output": "jbig2tox45 input.jb2 output.x45"}
+{"input": "jbig2tox46 ", "output": "jbig2tox46 input.jb2 output.x46"}
+{"input": "jbig2tox47 ", "output": "jbig2tox47 input.jb2 output.x47"}
+{"input": "jbig2tox48 ", "output": "jbig2tox48 input.jb2 output.x48"}
+{"input": "jbig2tox49 ", "output": "jbig2tox49 input.jb2 output.x49"}
+{"input": "jbig2tox50 ", "output": "jbig2tox50 input.jb2 output.x50"}

@@ -2,9 +2,9 @@
 
 ollama:
   url: "http://localhost:11434"
-  timeout: 30  # Reset to reasonable timeout
+  timeout: 60  # Increased timeout for zsh-assistant model
 
-model: "tinyllama"  # Use reliable small model for now
+model: "zsh-assistant"  # Use the fine-tuned model
 
 cache:
   enabled: true
