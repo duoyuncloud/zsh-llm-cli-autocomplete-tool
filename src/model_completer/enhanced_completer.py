@@ -239,53 +239,81 @@ class EnhancedCompleter(ModelCompleter):
         # Refresh project context
         self.project_context = self._detect_project_context()
         
-        # Try AI completion with enhanced prompt
-        try:
-            prompt = self._build_enhanced_prompt(command)
-            
-            completion = self.client.generate_completion(
-                prompt, self.model, use_cache=use_cache
-            )
-            
-            # Extract the completion from the response
-            lines = completion.strip().split('\n')
-            for line in lines:
-                line = line.strip()
-                # Clean markdown
-                line = line.replace('```', '').strip()
-                
-                # Look for lines that look like actual commands
-                if (line and 
-                    len(line) > len(command) and
-                    ' ' in line and
-                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently')) and
-                    not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
-                    not line.endswith(':') and
-                    not line.startswith('$') and
-                    not line.startswith('`') and
-                    not line.endswith('`') and
-                    '|' not in line[:20]):  # Skip context lines
-                    result = line
-                    
-                    # Save to history
-                    git_info = self._get_git_info()
-                    git_branch = None
-                    if git_info and 'Branch:' in git_info:
-                        try:
-                            git_branch = git_info.split('Branch:')[1].strip().split('\n')[0]
-                        except:
-                            pass
-                    
-                    self._save_command(command, result, {
-                        'project_type': self.project_context['project_type'],
-                        'git_branch': git_branch
-                    })
-                    return result
-                    
-        except Exception as e:
-            logger.warning(f"AI completion failed: {e}")
+        # Try AI completion with enhanced prompt (with fast timeout)
+        # For interactive use, prioritize speed over AI quality
+        # Try training data first for instant results
+        fallback_completion = self._get_fallback_completion(command)
         
-        # Fall back to training data
+        # Try AI only if no training data match, with very short timeout
+        if not fallback_completion:
+            try:
+                prompt = self._build_enhanced_prompt(command)
+                
+                # Use very short timeout for interactive use (3 seconds)
+                original_timeout = self.client.timeout
+                self.client.timeout = 3
+                
+                try:
+                    completion = self.client.generate_completion(
+                        prompt, self.model, use_cache=use_cache
+                    )
+                except Exception:
+                    # Timeout or error - return None to use fallback
+                    completion = None
+                finally:
+                    self.client.timeout = original_timeout
+            except Exception:
+                completion = None
+        else:
+            # Use training data immediately
+            self._save_command(command, fallback_completion, {
+                'project_type': self.project_context['project_type'],
+                'source': 'training_data'
+            })
+            return fallback_completion
+        
+        # If we got an AI completion, process it
+        if completion:
+            try:
+                # Extract the completion from the response
+                lines = completion.strip().split('\n')
+                for line in lines:
+                    line = line.strip()
+                    # Clean markdown
+                    line = line.replace('```', '').strip()
+                    
+                    # Look for lines that look like actual commands
+                    if (line and 
+                        len(line) > len(command) and
+                        ' ' in line and
+                        not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently')) and
+                        not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
+                        not line.endswith(':') and
+                        not line.startswith('$') and
+                        not line.startswith('`') and
+                        not line.endswith('`') and
+                        '|' not in line[:20]):  # Skip context lines
+                        result = line
+                        
+                        # Save to history
+                        git_info = self._get_git_info()
+                        git_branch = None
+                        if git_info and 'Branch:' in git_info:
+                            try:
+                                git_branch = git_info.split('Branch:')[1].strip().split('\n')[0]
+                            except:
+                                pass
+                        
+                        self._save_command(command, result, {
+                            'project_type': self.project_context['project_type'],
+                            'git_branch': git_branch,
+                            'source': 'ai'
+                        })
+                        return result
+            except Exception as e:
+                logger.warning(f"AI completion processing failed: {e}")
+        
+        # Fall back to training data (already checked above, but check again in case)
         fallback_completion = self._get_fallback_completion(command)
         if fallback_completion:
             # Save to history even for fallbacks
@@ -511,22 +539,96 @@ Generate only the commit message, no explanations:"""
     
     def get_completion(self, command: str, use_cache: bool = True) -> str:
         """Get enhanced completion with smart commit message support."""
-        # Check if this is a git commit command
-        if command.strip().startswith('git comm') or 'git commit' in command:
-            # Check if it already has a message
-            if '-m' in command or '--message' in command:
-                # Already has a message, just complete normally
-                pass
-            else:
-                # Generate smart commit message
+        # Update history
+        if command and (not self.history or self.history[-1] != command):
+            self.history.append(command)
+            self.history = self.history[-10:]
+        
+        # Refresh project context
+        self.project_context = self._detect_project_context()
+        
+        # ALWAYS check training data first for speed
+        fallback_completion = self._get_fallback_completion(command)
+        
+        # Special handling for git commit commands
+        if (command.strip().startswith('git comm') or 'git commit' in command) and not ('-m' in command or '--message' in command):
+            # If we have training data, use it immediately
+            if fallback_completion:
+                self._save_command(command, fallback_completion, {
+                    'project_type': self.project_context['project_type'],
+                    'source': 'training_data'
+                })
+                return fallback_completion
+            
+            # Try to generate smart commit message (with fast timeout)
+            try:
                 smart_message = self.get_smart_commit_message(command)
                 if smart_message:
-                    # Insert the smart message into the command
-                    if command.strip() == 'git comm' or command.strip() == 'git commit':
-                        return f'git commit -m "{smart_message}"'
-                    elif command.endswith('git comm') or command.endswith('git commit'):
-                        return f'{command} -m "{smart_message}"'
+                    result = f'git commit -m "{smart_message}"'
+                    self._save_command(command, result, {
+                        'project_type': self.project_context['project_type'],
+                        'source': 'smart_commit'
+                    })
+                    return result
+            except Exception:
+                pass
         
-        # Continue with normal enhanced completion
-        return super().get_completion(command, use_cache)
+        # For all commands: use training data if available (instant)
+        if fallback_completion:
+            self._save_command(command, fallback_completion, {
+                'project_type': self.project_context['project_type'],
+                'source': 'training_data'
+            })
+            return fallback_completion
+        
+        # Try AI only if no training data match, with very short timeout
+        try:
+            prompt = self._build_enhanced_prompt(command)
+            
+            # Use very short timeout for interactive use (3 seconds)
+            original_timeout = self.client.timeout
+            self.client.timeout = 3
+            
+            try:
+                completion = self.client.generate_completion(
+                    prompt, self.model, use_cache=use_cache
+                )
+            except Exception:
+                completion = None
+            finally:
+                self.client.timeout = original_timeout
+            
+            # Process AI completion if we got one
+            if completion:
+                try:
+                    lines = completion.strip().split('\n')
+                    for line in lines:
+                        line = line.strip().replace('```', '').strip()
+                        if (line and len(line) > len(command) and ' ' in line and
+                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently')) and
+                            not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
+                            not line.endswith(':') and not line.startswith('$') and
+                            not line.startswith('`') and not line.endswith('`') and
+                            '|' not in line[:20]):
+                            result = line
+                            git_info = self._get_git_info()
+                            git_branch = None
+                            if git_info and 'Branch:' in git_info:
+                                try:
+                                    git_branch = git_info.split('Branch:')[1].strip().split('\n')[0]
+                                except:
+                                    pass
+                            self._save_command(command, result, {
+                                'project_type': self.project_context['project_type'],
+                                'git_branch': git_branch,
+                                'source': 'ai'
+                            })
+                            return result
+                except Exception as e:
+                    logger.warning(f"AI completion processing failed: {e}")
+        except Exception as e:
+            logger.warning(f"AI completion failed: {e}")
+        
+        # Return original command if no completion found
+        return command
 

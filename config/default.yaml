@@ -2,7 +2,7 @@
 
 ollama:
   url: "http://localhost:11434"
-  timeout: 60  # Increased timeout for zsh-assistant model
+  timeout: 10  # Shorter timeout for faster fallback
 
 model: "zsh-assistant"  # Use the fine-tuned model
 

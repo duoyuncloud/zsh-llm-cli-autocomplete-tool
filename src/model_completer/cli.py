@@ -154,9 +154,10 @@ def main():
                 print(f"{i}: {suggestion}")
         else:
             completion = get_ai_completion(args.command, config)
-            if completion:
+            if completion and completion != args.command:
                 print(completion)
             else:
+                # Return original command if no completion found
                 print(args.command)
     else:
         print("AI Command Completer with Navigatable UI - Ready!")

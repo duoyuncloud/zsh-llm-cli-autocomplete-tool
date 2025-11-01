@@ -73,8 +73,13 @@ class OllamaClient:
                 logger.error("Ollama API error: %s - %s", response.status_code, response.text)
                 return ""
                 
+        except requests.exceptions.Timeout:
+            # Timeout is expected for interactive use - use debug level
+            logger.debug("Request to Ollama timed out after %ds (expected for fast fallback)", self.timeout)
+            return ""
         except requests.exceptions.RequestException as e:
-            logger.error("Request to Ollama failed: %s", e)
+            # Only log non-timeout errors as warnings
+            logger.warning("Request to Ollama failed: %s", e)
             return ""
     
     def get_available_models(self) -> list:
