@@ -514,12 +514,10 @@ _model_completion_ensure_ollama_model() {
     return 1  # Model not available
 }
 
-# Auto-check on plugin load (completely silent, no output to avoid prompt interference)
-# Run in background to not block shell startup
-(
+# Auto-check on plugin load (completely silent, non-blocking)
+# Use disown to completely detach from shell and avoid any prompt blocking
+{
     set +e  # Don't exit on errors
-    # Redirect all output to avoid any prompt interference
-    exec >/dev/null 2>&1
     
     # Step 1: Start Ollama if not running
     local ollama_ready=0
@@ -549,5 +547,7 @@ _model_completion_ensure_ollama_model() {
     
     # No status message - completely silent to avoid prompt interference
     # User can check status with: ai-completion-status
-) &!
+} &!
+# Disown the background job to completely detach it from shell
+disown %- 2>/dev/null || true
 

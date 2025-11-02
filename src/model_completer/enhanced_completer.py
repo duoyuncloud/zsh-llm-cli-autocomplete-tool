@@ -995,6 +995,7 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
         self.project_context = self._detect_project_context()
         
         # Special handling for "git" command - suggest workflow-aware commands
+        # MUST return early to avoid falling back to training data
         if command.strip() == "git":
             try:
                 # Check if we're in a git repo
@@ -1041,9 +1042,65 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                         'source': 'git_workflow'
                     })
                     return result
+                
+                # If no changes at all, try AI completion instead of training data
+                # Try AI to get smart suggestion
+                try:
+                    prompt = self._build_enhanced_prompt(command)
+                    original_timeout = self.client.timeout
+                    self.client.timeout = 3
+                    try:
+                        completion = self.client.generate_completion(prompt, self.model, use_cache=use_cache)
+                        if completion:
+                            lines = completion.strip().split('\n')
+                            for line in lines:
+                                line = line.strip().replace('```', '').strip()
+                                if (line and len(line) > len(command) and ' ' in line and
+                                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Suggestion:', 'Format:', 'Here', 'Sure')) and
+                                    not line.startswith(('1.', '2.', '3.', '- ', '* ', '• ')) and
+                                    '|' not in line[:20]):
+                                    result = line
+                                    self._save_command(command, result, {
+                                        'project_type': self.project_context['project_type'],
+                                        'source': 'ai'
+                                    })
+                                    return result
+                    finally:
+                        self.client.timeout = original_timeout
+                except Exception:
+                    pass
+                
+                # No changes and AI failed - return original command (don't fallback to training data)
+                return command
             except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-                # Not in git repo or git not available - continue with normal completion
-                pass
+                # Not in git repo - try AI completion instead of training data
+                try:
+                    prompt = self._build_enhanced_prompt(command)
+                    original_timeout = self.client.timeout
+                    self.client.timeout = 3
+                    try:
+                        completion = self.client.generate_completion(prompt, self.model, use_cache=use_cache)
+                        if completion:
+                            lines = completion.strip().split('\n')
+                            for line in lines:
+                                line = line.strip().replace('```', '').strip()
+                                if (line and len(line) > len(command) and ' ' in line and
+                                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Suggestion:', 'Format:', 'Here', 'Sure')) and
+                                    not line.startswith(('1.', '2.', '3.', '- ', '* ', '• ')) and
+                                    '|' not in line[:20]):
+                                    result = line
+                                    self._save_command(command, result, {
+                                        'project_type': self.project_context['project_type'],
+                                        'source': 'ai'
+                                    })
+                                    return result
+                    finally:
+                        self.client.timeout = original_timeout
+                except Exception:
+                    pass
+                
+                # Return original, don't fallback to training data
+                return command
         
         # Special handling for git commit commands - ALWAYS prioritize smart commit messages
         # Skip training data check for git commit commands to ensure smart commit runs
