@@ -48,9 +48,16 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
     
     return default_config
 
-def setup_logging(config: Dict[str, Any]) -> None:
-    """Setup logging configuration."""
+def setup_logging(config: Dict[str, Any], silent: bool = False) -> None:
+    """Setup logging configuration.
+    
+    Args:
+        config: Configuration dictionary
+        silent: If True, only log to file, not to console (for Zsh plugin use)
+    """
     import logging
+    import sys
+    
     logging_config = config.get('logging', {})
     level = getattr(logging, logging_config.get('level', 'INFO').upper())
     
@@ -58,11 +65,18 @@ def setup_logging(config: Dict[str, Any]) -> None:
     log_file = os.path.expanduser(logging_config.get('file', '~/.cache/model-completer/logs.txt'))
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
     
+    handlers = [logging.FileHandler(log_file)]
+    
+    # Only add console handler if not in silent mode (i.e., not called from Zsh plugin)
+    if not silent:
+        handlers.append(logging.StreamHandler())
+    else:
+        # In silent mode, set logging level to WARNING to suppress INFO/DEBUG
+        level = logging.WARNING
+    
     logging.basicConfig(
         level=level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
+        handlers=handlers,
+        force=True  # Force reconfiguration if already set up
     )

@@ -240,6 +240,18 @@ class RealLoRATrainer:
             }, f)
         
         logger.info(f"✅ Training completed! Model saved to: {self.output_dir}")
+        
+        # Import to Ollama after training
+        logger.info("Importing fine-tuned model to Ollama...")
+        try:
+            from .ollama_lora_import import import_lora_to_ollama
+            if import_lora_to_ollama(self.base_dir):
+                logger.info("✅ Model imported to Ollama successfully")
+            else:
+                logger.warning("⚠️  Failed to import model to Ollama. You can run it manually later.")
+        except Exception as e:
+            logger.warning(f"⚠️  Failed to import to Ollama: {e}. Model is still saved locally.")
+        
         return True
     
     def test_model(self) -> bool:

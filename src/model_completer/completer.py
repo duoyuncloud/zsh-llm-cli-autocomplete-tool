@@ -75,47 +75,111 @@ Output:"""
             return ""
     
     def get_completion(self, command: str, use_cache: bool = True) -> str:
-        """Get completion for the given command."""
+        """Get completion for the given command using Ollama.
+        
+        Priority:
+        1. Ollama with fine-tuned model (zsh-assistant) if available
+        2. Ollama with configured model
+        3. Training data fallback
+        4. Original command (if no completion found)
+        """
         # Update history
         if command and (not self.history or self.history[-1] != command):
             self.history.append(command)
             # Keep only last 10 commands
             self.history = self.history[-10:]
         
-        # Try AI completion first with a proper command completion prompt
+        # Determine which model to use
+        model_to_use = self.model
+        
+        # Check if fine-tuned model (zsh-assistant) is available in Ollama
+        if self.model != "zsh-assistant":
+            try:
+                available_models = self.client.get_available_models()
+                if "zsh-assistant" in available_models:
+                    model_to_use = "zsh-assistant"
+                    logger.debug("Using fine-tuned zsh-assistant model")
+            except Exception:
+                pass  # Continue with configured model
+        
+        # Priority 1: Try Ollama AI completion
         try:
             # Create a very direct prompt for command completion
             prompt = f"{command}"
             
             completion = self.client.generate_completion(
-                prompt, self.model, use_cache=use_cache
+                prompt, model_to_use, use_cache=use_cache
             )
             
             # Extract the completion from the response
-            lines = completion.strip().split('\n')
+            import re
+            
+            # First, clean up common prefixes/suffixes
+            completion_text = completion.strip()
+            
+            # Handle multiline responses - look for Output: line first
+            lines = completion_text.split('\n')
+            output_line = None
+            
             for line in lines:
+                line_stripped = line.strip()
+                # Look for Output: line
+                if re.match(r'^(Output|output):', line_stripped, re.IGNORECASE):
+                    output_line = re.sub(r'^(Output|output):\s*', '', line_stripped, flags=re.IGNORECASE).strip()
+                    break
+            
+            # Use Output line if found, otherwise process all lines
+            if output_line:
+                candidate_lines = [output_line]
+            else:
+                candidate_lines = [l.strip() for l in lines]
+            
+            # Process each candidate line
+            for line in candidate_lines:
+                if not line or len(line) <= len(command):
+                    continue
+                
+                # Remove Input:/Output: labels
+                line = re.sub(r'^(Input|Output|input|output):\s*', '', line, flags=re.IGNORECASE).strip()
+                
+                # Remove "(Added by...)" suffixes
+                if '"' in line:
+                    parts = line.split('"')
+                    if len(parts) >= 3:
+                        parts[1] = re.sub(r'\s*\(Added by[^)]*\)', '', parts[1])
+                        parts[1] = re.sub(r'^\s*Conventional Commit Message:\s*', '', parts[1], flags=re.IGNORECASE).strip()
+                        if not parts[1]:
+                            parts[1] = "commit message"
+                        line = '"'.join(parts)
+                else:
+                    line = re.sub(r'\s*\(Added by[^)]*\)', '', line)
+                    line = re.sub(r'\s*Conventional Commit Message:.*$', '', line, flags=re.IGNORECASE)
+                
                 line = line.strip()
+                
                 # Look for lines that look like actual commands
                 if (line and 
                     len(line) > len(command) and
                     ' ' in line and
-                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', '```', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'The', 'A', 'An', 'For', 'In', 'On', 'At', 'By', 'With', 'Without', 'Using', 'When', 'If', 'Because', 'Since', 'Although', 'While', 'Before', 'After', 'During', 'Until', 'Unless', 'Whether', 'How', 'What', 'Where', 'When', 'Why', 'Who', 'Which')) and
+                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', '```', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Input:', 'Output:', 'input:', 'output:')) and
                     not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ', '6.', '7.', '8.', '9.', '10.')) and
                     not line.endswith(':') and
                     not line.startswith('$') and
                     not line.startswith('`') and
                     not line.endswith('`')):
+                    logger.debug(f"Using Ollama completion ({model_to_use}): {line}")
                     return line
                     
         except Exception as e:
-            logger.warning(f"AI completion failed: {e}")
+            logger.debug(f"Ollama completion failed: {e}")
         
-        # Fall back to training data
+        # Priority 2: Fall back to training data
         fallback_completion = self._get_fallback_completion(command)
         if fallback_completion:
+            logger.debug(f"Using training data fallback: {fallback_completion}")
             return fallback_completion
         
-        # Return original command if no completion found
+        # Priority 3: Return original command if no completion found
         return command
     
     def get_suggestions(self, command: str, max_suggestions: int = 3) -> List[str]:
@@ -185,8 +249,17 @@ Output:"""
                 with open(training_file, 'r') as f:
                     for line in f:
                         data = json.loads(line.strip())
+                        # Try exact match first
                         if data['input'].lower() == command.lower():
-                            return data['output']
+                            output = data['output']
+                            # Clean up output - remove any "Output:" labels
+                            output = output.replace("Output:", "").replace("output:", "").strip()
+                            return output
+                        # Try prefix match
+                        elif command.lower() in data['input'].lower() or data['input'].lower().startswith(command.lower()):
+                            output = data['output']
+                            output = output.replace("Output:", "").replace("output:", "").strip()
+                            return output
         except Exception:
             pass
         return None

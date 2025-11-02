@@ -482,6 +482,31 @@ echo ""
 # Make script executable for future
 chmod +x "$SCRIPT_DIR/install.sh"
 
+# Setup PATH for model-completer command
+print_step "Setting up PATH for model-completer command..."
+
+# Check if PATH setup script exists
+if [[ -f "$SCRIPT_DIR/setup_path.sh" ]]; then
+    source "$SCRIPT_DIR/setup_path.sh"
+    
+    # Add to ~/.zshrc if not already there
+    if ! grep -q "model-cli-autocomplete.*setup_path" ~/.zshrc 2>/dev/null; then
+        echo "" >> ~/.zshrc
+        echo "# Model CLI Autocomplete PATH setup" >> ~/.zshrc
+        echo "export PATH=\"$SCRIPT_DIR/venv/bin:\$PATH\"" >> ~/.zshrc
+        echo "export PATH=\"$SCRIPT_DIR/bin:\$PATH\"" >> ~/.zshrc
+        print_success "Added model-completer to PATH in ~/.zshrc"
+    else
+        print_info "PATH already configured in ~/.zshrc"
+    fi
+else
+    # Manual PATH setup
+    print_info "To use 'model-completer' command, add to ~/.zshrc:"
+    echo "  export PATH=\"$SCRIPT_DIR/venv/bin:\$PATH\""
+    echo "  export PATH=\"$SCRIPT_DIR/bin:\$PATH\""
+fi
+
 print_success "🎉 Installation complete! Reload your shell and start using AI completions!"
 echo ""
 print_info "💡 Pro tip: Use 'ai-completion-help' to see all available features!"
+print_info "💡 Use 'model-completer --help' to see CLI options!"

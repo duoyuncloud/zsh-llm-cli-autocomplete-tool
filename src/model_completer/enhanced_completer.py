@@ -430,13 +430,28 @@ class EnhancedCompleter(ModelCompleter):
                                     except:
                                         pass
             
-            # Generate summary
+            # Generate concise summary
+            summary_parts = []
             if changes['files_added']:
-                changes['summary'] += f"Added {len(changes['files_added'])} file(s). "
+                file_list = changes['files_added'][:3]  # Show first 3 files
+                if len(changes['files_added']) > 3:
+                    summary_parts.append(f"add {', '.join(file_list)} and {len(changes['files_added'])-3} more")
+                else:
+                    summary_parts.append(f"add {', '.join(file_list)}")
             if changes['files_modified']:
-                changes['summary'] += f"Modified {len(changes['files_modified'])} file(s). "
+                file_list = changes['files_modified'][:3]
+                if len(changes['files_modified']) > 3:
+                    summary_parts.append(f"update {', '.join(file_list)} and {len(changes['files_modified'])-3} more")
+                else:
+                    summary_parts.append(f"update {', '.join(file_list)}")
             if changes['files_deleted']:
-                changes['summary'] += f"Deleted {len(changes['files_deleted'])} file(s). "
+                file_list = changes['files_deleted'][:3]
+                if len(changes['files_deleted']) > 3:
+                    summary_parts.append(f"remove {', '.join(file_list)} and {len(changes['files_deleted'])-3} more")
+                else:
+                    summary_parts.append(f"remove {', '.join(file_list)}")
+            
+            changes['summary'] = '; '.join(summary_parts)
             
         except (subprocess.CalledProcessError, FileNotFoundError):
             pass
@@ -472,53 +487,160 @@ class EnhancedCompleter(ModelCompleter):
             file_types[ext] = file_types.get(ext, 0) + 1
         
         # Build prompt for commit message generation
-        prompt = f"""Generate a concise, professional git commit message following conventional commits format.
+        # Determine likely commit type from changes
+        commit_type_hint = "chore"
+        if changes['files_added']:
+            commit_type_hint = "feat"
+        elif any('fix' in f.lower() or 'bug' in f.lower() or 'error' in f.lower() for f in changes['files_changed']):
+            commit_type_hint = "fix"
+        elif any('test' in f.lower() for f in changes['files_changed']):
+            commit_type_hint = "test"
+        elif any('doc' in f.lower() or 'readme' in f.lower() for f in changes['files_changed']):
+            commit_type_hint = "docs"
+        
+        prompt = f"""Complete this git commit message following conventional commits:
 
 Changes: {context}
 
-Project: {self.project_context['project_type']}
-File types: {', '.join(file_types.keys())}
-
-Format: <type>(<scope>): <subject>
+Use format: <type>: <brief subject>
 
 Examples:
-- feat: add user authentication
-- fix: resolve memory leak in parser
-- refactor: simplify error handling
-- docs: update API documentation
-- test: add unit tests for utils
+- feat: add user authentication module
+- fix: resolve memory leak in data parser
+- refactor: simplify error handling logic
+- docs: update installation instructions
+- test: add unit tests for validation
 
-Generate only the commit message, no explanations:"""
+Generate ONLY the commit message line (type: subject), nothing else:"""
         
         try:
             completion = self.client.generate_completion(
                 prompt, self.model, use_cache=False
             )
             
-            # Extract commit message
-            lines = completion.strip().split('\n')
+            # Extract commit message - clean and parse AI response
+            import re
+            completion_text = completion.strip()
+            
+            # Remove common prefixes
+            completion_text = re.sub(r'^(Input|Output|input|output):\s*', '', completion_text, flags=re.IGNORECASE)
+            
+            # Split into lines and process
+            lines = completion_text.split('\n')
             for line in lines:
                 line = line.strip()
+                if not line:
+                    continue
+                    
                 # Remove markdown formatting
-                line = line.replace('```', '').strip()
+                line = line.replace('```', '').replace('`', '').strip()
                 
-                # Look for commit message format
-                if (line and 
-                    len(line) > 5 and
-                    not line.startswith(('Generate', 'Format:', 'Examples:', 'Changes:', 'Project:', 'File types:')) and
-                    not line.startswith(('1.', '2.', '3.', '- ', '* ', '•')) and
-                    ':' in line[:50]):  # Commit messages usually have format "type: message"
-                    # Clean up
-                    if line.startswith('`'):
-                        line = line[1:]
-                    if line.endswith('`'):
-                        line = line[:-1]
-                    return line.strip()
+                # Remove "Conventional Commit Message:" labels
+                line = re.sub(r'^\s*Conventional Commit Message:\s*', '', line, flags=re.IGNORECASE)
+                line = re.sub(r'^\s*Commit Message:\s*', '', line, flags=re.IGNORECASE)
+                
+                # Skip explanatory lines
+                if (line.startswith(('Generate', 'Format:', 'Examples:', 'Changes:', 'Project:', 'File types:', 'Here', 'Sure', 'This')) or
+                    line.startswith(('1.', '2.', '3.', '- ', '* ', '•')) or
+                    len(line) < 5):
+                    continue
+                
+                # Look for commit message format (type: subject)
+                if ':' in line[:60]:  # Allow longer lines
+                    # Clean up the message
+                    line = line.strip()
+                    # Remove any trailing explanatory text in parentheses
+                    line = re.sub(r'\s*\([^)]*\)\s*$', '', line)
+                    # Remove "(Added by...)" text
+                    line = re.sub(r'\s*\(Added by[^)]*\)', '', line)
+                    # Return first valid commit message found
+                    if len(line) > 8 and line.count(':') >= 1:  # Must have at least type: subject
+                        # Extract type and subject
+                        if ':' in line:
+                            parts = line.split(':', 1)  # Split only on first colon
+                            if len(parts) == 2 and len(parts[0].strip()) <= 15:  # Type should be short
+                                commit_type = parts[0].strip()
+                                subject = parts[1].strip()
+                                # Clean subject - remove quotes, extra spaces
+                                subject = subject.strip('"').strip("'").strip()
+                                # Limit subject length to 72 chars (git convention)
+                                if len(subject) > 72:
+                                    subject = subject[:69] + '...'
+                                return f"{commit_type}: {subject}"
+                    # Fallback: if format doesn't match, try to fix it
+                    if ':' in line and not line.startswith(('feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'perf', 'style', 'build', 'ci')):
+                        # Line has colon but wrong format, try to extract meaningful part
+                        parts = line.split(':', 1)
+                        if len(parts) == 2:
+                            # Try to infer type from content
+                            content = parts[1].lower()
+                            commit_type = "chore"
+                            if any(word in content for word in ['add', 'new', 'feature', 'implement']):
+                                commit_type = "feat"
+                            elif any(word in content for word in ['fix', 'bug', 'error', 'issue']):
+                                commit_type = "fix"
+                            elif any(word in content for word in ['refactor', 'simplify']):
+                                commit_type = "refactor"
+                            return f"{commit_type}: {parts[1].strip()[:72]}"
             
-            # Fallback: generate simple message
+            # Fallback: use summary or generate simple message from file changes
             if changes['summary']:
-                return f"{changes['summary'].strip()}"
-            return "Update files"
+                summary = changes['summary'].strip()
+                # Try to format summary as conventional commit
+                if summary and not ':' in summary:
+                    # Try to detect type from summary and files
+                    summary_lower = summary.lower()
+                    all_files = ' '.join(changes['files_changed']).lower()
+                    
+                    commit_type = "chore"
+                    if any(word in summary_lower or word in all_files for word in ['add', 'new', 'feature', 'implement', 'create']):
+                        commit_type = "feat"
+                    elif any(word in summary_lower or word in all_files for word in ['fix', 'bug', 'error', 'issue', 'resolve', 'repair']):
+                        commit_type = "fix"
+                    elif any(word in summary_lower or word in all_files for word in ['refactor', 'simplify', 'clean', 'restructure']):
+                        commit_type = "refactor"
+                    elif any(word in summary_lower or word in all_files for word in ['docs', 'documentation', 'readme', '.md']):
+                        commit_type = "docs"
+                    elif any(word in summary_lower or word in all_files for word in ['test', 'testing', 'spec']):
+                        commit_type = "test"
+                    elif any(word in summary_lower or word in all_files for word in ['style', 'format', 'lint']):
+                        commit_type = "style"
+                    
+                    # Create concise, descriptive message
+                    # Show key files if not too many
+                    if len(changes['files_changed']) <= 3:
+                        key_files = [os.path.basename(f) for f in changes['files_changed']]
+                        msg = f"{summary.split(';')[0].strip()} ({', '.join(key_files)})"
+                    else:
+                        # Use summary but make it concise
+                        msg_parts = []
+                        if changes['files_added']:
+                            count = len(changes['files_added'])
+                            msg_parts.append(f"add {count} file{'s' if count > 1 else ''}")
+                        if changes['files_modified']:
+                            count = len(changes['files_modified'])
+                            msg_parts.append(f"update {count} file{'s' if count > 1 else ''}")
+                        if changes['files_deleted']:
+                            count = len(changes['files_deleted'])
+                            msg_parts.append(f"remove {count} file{'s' if count > 1 else ''}")
+                        msg = ' and '.join(msg_parts)
+                    
+                    # Limit to 72 chars (git convention)
+                    if len(msg) > 72:
+                        msg = msg[:69] + '...'
+                    return f"{commit_type}: {msg}"
+                return summary if ':' in summary else f"chore: {summary}"
+            
+            # Final fallback - create message from file list
+            if changes['files_changed']:
+                file_count = len(changes['files_changed'])
+                if file_count == 1:
+                    filename = os.path.basename(changes['files_changed'][0])
+                    return f"chore: update {filename}"
+                else:
+                    return f"chore: update {file_count} files"
+            
+            return "chore: update files"
             
         except Exception as e:
             logger.warning(f"Failed to generate commit message: {e}")
@@ -534,8 +656,20 @@ Generate only the commit message, no explanations:"""
         if not changes['files_changed']:
             return None
         
-        commit_message = self._generate_commit_message(changes)
-        return commit_message
+        try:
+            commit_message = self._generate_commit_message(changes)
+            # Clean up the message - remove any unwanted prefixes/suffixes
+            if commit_message:
+                import re
+                # Remove any "Input:" or "Output:" labels
+                commit_message = re.sub(r'^(Input|Output|input|output):\s*', '', commit_message, flags=re.IGNORECASE)
+                commit_message = commit_message.strip()
+                return commit_message
+        except Exception as e:
+            logger.debug(f"Failed to generate commit message: {e}")
+            return None
+        
+        return None
     
     def get_completion(self, command: str, use_cache: bool = True) -> str:
         """Get enhanced completion with smart commit message support."""
@@ -550,28 +684,28 @@ Generate only the commit message, no explanations:"""
         # ALWAYS check training data first for speed
         fallback_completion = self._get_fallback_completion(command)
         
-        # Special handling for git commit commands
+        # Special handling for git commit commands - prioritize smart commit messages
         if (command.strip().startswith('git comm') or 'git commit' in command) and not ('-m' in command or '--message' in command):
-            # If we have training data, use it immediately
-            if fallback_completion:
-                self._save_command(command, fallback_completion, {
-                    'project_type': self.project_context['project_type'],
-                    'source': 'training_data'
-                })
-                return fallback_completion
-            
-            # Try to generate smart commit message (with fast timeout)
+            # Try to generate smart commit message FIRST (contextual and better)
             try:
                 smart_message = self.get_smart_commit_message(command)
-                if smart_message:
+                if smart_message and smart_message.strip():
                     result = f'git commit -m "{smart_message}"'
                     self._save_command(command, result, {
                         'project_type': self.project_context['project_type'],
                         'source': 'smart_commit'
                     })
                     return result
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Smart commit message generation failed: {e}")
+            
+            # Fallback to training data if smart message generation fails
+            if fallback_completion:
+                self._save_command(command, fallback_completion, {
+                    'project_type': self.project_context['project_type'],
+                    'source': 'training_data'
+                })
+                return fallback_completion
         
         # For all commands: use training data if available (instant)
         if fallback_completion:

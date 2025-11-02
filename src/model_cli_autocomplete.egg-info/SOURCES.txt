@@ -4,6 +4,7 @@ setup.py
 src/model_cli_autocomplete.egg-info/PKG-INFO
 src/model_cli_autocomplete.egg-info/SOURCES.txt
 src/model_cli_autocomplete.egg-info/dependency_links.txt
+src/model_cli_autocomplete.egg-info/entry_points.txt
 src/model_cli_autocomplete.egg-info/requires.txt
 src/model_cli_autocomplete.egg-info/top_level.txt
 src/model_completer/__init__.py
@@ -11,7 +12,11 @@ src/model_completer/cache.py
 src/model_completer/cli.py
 src/model_completer/client.py
 src/model_completer/completer.py
+src/model_completer/enhanced_completer.py
+src/model_completer/lora_inference.py
+src/model_completer/ollama_lora_import.py
 src/model_completer/ollama_manager.py
+src/model_completer/real_lora_trainer.py
 src/model_completer/simple_training.py
 src/model_completer/training.py
 src/model_completer/ui.py

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Wrapper script for model-completer command
+# This ensures the command works even if entry points aren't set up
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Try to use venv Python if available
+if [[ -f "$PROJECT_DIR/venv/bin/python3" ]]; then
+    PYTHON="$PROJECT_DIR/venv/bin/python3"
+elif command -v python3 &> /dev/null; then
+    PYTHON="$(command -v python3)"
+else
+    echo "Error: python3 not found" >&2
+    exit 1
+fi
+
+# Run the CLI module
+exec "$PYTHON" -m model_completer.cli "$@"
+

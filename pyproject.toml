@@ -26,3 +26,6 @@ training = [
     "peft>=0.4.0",
     "axolotl>=0.3.0",
 ]
+
+[project.scripts]
+model-completer = "model_completer.cli:main"
