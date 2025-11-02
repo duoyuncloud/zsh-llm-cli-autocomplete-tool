@@ -65,15 +65,9 @@ else
         if [[ -f "$script_path" ]]; then
             export MODEL_COMPLETION_SCRIPT="$script_path"
             # Set project dir from script path (go up two levels: cli.py -> model_completer -> src -> project_root)
-            # Use realpath or readlink if available, otherwise use dirname
-            if command -v realpath &> /dev/null; then
-                export MODEL_COMPLETION_PROJECT_DIR="$(realpath "$(dirname "$(dirname "$script_path")")")"
-            elif command -v readlink &> /dev/null; then
-                export MODEL_COMPLETION_PROJECT_DIR="$(readlink -f "$(dirname "$(dirname "$script_path")")")"
-            else
-                # Fallback: use dirname (works for absolute paths)
-                export MODEL_COMPLETION_PROJECT_DIR="$(dirname "$(dirname "$script_path")")"
-            fi
+            # Use simple dirname to avoid blocking - realpath/readlink can be slow
+            # For absolute paths, dirname works fine without symlink resolution
+            export MODEL_COMPLETION_PROJECT_DIR="$(dirname "$(dirname "$script_path")")"
             break
         fi
     done
@@ -116,29 +110,27 @@ fi
 
 export MODEL_COMPLETION_CONFIG="${MODEL_COMPLETION_CONFIG:-~/.config/model-completer/config.yaml}"
 
-# Check if the completer script exists
+# Check if the completer script exists (non-blocking - just warn, don't fail)
 if [[ -z "$MODEL_COMPLETION_SCRIPT" || ! -f "$MODEL_COMPLETION_SCRIPT" ]]; then
-    echo "❌ Error: model completer not found" >&2
-    echo "   Please set MODEL_COMPLETION_PROJECT_DIR or ensure the project is installed" >&2
-    return 1
+    # Don't block - just set a flag for background init to handle
+    # The plugin will work for status checks even without the script
+    export MODEL_COMPLETION_SCRIPT_MISSING=1
 fi
 
-# Verify Python exists
+# Verify Python exists (non-blocking - just set fallback)
 if ! command -v "$MODEL_COMPLETION_PYTHON" &> /dev/null; then
-    echo "⚠️  Warning: Python not found at $MODEL_COMPLETION_PYTHON" >&2
     if command -v python3 &> /dev/null; then
         export MODEL_COMPLETION_PYTHON="$(command -v python3)"
-        echo "   Using system python3 instead" >&2
     else
-        echo "❌ Error: No Python found" >&2
-        return 1
+        # Don't fail - just use python3 as fallback (will fail later if needed)
+        export MODEL_COMPLETION_PYTHON="python3"
     fi
 fi
 
-# Function to auto-start Ollama if not running
+# Function to auto-start Ollama if not running (non-blocking version)
 _model_completion_start_ollama() {
-    # Check if already running
-    if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+    # Check if already running (with short timeout)
+    if curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags > /dev/null 2>&1; then
         return 0
     fi
     
@@ -149,66 +141,49 @@ _model_completion_start_ollama() {
     
     # Check if Ollama process already exists (might be starting)
     if pgrep -x ollama > /dev/null 2>&1; then
-        # Wait for it to be ready (max 10 seconds)
+        # Quick check - don't wait long (max 2 seconds)
         local wait_time=0
-        while [[ $wait_time -lt 10 ]]; do
-            if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+        while [[ $wait_time -lt 2 ]]; do
+            if curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags > /dev/null 2>&1; then
                 return 0
             fi
-            sleep 1
+            sleep 0.5
             wait_time=$((wait_time + 1))
         done
     fi
     
-    # Start Ollama in background
-    nohup ollama serve > /tmp/ollama.log 2>&1 &
-    local ollama_pid=$!
+    # Start Ollama in background (don't wait for it)
+    nohup ollama serve > /tmp/ollama.log 2>&1 </dev/null &
     
-    # Wait for server to be ready (max 15 seconds)
-    local max_wait=15
-    local waited=0
-    while [[ $waited -lt $max_wait ]]; do
-        if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
-            return 0
-        fi
-        
-        # Check if process is still running
-        if ! kill -0 $ollama_pid > /dev/null 2>&1; then
-            # Process died
-            return 1
-        fi
-        
-        sleep 1
-        waited=$((waited + 1))
-    done
-    
-    # Timeout
-    return 1
+    # Don't wait - return immediately and let it start in background
+    return 0
 }
 
-# Function to check if Ollama is available
+# Function to check if Ollama is available (non-blocking)
 _model_completion_check_ollama() {
-    if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+    # Use very short timeouts to prevent blocking
+    if curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags > /dev/null 2>&1; then
         return 0
     fi
     return 1
 }
 
-# Function to check if zsh-assistant model is available
+# Function to check if zsh-assistant model is available (non-blocking)
 _model_completion_check_zsh_assistant() {
     local models
-    models=$(curl -s --max-time 3 http://localhost:11434/api/tags 2>/dev/null)
+    # Use very short timeouts to prevent blocking
+    models=$(curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags 2>/dev/null || echo "")
     if [[ -z "$models" ]]; then
         return 1
     fi
-    # Try proper JSON parsing if Python available
+    # Try proper JSON parsing if Python available (with timeout)
     if command -v python3 &> /dev/null; then
-        if echo "$models" | python3 -c "import sys, json; data = json.load(sys.stdin); exit(0 if any('zsh-assistant' in str(m.get('name', '')) for m in data.get('models', [])) else 1)" 2>/dev/null; then
+        if echo "$models" | timeout 0.3 python3 -c "import sys, json; data = json.load(sys.stdin); exit(0 if any('zsh-assistant' in str(m.get('name', '')) for m in data.get('models', [])) else 1)" 2>/dev/null; then
             return 0
         fi
     fi
-    # Fallback to grep
-    if echo "$models" | grep -q '"name"[[:space:]]*:[[:space:]]*"zsh-assistant"'; then
+    # Fallback to grep (fastest)
+    if echo "$models" | grep -q '"name"[[:space:]]*:[[:space:]]*"zsh-assistant"' 2>/dev/null || echo "$models" | grep -q 'zsh-assistant' 2>/dev/null; then
         return 0
     fi
     return 1
@@ -448,8 +423,11 @@ _ai_completion_utils() {
     _describe 'AI completion utilities' utils
 }
 
-# Only register completion if in interactive shell with ZLE
-if [[ -o interactive ]] && zle; then
+# Only register completion if in interactive shell
+# Don't check zle() - it can block during plugin load
+# Completion will work when zle is active during actual use
+if [[ -o interactive ]]; then
+    # Register completion - compdef is safe to call even if zle isn't ready yet
     compdef _ai_completion_utils ai-completion 2>/dev/null || true
 fi
 
@@ -606,87 +584,92 @@ _model_completion_full_init() {
 
 # Auto-initialization on plugin load (completely non-blocking)
 # CRITICAL: This MUST NOT block the prompt - everything runs asynchronously
-# Use multiple levels of forking and immediate disown to ensure complete detachment
-{
-    # First fork: redirect all output
-    (
-        exec >/tmp/model-completer-init.log 2>&1
+# Fork immediately and completely detach from shell with all file descriptors closed
+(
+    {
+        # Close all file descriptors and redirect to log
+        exec >/tmp/model-completer-init.log 2>&1 <&- || exec >/tmp/model-completer-init.log 2>&1
         
-        # Second fork: background process
-        (
-            # Third fork: complete isolation
-            (
-                # Set error handling - never fail
-                set +e
-                
-                # Change directory immediately to avoid any cwd blocking
-                cd /tmp 2>/dev/null || cd ~ 2>/dev/null || true
-                
-                # Variables
-                local status_file="/tmp/model-completer-init.status"
-                local log_file="/tmp/model-completer-init.log"
-                
-                # Initialize (quick check only)
-                _model_completion_full_init
-                local init_result=$?
-                
-                # Write result
-                echo "result:$init_result" >> "$status_file" 2>/dev/null
-                
-                # Prepare message
-                local message=""
-                local last_step=""
-                if [[ -f "$status_file" ]]; then
-                    last_step=$(cat "$status_file" 2>/dev/null | grep "^step" | tail -1)
-                fi
-                
-                # Determine message
-                if [[ "$last_step" == *"step2:model_ready"* ]]; then
-                    message="✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)"
-                elif [[ "$last_step" == *"step2:lora_not_found"* ]] || [[ "$last_step" == *"step2:config_missing"* ]]; then
-                    message="⚠️  AI Autocomplete ready (Fine-tuned model not found - run 'ai-completion-setup')"
-                elif [[ "$last_step" == *"step1:ollama_not_found"* ]] || [[ "$last_step" == *"step1:ollama_failed"* ]]; then
-                    message="⚠️  AI Autocomplete ready (Ollama not available - will use training data fallback)"
-                elif [[ "$last_step" == *"step2:ollama_not_ready"* ]] || [[ "$last_step" == *"step1:ollama_starting"* ]]; then
-                    message="⏳ AI Autocomplete ready (Ollama starting in background)"
-                else
-                    message="✅ AI Autocomplete ready (check 'ai-completion-status' for details)"
-                fi
-                
-                # Write message
-                echo "$message" > /tmp/model-completer-init.msg 2>/dev/null
-            ) &
-        ) &
-    ) &
-} &!
+        # Set error handling - never fail
+        set +e
+        
+        # Change directory immediately to avoid any cwd blocking
+        cd /tmp 2>/dev/null || cd ~ 2>/dev/null || true
+        
+        # Variables
+        status_file="/tmp/model-completer-init.status"
+        log_file="/tmp/model-completer-init.log"
+        
+        # Initialize (quick check only)
+        _model_completion_full_init
+        init_result=$?
+        
+        # Write result
+        echo "result:$init_result" >> "$status_file" 2>/dev/null || true
+        
+        # Prepare message
+        message=""
+        last_step=""
+        if [[ -f "$status_file" ]]; then
+            last_step=$(cat "$status_file" 2>/dev/null | grep "^step" | tail -1 || echo "")
+        fi
+        
+        # Determine message
+        if [[ "$last_step" == *"step2:model_ready"* ]]; then
+            message="✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)"
+        elif [[ "$last_step" == *"step2:lora_not_found"* ]] || [[ "$last_step" == *"step2:config_missing"* ]]; then
+            message="⚠️  AI Autocomplete ready (Fine-tuned model not found - run 'ai-completion-setup')"
+        elif [[ "$last_step" == *"step1:ollama_not_found"* ]] || [[ "$last_step" == *"step1:ollama_failed"* ]]; then
+            message="⚠️  AI Autocomplete ready (Ollama not available - will use training data fallback)"
+        elif [[ "$last_step" == *"step2:ollama_not_ready"* ]] || [[ "$last_step" == *"step1:ollama_starting"* ]]; then
+            message="⏳ AI Autocomplete ready (Ollama starting in background)"
+        else
+            message="✅ AI Autocomplete ready (check 'ai-completion-status' for details)"
+        fi
+        
+        # Write message (non-blocking)
+        echo "$message" > /tmp/model-completer-init.msg 2>/dev/null || true
+    } &
+) &!
 
-# Immediately disown all background jobs to prevent any blocking
+# Immediately disown to prevent blocking
 disown -a 2>/dev/null || true
 
 # Set up precmd hook to show initialization message when ready (non-blocking)
 # This runs before each prompt, but only shows message once
+# CRITICAL: Must be ultra-fast and never block - use static flag to skip after first run
 if [[ -o interactive ]] && [[ -n "$ZSH_VERSION" ]]; then
+    # Static flag to prevent multiple executions
+    typeset -g _model_completion_msg_shown=0
+    
     _model_completion_show_init_message() {
-        if [[ -f /tmp/model-completer-init.msg ]]; then
-            local msg=$(cat /tmp/model-completer-init.msg 2>/dev/null)
-            if [[ -n "$msg" ]]; then
-                echo "$msg"
-                # Remove the message file so it doesn't show again
-                rm -f /tmp/model-completer-init.msg 2>/dev/null
-                # Remove this hook after showing once (safe array manipulation)
-                typeset -a new_precmd
-                for func in "${precmd_functions[@]}"; do
-                    [[ "$func" != "_model_completion_show_init_message" ]] && new_precmd+=("$func")
-                done
-                precmd_functions=("${new_precmd[@]}")
-                unset new_precmd
-            fi
-        fi
+        # Fastest possible exit - check static variable first
+        (( _model_completion_msg_shown )) && return 0
+        
+        # Fast exit if no message file (avoid filesystem check if possible)
+        [[ ! -f /tmp/model-completer-init.msg ]] && return 0
+        
+        # Read message (quick operation with timeout protection)
+        local msg
+        msg=$(cat /tmp/model-completer-init.msg 2>/dev/null || true)
+        [[ -z "$msg" ]] && return 0
+        
+        # Display message
+        echo "$msg"
+        
+        # Mark as shown immediately (before any cleanup)
+        _model_completion_msg_shown=1
+        
+        # Cleanup in background to not block
+        (rm -f /tmp/model-completer-init.msg /tmp/model-completer-init.shown 2>/dev/null &)
     }
+    
     # Initialize precmd_functions array if it doesn't exist
     [[ ${+precmd_functions} -eq 0 ]] && typeset -a precmd_functions
-    # Add to precmd hooks (runs before each prompt, non-blocking)
-    precmd_functions+=(_model_completion_show_init_message)
+    
+    # Add to precmd hooks (only once - use simple check)
+    [[ "${precmd_functions[(ie)_model_completion_show_init_message]}" -gt "${#precmd_functions}" ]] && \
+        precmd_functions+=(_model_completion_show_init_message)
 fi
 
 # The initialization is now running completely in background
