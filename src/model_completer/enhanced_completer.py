@@ -351,6 +351,110 @@ class EnhancedCompleter(ModelCompleter):
         
         return suggestions[:max_suggestions]
     
+    def _get_git_diff_context(self) -> str:
+        """Get git diff content to understand actual code changes."""
+        try:
+            # Try staged changes first
+            diff_result = subprocess.run(['git', 'diff', '--cached'],
+                                       capture_output=True, text=True, timeout=5)
+            diff_content = diff_result.stdout if diff_result.returncode == 0 else ""
+            
+            # If no staged changes, check unstaged
+            if not diff_content.strip():
+                diff_result = subprocess.run(['git', 'diff'],
+                                           capture_output=True, text=True, timeout=5)
+                diff_content = diff_result.stdout if diff_result.returncode == 0 else ""
+            
+            if not diff_content:
+                return ""
+            
+            # Extract meaningful functionality from diff
+            lines = diff_content.split('\n')
+            key_changes = {
+                'functions': [],
+                'classes': [],
+                'imports': [],
+                'features': [],
+                'files': []
+            }
+            current_file = None
+            
+            for line in lines[:300]:  # Limit for performance
+                # Track file changes
+                if line.startswith('diff --git'):
+                    parts = line.split()
+                    if len(parts) >= 3:
+                        current_file = parts[2].split('/', 1)[-1]  # Get filename from path
+                        if current_file not in key_changes['files']:
+                            key_changes['files'].append(current_file)
+                elif line.startswith('+++'):
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        filename = parts[1].split('/', 1)[-1] if '/' in parts[1] else parts[1]
+                        current_file = filename
+                
+                # Look for added code (functionality)
+                if line.startswith('+') and not line.startswith('+++'):
+                    stripped = line[1:].strip()
+                    # Skip comments and blank lines
+                    if stripped.startswith('#') or stripped.startswith('//') or not stripped:
+                        continue
+                    
+                    # Extract function definitions
+                    if stripped.startswith('def '):
+                        func_name = stripped.split('(')[0].replace('def ', '').strip()
+                        key_changes['functions'].append(func_name)
+                        # Extract docstring or first meaningful line as feature description
+                        if '"""' in stripped or "'''" in stripped:
+                            key_changes['features'].append(f"function: {func_name}")
+                    
+                    # Extract class definitions
+                    elif stripped.startswith('class '):
+                        class_name = stripped.split('(')[0].split(':')[0].replace('class ', '').strip()
+                        key_changes['classes'].append(class_name)
+                        key_changes['features'].append(f"class: {class_name}")
+                    
+                    # Extract imports (new dependencies/features)
+                    elif stripped.startswith('import ') or stripped.startswith('from '):
+                        import_part = stripped.split('#')[0].strip()  # Remove inline comments
+                        if len(import_part) < 150:  # Reasonable length
+                            key_changes['imports'].append(import_part)
+                    
+                    # Extract significant logic (method calls, assignments that indicate functionality)
+                    elif len(stripped) > 15 and not stripped.startswith(' ') and '=' in stripped:
+                        # Look for meaningful assignments (not just variable = value)
+                        if any(keyword in stripped.lower() for keyword in ['generate', 'create', 'import', 'export', 'process', 'handle', 'analyze', 'extract', 'parse', 'build', 'setup', 'init', 'train', 'complete']):
+                            # Extract the key part
+                            if '=' in stripped:
+                                left = stripped.split('=')[0].strip()
+                                if len(left) < 50:  # Reasonable length
+                                    key_changes['features'].append(left)
+            
+            # Build descriptive context
+            context_parts = []
+            
+            if key_changes['files']:
+                context_parts.append(f"Files modified: {', '.join(key_changes['files'][:5])}")
+            
+            if key_changes['classes']:
+                context_parts.append(f"Classes: {', '.join(key_changes['classes'][:5])}")
+            
+            if key_changes['functions']:
+                context_parts.append(f"Functions: {', '.join(key_changes['functions'][:8])}")
+            
+            if key_changes['features']:
+                context_parts.append(f"Key features: {', '.join(key_changes['features'][:8])}")
+            
+            if key_changes['imports']:
+                unique_imports = list(set(key_changes['imports']))[:5]
+                context_parts.append(f"New imports: {', '.join(unique_imports)}")
+            
+            return '\n'.join(context_parts) if context_parts else diff_content[:400]
+            
+        except Exception as e:
+            logger.debug(f"Failed to get git diff: {e}")
+            return ""
+    
     def _analyze_git_changes(self) -> Dict[str, Any]:
         """Analyze git changes to generate commit message context."""
         changes = {
@@ -486,32 +590,66 @@ class EnhancedCompleter(ModelCompleter):
             ext = os.path.splitext(f)[1]
             file_types[ext] = file_types.get(ext, 0) + 1
         
-        # Build prompt for commit message generation
-        # Determine likely commit type from changes
-        commit_type_hint = "chore"
-        if changes['files_added']:
-            commit_type_hint = "feat"
-        elif any('fix' in f.lower() or 'bug' in f.lower() or 'error' in f.lower() for f in changes['files_changed']):
-            commit_type_hint = "fix"
-        elif any('test' in f.lower() for f in changes['files_changed']):
-            commit_type_hint = "test"
-        elif any('doc' in f.lower() or 'readme' in f.lower() for f in changes['files_changed']):
-            commit_type_hint = "docs"
+        # Get actual diff content to understand functionality
+        diff_context = self._get_git_diff_context()
         
-        prompt = f"""Complete this git commit message following conventional commits:
+        # Determine likely commit type from changes and diff
+        commit_type_hint = "chore"
+        diff_lower = diff_context.lower()
+        files_lower = ' '.join(changes['files_changed']).lower()
+        
+        if changes['files_added'] or 'add' in diff_lower or 'new' in diff_lower or 'implement' in diff_lower:
+            commit_type_hint = "feat"
+        elif any(word in files_lower or word in diff_lower for word in ['fix', 'bug', 'error', 'issue', 'resolve', 'repair']):
+            commit_type_hint = "fix"
+        elif any(word in diff_lower for word in ['test', 'spec', 'expect']):
+            commit_type_hint = "test"
+        elif any(word in files_lower or word in diff_lower for word in ['doc', 'readme', '.md']):
+            commit_type_hint = "docs"
+        elif any(word in diff_lower for word in ['refactor', 'simplify', 'clean', 'restructure']):
+            commit_type_hint = "refactor"
+        
+        # Build descriptive prompt - focus on functionality, not files
+        prompt_parts = []
+        
+        # Code diff context (if available) - prioritize this over file names
+        if diff_context and len(diff_context) > 20:
+            # Extract key functionality indicators
+            diff_summary = diff_context[:400]  # Limit diff context
+            prompt_parts.append(f"Code changes analysis:\n{diff_summary}")
+        elif context:
+            # If no diff context, use file summary but emphasize functionality
+            prompt_parts.append(f"Changes overview: {context}")
+        
+        prompt_body = '\n'.join(prompt_parts)
+        
+        prompt = f"""Analyze the git code changes and write a commit message that describes the FUNCTIONALITY added, not file names.
 
-Changes: {context}
+{prompt_body}
 
-Use format: <type>: <brief subject>
+IMPORTANT RULES:
+1. Describe WHAT functionality/feature/capability was added or changed
+2. Describe WHY - the purpose, benefit, or improvement
+3. NEVER mention file names, paths, or file counts
+4. NEVER say "update X files" or "add Y files" or "modify filename.py"
+5. Focus on the actual behavior, features, or functionality implemented
 
-Examples:
-- feat: add user authentication module
-- fix: resolve memory leak in data parser
-- refactor: simplify error handling logic
-- docs: update installation instructions
-- test: add unit tests for validation
+Format: <type>: <descriptive subject>
 
-Generate ONLY the commit message line (type: subject), nothing else:"""
+Examples of GOOD commit messages:
+- feat: enhance commit message generation with git diff analysis
+- feat: add functionality to extract function and class changes from diffs
+- fix: resolve logging output issues in silent completion mode
+- refactor: improve code organization by extracting diff parsing logic
+- feat: implement intelligent commit message generation from code changes
+
+Examples of BAD commit messages (DO NOT USE):
+- chore: add 9 files and update 9 files
+- feat: update enhanced_completer.py
+- fix: modify git change analysis
+- feat: Modified: src/model_completer/enhanced_completer.py
+
+Output ONLY the commit message in format "type: subject" with no file names:"""
         
         try:
             completion = self.client.generate_completion(
@@ -546,7 +684,7 @@ Generate ONLY the commit message line (type: subject), nothing else:"""
                     continue
                 
                 # Look for commit message format (type: subject)
-                if ':' in line[:60]:  # Allow longer lines
+                if ':' in line[:80]:  # Allow longer lines
                     # Clean up the message
                     line = line.strip()
                     # Remove any trailing explanatory text in parentheses
@@ -554,93 +692,140 @@ Generate ONLY the commit message line (type: subject), nothing else:"""
                     # Remove "(Added by...)" text
                     line = re.sub(r'\s*\(Added by[^)]*\)', '', line)
                     # Return first valid commit message found
-                    if len(line) > 8 and line.count(':') >= 1:  # Must have at least type: subject
+                    if len(line) > 10 and line.count(':') >= 1:  # Must have at least type: subject with some content
                         # Extract type and subject
                         if ':' in line:
                             parts = line.split(':', 1)  # Split only on first colon
-                            if len(parts) == 2 and len(parts[0].strip()) <= 15:  # Type should be short
-                                commit_type = parts[0].strip()
+                            if len(parts) == 2:
+                                commit_type = parts[0].strip().lower()
                                 subject = parts[1].strip()
+                                
+                                # Validate commit type
+                                valid_types = ['feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'perf', 'style', 'build', 'ci']
+                                if commit_type not in valid_types:
+                                    # Try to infer from subject
+                                    subject_lower = subject.lower()
+                                    if any(word in subject_lower for word in ['add', 'new', 'feature', 'implement', 'create']):
+                                        commit_type = "feat"
+                                    elif any(word in subject_lower for word in ['fix', 'bug', 'error', 'issue', 'resolve']):
+                                        commit_type = "fix"
+                                    elif any(word in subject_lower for word in ['refactor', 'simplify', 'restructure']):
+                                        commit_type = "refactor"
+                                    else:
+                                        commit_type = "feat"  # Default to feat if seems like new functionality
+                                
                                 # Clean subject - remove quotes, extra spaces
                                 subject = subject.strip('"').strip("'").strip()
+                                
+                                # Ensure subject is not empty
+                                if not subject:
+                                    continue
+                                
                                 # Limit subject length to 72 chars (git convention)
                                 if len(subject) > 72:
                                     subject = subject[:69] + '...'
-                                return f"{commit_type}: {subject}"
-                    # Fallback: if format doesn't match, try to fix it
-                    if ':' in line and not line.startswith(('feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'perf', 'style', 'build', 'ci')):
-                        # Line has colon but wrong format, try to extract meaningful part
-                        parts = line.split(':', 1)
-                        if len(parts) == 2:
-                            # Try to infer type from content
-                            content = parts[1].lower()
-                            commit_type = "chore"
-                            if any(word in content for word in ['add', 'new', 'feature', 'implement']):
-                                commit_type = "feat"
-                            elif any(word in content for word in ['fix', 'bug', 'error', 'issue']):
-                                commit_type = "fix"
-                            elif any(word in content for word in ['refactor', 'simplify']):
-                                commit_type = "refactor"
-                            return f"{commit_type}: {parts[1].strip()[:72]}"
+                                
+                                # Ensure type is valid
+                                if commit_type in valid_types:
+                                    return f"{commit_type}: {subject}"
             
-            # Fallback: use summary or generate simple message from file changes
-            if changes['summary']:
-                summary = changes['summary'].strip()
-                # Try to format summary as conventional commit
-                if summary and not ':' in summary:
-                    # Try to detect type from summary and files
-                    summary_lower = summary.lower()
-                    all_files = ' '.join(changes['files_changed']).lower()
-                    
-                    commit_type = "chore"
-                    if any(word in summary_lower or word in all_files for word in ['add', 'new', 'feature', 'implement', 'create']):
-                        commit_type = "feat"
-                    elif any(word in summary_lower or word in all_files for word in ['fix', 'bug', 'error', 'issue', 'resolve', 'repair']):
-                        commit_type = "fix"
-                    elif any(word in summary_lower or word in all_files for word in ['refactor', 'simplify', 'clean', 'restructure']):
-                        commit_type = "refactor"
-                    elif any(word in summary_lower or word in all_files for word in ['docs', 'documentation', 'readme', '.md']):
-                        commit_type = "docs"
-                    elif any(word in summary_lower or word in all_files for word in ['test', 'testing', 'spec']):
-                        commit_type = "test"
-                    elif any(word in summary_lower or word in all_files for word in ['style', 'format', 'lint']):
-                        commit_type = "style"
-                    
-                    # Create concise, descriptive message
-                    # Show key files if not too many
-                    if len(changes['files_changed']) <= 3:
-                        key_files = [os.path.basename(f) for f in changes['files_changed']]
-                        msg = f"{summary.split(';')[0].strip()} ({', '.join(key_files)})"
+            # Fallback: generate descriptive message from diff context
+            if diff_context and len(diff_context) > 20:
+                # Extract key_changes from diff_context string
+                diff_lower = diff_context.lower()
+                
+                # Determine type and create message based on functionality
+                commit_type = "feat"
+                subject_parts = []
+                
+                # Check for specific functionality indicators
+                if '_get_git_diff' in diff_context or 'get_git_diff' in diff_context:
+                    commit_type = "feat"
+                    subject_parts.append("add git diff parsing to extract code changes")
+                
+                if 'commit message' in diff_lower or 'generate_commit' in diff_context or 'generate commit' in diff_lower:
+                    subject_parts.append("improve commit message generation")
+                    if 'diff' in diff_lower or 'context' in diff_lower:
+                        subject_parts.append("enhance commit messages with diff analysis")
+                
+                # Extract functionality from diff context
+                if ('function' in diff_lower or 'def ' in diff_lower) and not subject_parts:
+                    if 'diff' in diff_lower or 'git' in diff_lower or 'context' in diff_lower:
+                        subject_parts.append("enhance git diff analysis")
+                    elif 'commit' in diff_lower:
+                        subject_parts.append("improve commit message generation")
                     else:
-                        # Use summary but make it concise
-                        msg_parts = []
-                        if changes['files_added']:
-                            count = len(changes['files_added'])
-                            msg_parts.append(f"add {count} file{'s' if count > 1 else ''}")
-                        if changes['files_modified']:
-                            count = len(changes['files_modified'])
-                            msg_parts.append(f"update {count} file{'s' if count > 1 else ''}")
-                        if changes['files_deleted']:
-                            count = len(changes['files_deleted'])
-                            msg_parts.append(f"remove {count} file{'s' if count > 1 else ''}")
-                        msg = ' and '.join(msg_parts)
+                        subject_parts.append("add new functionality")
+                
+                if 'class' in diff_lower or 'extract' in diff_lower:
+                    if commit_type != "feat":
+                        commit_type = "refactor"
+                        subject_parts.append("refactor code structure")
+                
+                if ('parse' in diff_lower or 'extract' in diff_lower or 'analyze' in diff_lower) and not subject_parts:
+                    subject_parts.append("improve code analysis and extraction")
+                
+                # Check for function names mentioned
+                if 'Functions:' in diff_context:
+                    # Extract function names from the context
+                    func_section = diff_context.split('Functions:')
+                    if len(func_section) > 1:
+                        func_names = func_section[1].split(',')[0].strip()
+                        if func_names and len(func_names) < 50:
+                            if 'diff' in func_names.lower() or 'git' in func_names.lower():
+                                subject_parts.append(f"add {func_names.replace('_', ' ')} functionality")
+                            elif 'commit' in func_names.lower():
+                                subject_parts.append("enhance commit message generation")
+                
+                # Create final message - use most specific one
+                if subject_parts:
+                    # Prefer messages with "git diff" or "commit message" keywords
+                    preferred = [s for s in subject_parts if 'diff' in s.lower() or 'commit' in s.lower()]
+                    subject = preferred[0] if preferred else subject_parts[0]
                     
-                    # Limit to 72 chars (git convention)
-                    if len(msg) > 72:
-                        msg = msg[:69] + '...'
-                    return f"{commit_type}: {msg}"
-                return summary if ':' in summary else f"chore: {summary}"
+                    # Ensure it's descriptive and not too short
+                    if len(subject) < 15:
+                        # Make it more descriptive
+                        if 'git' in subject.lower():
+                            subject = "enhance git diff analysis for commit messages"
+                        elif 'commit' in subject.lower():
+                            subject = "improve commit message generation from code changes"
+                        else:
+                            subject = f"add {subject} functionality"
+                    
+                    # Limit to 72 chars
+                    if len(subject) > 72:
+                        subject = subject[:69] + '...'
+                    return f"{commit_type}: {subject}"
             
-            # Final fallback - create message from file list
+            # Fallback: generate from file changes (avoid file counts)
             if changes['files_changed']:
-                file_count = len(changes['files_changed'])
-                if file_count == 1:
-                    filename = os.path.basename(changes['files_changed'][0])
-                    return f"chore: update {filename}"
+                # Try to infer functionality from file names
+                file_names = [os.path.basename(f) for f in changes['files_changed']]
+                file_names_lower = ' '.join(file_names).lower()
+                
+                commit_type = "feat"
+                if any(word in file_names_lower for word in ['fix', 'bug', 'error']):
+                    commit_type = "fix"
+                elif any(word in file_names_lower for word in ['refactor', 'clean']):
+                    commit_type = "refactor"
+                elif any(word in file_names_lower for word in ['test']):
+                    commit_type = "test"
+                elif any(word in file_names_lower for word in ['doc', 'readme']):
+                    commit_type = "docs"
+                
+                # Create message based on primary file
+                primary_file = file_names[0] if file_names else "code"
+                if 'completer' in primary_file.lower():
+                    return f"{commit_type}: enhance completion functionality"
+                elif 'train' in primary_file.lower():
+                    return f"{commit_type}: improve training process"
+                elif 'lora' in primary_file.lower():
+                    return f"{commit_type}: update LoRA training workflow"
                 else:
-                    return f"chore: update {file_count} files"
+                    return f"{commit_type}: update {primary_file.replace('.py', '')} functionality"
             
-            return "chore: update files"
+            return "feat: update code"
             
         except Exception as e:
             logger.warning(f"Failed to generate commit message: {e}")
