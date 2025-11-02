@@ -25,14 +25,33 @@ git clone https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool.git
 cd zsh-llm-cli-autocomplete-tool
 ./install.sh
 
-# 2. Reload your shell
+# 2. Load plugin into ~/.zshrc
+echo 'source '"$(pwd)"'/src/scripts/zsh_autocomplete.plugin.zsh' >> ~/.zshrc
+
+# 3. Reload shell (or open new terminal)
 source ~/.zshrc
 
-# 3. Start using AI completions!
-git comm[Tab]        # → git commit -m "message"
+# Plugin will automatically:
+# ✅ Start Ollama Server (if not running)
+# ✅ Load fine-tuned model (zsh-assistant)
+# ✅ Prompt shows immediately, ready for command input
+
+# 4. Start using AI completions!
+git comm[Tab]        # → git commit -m "smart message"
 docker run[Shift+Tab] # → Multiple suggestions
 npm run[Ctrl+Tab]    # → With confidence score
 ```
+
+### 📝 Manual Plugin Loading
+
+If the install script didn't auto-configure, you can add manually:
+
+```bash
+# Add to end of ~/.zshrc file:
+source /path/to/zsh-llm-cli-autocomplete-tool/src/scripts/zsh_autocomplete.plugin.zsh
+```
+
+Replace the path with your actual project path. The plugin will automatically start Ollama and load the model after loading, **without blocking the prompt**.
 
 ## 🛠️ Installation
 

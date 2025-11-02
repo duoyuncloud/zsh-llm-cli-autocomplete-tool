@@ -1060,11 +1060,14 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                         lines = ai_completion.strip().split('\n')
                         for line in lines:
                             line = line.strip()
-                            if ':' in line and len(line) > 10 and not line.startswith(('To', 'Here', 'Sure', 'Format')):
+                            # REJECT placeholder commit messages
+                            if 'commit message' in line.lower():
+                                continue
+                            if ':' in line and len(line) > 10 and not line.startswith(('To', 'Here', 'Sure', 'Format', 'Complete', 'The command')):
                                 commit_msg = line.split('\n')[0].strip()
                                 # Clean up
                                 commit_msg = re.sub(r'^(feat|fix|chore|docs|refactor|test|style|perf|build|ci):\s*', '', commit_msg, count=1, flags=re.IGNORECASE)
-                                if len(commit_msg) > 5:
+                                if len(commit_msg) > 5 and 'commit message' not in commit_msg.lower():
                                     result = f'git commit -m "{commit_msg}"'
                                     self._save_command(command, result, {
                                         'project_type': self.project_context['project_type'],
@@ -1076,15 +1079,10 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
             except Exception as e:
                 logger.debug(f"AI fallback failed: {e}")
             
-            # Last resort: training data fallback
-            fallback_completion = self._get_fallback_completion(command)
-            if fallback_completion:
-                logger.warning("Using training data fallback - smart commit and AI both failed")
-                self._save_command(command, fallback_completion, {
-                    'project_type': self.project_context['project_type'],
-                    'source': 'training_data'
-                })
-                return fallback_completion
+            # Don't fallback to training data for git commit - it has "commit message" placeholder
+            # Return original command if all AI attempts failed (better than placeholder)
+            logger.warning("All commit message generation attempts failed, returning original command")
+            return command
         
         # ALWAYS try AI model first - let the fine-tuned model make intelligent decisions
         # Only fallback to training data if AI completely fails

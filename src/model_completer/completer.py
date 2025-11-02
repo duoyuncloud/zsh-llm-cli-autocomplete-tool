@@ -255,8 +255,8 @@ Output:"""
                             # Clean up output - remove any "Output:" labels
                             output = output.replace("Output:", "").replace("output:", "").strip()
                             return output
-                        # Try prefix match (but skip "git" - it's handled specially in EnhancedCompleter)
-                        elif (command.strip().lower() != "git" and 
+                        # Try prefix match (but skip "git" and "git comm" - they're handled specially in EnhancedCompleter)
+                        elif (command.strip().lower() not in ("git", "git comm") and 
                               (command.lower() in data['input'].lower() or data['input'].lower().startswith(command.lower()))):
                             output = data['output']
                             output = output.replace("Output:", "").replace("output:", "").strip()
