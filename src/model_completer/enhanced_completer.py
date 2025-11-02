@@ -230,12 +230,12 @@ class EnhancedCompleter(ModelCompleter):
         if git_status and 'M' in git_status:
             context_parts.append("Has uncommitted changes")
         
-        # Add detailed git status for "git" command
+        # Add detailed git status for "git" command (informational only, let AI decide)
         if command.strip() == "git":
             if self.project_context.get('git_unstaged', 0) > 0:
-                context_parts.append(f"Has {self.project_context.get('git_unstaged')} unstaged file(s) - suggest 'git add'")
+                context_parts.append(f"Has {self.project_context.get('git_unstaged')} unstaged file(s)")
             if self.project_context.get('git_staged', 0) > 0:
-                context_parts.append(f"Has {self.project_context.get('git_staged')} staged file(s) - suggest 'git commit'")
+                context_parts.append(f"Has {self.project_context.get('git_staged')} staged file(s)")
             if self.project_context.get('git_unstaged', 0) == 0 and self.project_context.get('git_staged', 0) == 0:
                 context_parts.append("No uncommitted changes")
         
@@ -253,22 +253,14 @@ class EnhancedCompleter(ModelCompleter):
         # Build enhanced prompt with command sequence awareness
         prompt_parts = [f"Complete this command: {command}"]
         
-        # Add command sequence context - very important for workflows
+        # Add command sequence context - informative only, don't force specific suggestions
         if recent_commands:
             sequence_str = " -> ".join(recent_commands)
             prompt_parts.append(f"\nRecent command sequence: {sequence_str}")
-            prompt_parts.append("Understand the workflow context and suggest the logical next step.")
+            prompt_parts.append("Based on the current state and context, suggest the most appropriate completion.")
             
-            # Special handling for common workflows
-            last_cmd = recent_commands[-1].lower() if recent_commands else ""
-            if "git commit" in last_cmd and command.strip() == "git":
-                prompt_parts.append("After 'git commit', the next logical step is usually 'git push' to push commits to remote.")
-            elif "git add" in last_cmd and command.strip() == "git":
-                prompt_parts.append("After 'git add', the next logical step is 'git commit' to commit staged changes.")
-            elif "npm install" in last_cmd and command.strip().startswith("npm"):
-                prompt_parts.append("After 'npm install', common next steps are 'npm run dev' or 'npm start'.")
-            elif "docker build" in last_cmd and command.strip().startswith("docker"):
-                prompt_parts.append("After 'docker build', the next logical step is usually 'docker run' to run the container.")
+            # Don't add explicit workflow hints - let AI decide based on actual state
+            # The git status context below will provide enough information
         
         if context_str:
             prompt_parts.append(f"\nContext: {context_str}")
@@ -279,9 +271,8 @@ class EnhancedCompleter(ModelCompleter):
         
         prompt = "\n".join(prompt_parts)
         
-        # Add explicit instruction for command sequences
-        if recent_commands:
-            prompt += "\n\nOutput the complete command that logically follows the sequence. Do not repeat previous commands."
+        # Add explicit instruction to output ONLY the command, no explanations
+        prompt += "\n\nOutput ONLY the complete command, nothing else. No explanations, no prefixes like 'Complete command:' or 'The command is:'. Just the command itself."
         
         return prompt
     
