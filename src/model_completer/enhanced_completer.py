@@ -168,7 +168,7 @@ class EnhancedCompleter(ModelCompleter):
         return patterns
     
     def _build_enhanced_prompt(self, command: str) -> str:
-        """Build enhanced prompt with developer context."""
+        """Build enhanced prompt with developer context and command sequences."""
         current_dir = os.getcwd()
         dir_name = os.path.basename(current_dir)
         
@@ -186,6 +186,30 @@ class EnhancedCompleter(ModelCompleter):
         
         # Get user patterns
         patterns = self._get_user_patterns(command)
+        
+        # Get recent command history for sequence awareness
+        # Since CLI creates new instance each time, we rely on persisted history
+        recent_commands = []
+        
+        # First try in-memory history (same session - works if completer is reused)
+        if self.history and len(self.history) > 1:
+            # Get last 3 commands before current one
+            recent_commands = self.history[-4:-1] if len(self.history) > 4 else self.history[:-1]
+        
+        # Check persisted history for recent commands (including completions that were executed)
+        if not recent_commands and self.command_history:
+            # Look at the last few commands/completions - use the completion as that's what was actually executed
+            recent_entries = self.command_history[-5:]
+            # Get actual executed commands (use completion if it's a full command)
+            executed_commands = []
+            for entry in recent_entries:
+                # Prefer completion as that's what user actually executed
+                exec_cmd = entry.get('completion', entry.get('command', ''))
+                if exec_cmd and exec_cmd.strip():
+                    executed_commands.append(exec_cmd)
+            if executed_commands:
+                # Get last 2-3 commands for context
+                recent_commands = executed_commands[-3:]
         
         # Build context string
         context_parts = []
@@ -217,15 +241,38 @@ class EnhancedCompleter(ModelCompleter):
         
         context_str = " | ".join(context_parts)
         
-        # Build enhanced prompt
-        prompt = f"""{command}"""
+        # Build enhanced prompt with command sequence awareness
+        prompt_parts = [f"Complete this command: {command}"]
+        
+        # Add command sequence context - very important for workflows
+        if recent_commands:
+            sequence_str = " -> ".join(recent_commands)
+            prompt_parts.append(f"\nRecent command sequence: {sequence_str}")
+            prompt_parts.append("Understand the workflow context and suggest the logical next step.")
+            
+            # Special handling for common workflows
+            last_cmd = recent_commands[-1].lower() if recent_commands else ""
+            if "git commit" in last_cmd and command.strip() == "git":
+                prompt_parts.append("After 'git commit', the next logical step is usually 'git push' to push commits to remote.")
+            elif "git add" in last_cmd and command.strip() == "git":
+                prompt_parts.append("After 'git add', the next logical step is 'git commit' to commit staged changes.")
+            elif "npm install" in last_cmd and command.strip().startswith("npm"):
+                prompt_parts.append("After 'npm install', common next steps are 'npm run dev' or 'npm start'.")
+            elif "docker build" in last_cmd and command.strip().startswith("docker"):
+                prompt_parts.append("After 'docker build', the next logical step is usually 'docker run' to run the container.")
         
         if context_str:
-            prompt += f"\n\nContext: {context_str}"
+            prompt_parts.append(f"\nContext: {context_str}")
         
         # Add personalization hint
         if patterns['frequent_commands'] and command.split()[0] in patterns['frequent_commands']:
-            prompt += "\n(User frequently uses this command type)"
+            prompt_parts.append("\n(User frequently uses this command type)")
+        
+        prompt = "\n".join(prompt_parts)
+        
+        # Add explicit instruction for command sequences
+        if recent_commands:
+            prompt += "\n\nOutput the complete command that logically follows the sequence. Do not repeat previous commands."
         
         return prompt
     
@@ -470,47 +517,93 @@ class EnhancedCompleter(ModelCompleter):
         try:
             # Check if we're in a git repo
             subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'], 
-                         check=True, capture_output=True, text=True)
+                         check=True, capture_output=True, text=True, timeout=2)
             
             # Get both staged and unstaged changes
             status_result = subprocess.run(['git', 'status', '--short'],
-                                         capture_output=True, text=True)
+                                         capture_output=True, text=True, timeout=2)
             status_output = status_result.stdout.strip()
             
             # Also check unstaged changes
             diff_unstaged = subprocess.run(['git', 'diff', '--name-only'],
-                                          capture_output=True, text=True)
+                                          capture_output=True, text=True, timeout=2)
             unstaged_files = [f.strip() for f in diff_unstaged.stdout.strip().split('\n') if f.strip()]
             
-            if not status_output and not unstaged_files:
+            # Also check staged changes specifically
+            diff_staged = subprocess.run(['git', 'diff', '--cached', '--name-only'],
+                                       capture_output=True, text=True, timeout=2)
+            staged_files = [f.strip() for f in diff_staged.stdout.strip().split('\n') if f.strip()]
+            
+            # Use staged changes if available, otherwise use unstaged
+            if not status_output and not unstaged_files and not staged_files:
                 return changes
             
-            # Parse status output
-            for line in status_output.split('\n'):
-                if not line.strip():
-                    continue
-                
-                status = line[:2]
-                filename = line[3:].strip()
-                
-                if status.startswith('A'):
-                    changes['files_added'].append(filename)
-                elif status.startswith('D'):
-                    changes['files_deleted'].append(filename)
-                elif status.startswith('M') or status.startswith('R'):
-                    changes['files_modified'].append(filename)
-                
-                changes['files_changed'].append(filename)
+            # Prefer staged changes for commit message generation (for commits, we want staged)
+            # If no staged changes, use unstaged
+            if staged_files:
+                # Get detailed status of staged files
+                status_staged = subprocess.run(['git', 'diff', '--cached', '--name-status'],
+                                             capture_output=True, text=True, timeout=2)
+                if status_staged.returncode == 0:
+                    for line in status_staged.stdout.strip().split('\n'):
+                        if not line.strip():
+                            continue
+                        status = line[0]
+                        filename = line[1:].strip()
+                        if filename not in changes['files_changed']:
+                            if status == 'A':
+                                changes['files_added'].append(filename)
+                            elif status == 'D':
+                                changes['files_deleted'].append(filename)
+                            else:  # M, R, etc
+                                changes['files_modified'].append(filename)
+                            changes['files_changed'].append(filename)
+            elif unstaged_files:
+                # No staged changes, but have unstaged - analyze those
+                status_unstaged = subprocess.run(['git', 'diff', '--name-status'],
+                                               capture_output=True, text=True, timeout=2)
+                if status_unstaged.returncode == 0:
+                    for line in status_unstaged.stdout.strip().split('\n'):
+                        if not line.strip():
+                            continue
+                        status = line[0]
+                        filename = line[1:].strip()
+                        if filename not in changes['files_changed']:
+                            if status == 'A':
+                                changes['files_added'].append(filename)
+                            elif status == 'D':
+                                changes['files_deleted'].append(filename)
+                            else:  # M, R, etc
+                                changes['files_modified'].append(filename)
+                            changes['files_changed'].append(filename)
+            else:
+                # Fallback to parsing status output
+                for line in status_output.split('\n'):
+                    if not line.strip():
+                        continue
+                    
+                    status = line[:2]
+                    filename = line[3:].strip()
+                    
+                    if filename not in changes['files_changed']:
+                        if status.startswith('A'):
+                            changes['files_added'].append(filename)
+                        elif status.startswith('D'):
+                            changes['files_deleted'].append(filename)
+                        elif status.startswith('M') or status.startswith('R'):
+                            changes['files_modified'].append(filename)
+                        
+                        changes['files_changed'].append(filename)
             
             # Get diff stats (try staged first, then unstaged)
             diff_result = subprocess.run(['git', 'diff', '--cached', '--stat'],
-                                        capture_output=True, text=True)
+                                        capture_output=True, text=True, timeout=3)
             diff_output = diff_result.stdout if diff_result.returncode == 0 else ""
             
             # If no staged changes, check unstaged
             if not diff_output.strip():
                 diff_result = subprocess.run(['git', 'diff', '--stat'],
-                                            capture_output=True, text=True)
+                                            capture_output=True, text=True, timeout=3)
                 diff_output = diff_result.stdout if diff_result.returncode == 0 else ""
             
             if diff_output:
@@ -623,38 +716,45 @@ class EnhancedCompleter(ModelCompleter):
         
         prompt_body = '\n'.join(prompt_parts)
         
-        prompt = f"""Analyze the git code changes and write a commit message that describes the FUNCTIONALITY added, not file names.
+        prompt = f"""You are a git commit message expert. Analyze the code changes and write a descriptive commit message.
 
 {prompt_body}
 
-IMPORTANT RULES:
-1. Describe WHAT functionality/feature/capability was added or changed
-2. Describe WHY - the purpose, benefit, or improvement
-3. NEVER mention file names, paths, or file counts
-4. NEVER say "update X files" or "add Y files" or "modify filename.py"
-5. Focus on the actual behavior, features, or functionality implemented
-
-Format: <type>: <descriptive subject>
+CRITICAL RULES:
+1. Use format: "type: subject" where type is: feat, fix, docs, style, refactor, test, chore
+2. The subject MUST describe WHAT functionality was added/changed, NOT file names
+3. Be SPECIFIC and descriptive - minimum 5 words describing actual functionality
+4. NEVER use placeholder text like "commit message", "message", "update", "changes", "fix", "feat" alone
+5. NEVER mention file names, paths, or counts
+6. Focus on the actual behavior, features, or functionality implemented
 
 Examples of GOOD commit messages:
-- feat: enhance commit message generation with git diff analysis
-- feat: add functionality to extract function and class changes from diffs
-- fix: resolve logging output issues in silent completion mode
-- refactor: improve code organization by extracting diff parsing logic
-- feat: implement intelligent commit message generation from code changes
+- feat: add context-aware command sequence completion for git workflows  
+- fix: resolve ZLE widget errors by disabling widget bindings in plugin
+- refactor: improve commit message generation with better diff analysis
+- feat: implement automatic Ollama model loading on terminal startup
 
-Examples of BAD commit messages (DO NOT USE):
-- chore: add 9 files and update 9 files
-- feat: update enhanced_completer.py
-- fix: modify git change analysis
-- feat: Modified: src/model_completer/enhanced_completer.py
+Examples of BAD commit messages (DO NOT USE - these will be rejected):
+- feat: update files
+- fix: commit message
+- chore: changes  
+- feat: update code
+- feat: Modified: enhanced_completer.py
+- chore: add 5 files
 
-Output ONLY the commit message in format "type: subject" with no file names:"""
+Output ONLY the commit message in format "type: subject" - no explanations, no file names:"""
         
         try:
-            completion = self.client.generate_completion(
-                prompt, self.model, use_cache=False
-            )
+            # Use longer timeout for commit message generation (needs more time for quality)
+            original_timeout = self.client.timeout
+            self.client.timeout = 15  # Give more time for commit message generation
+            
+            try:
+                completion = self.client.generate_completion(
+                    prompt, self.model, use_cache=False
+                )
+            finally:
+                self.client.timeout = original_timeout
             
             # Extract commit message - clean and parse AI response
             import re
@@ -692,42 +792,39 @@ Output ONLY the commit message in format "type: subject" with no file names:"""
                     # Remove "(Added by...)" text
                     line = re.sub(r'\s*\(Added by[^)]*\)', '', line)
                     # Return first valid commit message found
-                    if len(line) > 10 and line.count(':') >= 1:  # Must have at least type: subject with some content
+                    if len(line) > 8 and line.count(':') >= 1:  # Must have at least type: subject with some content
                         # Extract type and subject
                         if ':' in line:
-                            parts = line.split(':', 1)  # Split only on first colon
-                            if len(parts) == 2:
-                                commit_type = parts[0].strip().lower()
-                                subject = parts[1].strip()
-                                
-                                # Validate commit type
-                                valid_types = ['feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'perf', 'style', 'build', 'ci']
-                                if commit_type not in valid_types:
-                                    # Try to infer from subject
-                                    subject_lower = subject.lower()
-                                    if any(word in subject_lower for word in ['add', 'new', 'feature', 'implement', 'create']):
-                                        commit_type = "feat"
-                                    elif any(word in subject_lower for word in ['fix', 'bug', 'error', 'issue', 'resolve']):
-                                        commit_type = "fix"
-                                    elif any(word in subject_lower for word in ['refactor', 'simplify', 'restructure']):
-                                        commit_type = "refactor"
-                                    else:
-                                        commit_type = "feat"  # Default to feat if seems like new functionality
-                                
-                                # Clean subject - remove quotes, extra spaces
-                                subject = subject.strip('"').strip("'").strip()
-                                
-                                # Ensure subject is not empty
-                                if not subject:
-                                    continue
-                                
-                                # Limit subject length to 72 chars (git convention)
-                                if len(subject) > 72:
-                                    subject = subject[:69] + '...'
-                                
-                                # Ensure type is valid
-                                if commit_type in valid_types:
+                            parts = line.split(':', 1)
+                            commit_type = parts[0].strip().lower()
+                            subject = parts[1].strip() if len(parts) > 1 else ""
+                            
+                            # Validate commit type
+                            valid_types = ['feat', 'fix', 'refactor', 'docs', 'test', 'chore', 'perf', 'style', 'build', 'ci']
+                            if commit_type not in valid_types:
+                                # Try to infer from subject
+                                subject_lower = subject.lower()
+                                if any(word in subject_lower for word in ['add', 'new', 'feature', 'implement', 'create']):
+                                    commit_type = "feat"
+                                elif any(word in subject_lower for word in ['fix', 'bug', 'error', 'issue', 'resolve']):
+                                    commit_type = "fix"
+                                elif any(word in subject_lower for word in ['refactor', 'simplify', 'restructure']):
+                                    commit_type = "refactor"
+                                else:
+                                    commit_type = "feat"  # Default to feat if seems like new functionality
+                            
+                            # Clean subject - remove quotes, extra spaces
+                            subject = subject.strip('"').strip("'").strip()
+                            
+                            # Validate subject has meaningful content
+                            if len(subject) >= 5:  # Need at least 5 chars for meaningful subject
+                                # Reject if subject is just placeholder words
+                                if subject.lower() not in ['update', 'changes', 'fix', 'message', 'commit message']:
+                                    # Limit subject length to 72 chars (git convention)
+                                    if len(subject) > 72:
+                                        subject = subject[:69] + '...'
                                     return f"{commit_type}: {subject}"
+                            # Continue searching if validation failed
             
             # Fallback: generate descriptive message from diff context
             if diff_context and len(diff_context) > 20:
@@ -836,22 +933,53 @@ Output ONLY the commit message in format "type: subject" with no file names:"""
     
     def get_smart_commit_message(self, command: str = None) -> Optional[str]:
         """Get smart commit message suggestion based on current git changes."""
-        changes = self._analyze_git_changes()
-        
-        if not changes['files_changed']:
-            return None
-        
         try:
+            changes = self._analyze_git_changes()
+            
+            if not changes['files_changed']:
+                logger.debug("No git changes found for smart commit message")
+                return None
+            
+            logger.info(f"Generating smart commit message for {len(changes['files_changed'])} changed files")
             commit_message = self._generate_commit_message(changes)
+            
             # Clean up the message - remove any unwanted prefixes/suffixes
             if commit_message:
                 import re
                 # Remove any "Input:" or "Output:" labels
                 commit_message = re.sub(r'^(Input|Output|input|output):\s*', '', commit_message, flags=re.IGNORECASE)
                 commit_message = commit_message.strip()
+                
+                # Only reject obvious placeholders
+                rejected_exact = ['wip', 'commit message', 'message']
+                if commit_message.lower().strip() in rejected_exact:
+                    logger.debug(f"Rejected generic commit message: {commit_message}")
+                    return None
+                
+                # If it's just a type without subject, reject
+                if ':' not in commit_message:
+                    # If it's just "update", "changes", etc without colon, reject
+                    if commit_message.lower().strip() in ['update', 'changes', 'fix', 'feat', 'chore']:
+                        logger.debug(f"Rejected too generic commit message (no subject): {commit_message}")
+                        return None
+                
+                # Validate subject if it has colon
+                if ':' in commit_message:
+                    subject = commit_message.split(':', 1)[1].strip()
+                    if len(subject) < 3:  # Reduced from 5 to be less strict
+                        logger.debug(f"Rejected commit message with too short subject: {commit_message}")
+                        return None
+                    # Only reject obvious placeholders in subject
+                    if subject.lower().strip() in ['message', 'commit message']:
+                        logger.debug(f"Rejected commit message with placeholder subject: {commit_message}")
+                        return None
+                
+                logger.info(f"✅ Generated smart commit message: {commit_message}")
                 return commit_message
+            else:
+                logger.warning("_generate_commit_message returned empty result")
         except Exception as e:
-            logger.debug(f"Failed to generate commit message: {e}")
+            logger.warning(f"Failed to generate commit message: {e}", exc_info=True)
             return None
         
         return None
@@ -866,34 +994,141 @@ Output ONLY the commit message in format "type: subject" with no file names:"""
         # Refresh project context
         self.project_context = self._detect_project_context()
         
-        # ALWAYS check training data first for speed
-        fallback_completion = self._get_fallback_completion(command)
+        # Special handling for "git" command - suggest workflow-aware commands
+        if command.strip() == "git":
+            try:
+                # Check if we're in a git repo
+                subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'], 
+                             check=True, capture_output=True, text=True, timeout=2)
+                
+                # Check for unstaged changes FIRST (highest priority)
+                diff_result = subprocess.run(['git', 'diff', '--name-only'],
+                                           capture_output=True, text=True, timeout=2)
+                unstaged_files = [f.strip() for f in diff_result.stdout.strip().split('\n') if f.strip()]
+                
+                # Check for staged changes
+                staged_result = subprocess.run(['git', 'diff', '--cached', '--name-only'],
+                                             capture_output=True, text=True, timeout=2)
+                staged_files = [f.strip() for f in staged_result.stdout.strip().split('\n') if f.strip()]
+                
+                # HIGHEST PRIORITY: If there are ANY unstaged changes → suggest "git add"
+                # This comes first because you need to stage before committing
+                if unstaged_files:
+                    result = 'git add .'
+                    self._save_command(command, result, {
+                        'project_type': self.project_context['project_type'],
+                        'source': 'git_workflow'
+                    })
+                    return result
+                
+                # SECOND PRIORITY: If we have ONLY staged changes (no unstaged) → suggest "git commit"
+                if staged_files:
+                    # Try smart commit message for staged changes
+                    try:
+                        smart_message = self.get_smart_commit_message(command)
+                        if smart_message and smart_message.strip():
+                            rejected = ['commit message', 'message', 'wip']
+                            if not any(p in smart_message.lower() for p in rejected):
+                                result = f'git commit -m "{smart_message}"'
+                            else:
+                                result = 'git commit -m "commit message"'
+                        else:
+                            result = 'git commit -m "commit message"'
+                    except:
+                        result = 'git commit -m "commit message"'
+                    self._save_command(command, result, {
+                        'project_type': self.project_context['project_type'],
+                        'source': 'git_workflow'
+                    })
+                    return result
+            except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+                # Not in git repo or git not available - continue with normal completion
+                pass
         
-        # Special handling for git commit commands - prioritize smart commit messages
+        # Special handling for git commit commands - ALWAYS prioritize smart commit messages
+        # Skip training data check for git commit commands to ensure smart commit runs
         if (command.strip().startswith('git comm') or 'git commit' in command) and not ('-m' in command or '--message' in command):
             # Try to generate smart commit message FIRST (contextual and better)
+            smart_message = None
             try:
                 smart_message = self.get_smart_commit_message(command)
-                if smart_message and smart_message.strip():
+                logger.info(f"Smart commit returned: {smart_message}")
+            except Exception as e:
+                logger.warning(f"Smart commit message generation failed: {e}", exc_info=True)
+            
+            # Use smart message if we got something useful
+            if smart_message and smart_message.strip():
+                # Only reject if it's clearly a placeholder
+                rejected_patterns = ['commit message', 'message', 'wip']
+                if not any(pattern in smart_message.lower() for pattern in rejected_patterns):
                     result = f'git commit -m "{smart_message}"'
                     self._save_command(command, result, {
                         'project_type': self.project_context['project_type'],
                         'source': 'smart_commit'
                     })
+                    logger.info(f"✅ Using smart commit: {smart_message}")
                     return result
-            except Exception as e:
-                logger.debug(f"Smart commit message generation failed: {e}")
+                else:
+                    logger.warning(f"Rejected placeholder commit message: {smart_message}")
             
-            # Fallback to training data if smart message generation fails
+            # If smart commit didn't work, try AI completion as fallback (not training data)
+            logger.info("Smart commit failed, trying AI completion fallback...")
+            try:
+                prompt = self._build_enhanced_prompt(command)
+                original_timeout = self.client.timeout
+                self.client.timeout = 10  # Give more time for commit message
+                try:
+                    ai_completion = self.client.generate_completion(prompt, self.model, use_cache=False)
+                    if ai_completion:
+                        # Extract commit message from AI response
+                        import re
+                        lines = ai_completion.strip().split('\n')
+                        for line in lines:
+                            line = line.strip()
+                            if ':' in line and len(line) > 10 and not line.startswith(('To', 'Here', 'Sure', 'Format')):
+                                commit_msg = line.split('\n')[0].strip()
+                                # Clean up
+                                commit_msg = re.sub(r'^(feat|fix|chore|docs|refactor|test|style|perf|build|ci):\s*', '', commit_msg, count=1, flags=re.IGNORECASE)
+                                if len(commit_msg) > 5:
+                                    result = f'git commit -m "{commit_msg}"'
+                                    self._save_command(command, result, {
+                                        'project_type': self.project_context['project_type'],
+                                        'source': 'ai_fallback'
+                                    })
+                                    return result
+                finally:
+                    self.client.timeout = original_timeout
+            except Exception as e:
+                logger.debug(f"AI fallback failed: {e}")
+            
+            # Last resort: training data fallback
+            fallback_completion = self._get_fallback_completion(command)
             if fallback_completion:
+                logger.warning("Using training data fallback - smart commit and AI both failed")
                 self._save_command(command, fallback_completion, {
                     'project_type': self.project_context['project_type'],
                     'source': 'training_data'
                 })
                 return fallback_completion
         
-        # For all commands: use training data if available (instant)
-        if fallback_completion:
+        # For non-git-commit commands, check training data first for speed
+        fallback_completion = self._get_fallback_completion(command)
+        
+        # For commands with context sequences, prefer AI over training data
+        # Check if we have recent command context that suggests a sequence
+        has_context_sequence = False
+        if self.history and len(self.history) > 1:
+            recent = self.history[-2:-1] if len(self.history) > 1 else []
+            last_cmd = recent[0].lower() if recent else ""
+            # If user just ran "git commit" and now types "git", suggest "git push"
+            if "git commit" in last_cmd and command.strip() == "git":
+                has_context_sequence = True
+            # If user just ran "git add" and now types "git", suggest "git commit"
+            elif "git add" in last_cmd and command.strip() == "git":
+                has_context_sequence = True
+        
+        # Use training data only if no contextual sequence detected
+        if fallback_completion and not has_context_sequence:
             self._save_command(command, fallback_completion, {
                 'project_type': self.project_context['project_type'],
                 'source': 'training_data'

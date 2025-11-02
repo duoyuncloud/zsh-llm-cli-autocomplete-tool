@@ -277,10 +277,52 @@ ai-completion-status() {
     echo "💡 Use CLI commands to test completions!"
 }
 
+ai-completion-debug() {
+    echo "🔍 Debugging smart commit..."
+    echo ""
+    
+    # Check git status
+    echo "1. Git status:"
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo "   ✅ In git repo"
+        git status --short | head -5 | sed 's/^/   /'
+        
+        echo ""
+        echo "2. Staged changes:"
+        staged=$(git diff --cached --name-only 2>/dev/null)
+        if [[ -n "$staged" ]]; then
+            echo "$staged" | head -5 | sed 's/^/   /'
+        else
+            echo "   (none)"
+        fi
+        
+        echo ""
+        echo "3. Unstaged changes:"
+        unstaged=$(git diff --name-only 2>/dev/null)
+        if [[ -n "$unstaged" ]]; then
+            echo "$unstaged" | head -5 | sed 's/^/   /'
+        else
+            echo "   (none)"
+        fi
+        
+        echo ""
+        echo "4. Testing smart commit:"
+        if [[ -n "$MODEL_COMPLETION_PYTHON" && -n "$MODEL_COMPLETION_SCRIPT" ]]; then
+            result=$($MODEL_COMPLETION_PYTHON "$MODEL_COMPLETION_SCRIPT" --commit-message 2>&1)
+            echo "$result"
+        else
+            echo "   ❌ Python/script not set"
+        fi
+    else
+        echo "   ❌ Not in git repo"
+    fi
+}
+
 ai-completion-help() {
     echo "🎯 AI Autocomplete Help:"
     echo "   ai-completion-test  - Test the system"
     echo "   ai-completion-status - Check status"
+    echo "   ai-completion-debug - Debug smart commit"
     echo "   ai-completion-help  - Show this help"
     echo ""
     echo "🔧 Training Commands:"
@@ -291,6 +333,7 @@ ai-completion-help() {
     echo ""
     echo "💡 Use CLI directly:"
     echo "   model-completer \"git comm\""
+    echo "   model-completer \"git\"  (suggests 'git add' if unstaged changes)"
     echo "   model-completer --commit-message"
 }
 
@@ -471,21 +514,22 @@ _model_completion_ensure_ollama_model() {
     return 1  # Model not available
 }
 
-# Auto-check on plugin load (silent, in background)
-{
+# Auto-check on plugin load (completely silent, no output to avoid prompt interference)
+# Run in background to not block shell startup
+(
     set +e  # Don't exit on errors
+    # Redirect all output to avoid any prompt interference
+    exec >/dev/null 2>&1
     
     # Step 1: Start Ollama if not running
     local ollama_ready=0
-    if ! _model_completion_check_ollama; then
-        if _model_completion_start_ollama > /dev/null 2>&1; then
+    if ! _model_completion_check_ollama >/dev/null 2>&1; then
+        if _model_completion_start_ollama >/dev/null 2>&1; then
             ollama_ready=1
-            # Wait for Ollama to be fully ready
             sleep 3
         else
-            # Wait a bit more in case it's still starting
             sleep 2
-            if _model_completion_check_ollama; then
+            if _model_completion_check_ollama >/dev/null 2>&1; then
                 ollama_ready=1
             fi
         fi
@@ -496,26 +540,14 @@ _model_completion_ensure_ollama_model() {
     # Step 2: Ensure fine-tuned model is in Ollama (with auto-import)
     local model_ready=0
     if [[ $ollama_ready -eq 1 ]]; then
-        if _model_completion_ensure_ollama_model; then
+        if _model_completion_ensure_ollama_model >/dev/null 2>&1; then
             model_ready=1
-        elif _model_completion_check_zsh_assistant; then
+        elif _model_completion_check_zsh_assistant >/dev/null 2>&1; then
             model_ready=1
         fi
     fi
     
-    # Step 3: Show status message
-    local status_msg=""
-    if [[ $ollama_ready -eq 1 && $model_ready -eq 1 ]]; then
-        status_msg="✅ AI Autocomplete ready (Ollama + Fine-tuned model: zsh-assistant)"
-    elif [[ $ollama_ready -eq 1 ]]; then
-        status_msg="⚠️  AI Autocomplete ready (Ollama running, fine-tuned model not found - run 'ai-completion-setup')"
-    else
-        status_msg="⚠️  AI Autocomplete ready (Ollama not running - using training data fallback)"
-    fi
-    
-    # Only print to interactive terminals
-    if [[ -t 1 ]]; then
-        echo "$status_msg"
-    fi
-} &!
+    # No status message - completely silent to avoid prompt interference
+    # User can check status with: ai-completion-status
+) &!
 
