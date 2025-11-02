@@ -1168,43 +1168,21 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                 })
                 return fallback_completion
         
-        # For non-git-commit commands, check training data first for speed
-        fallback_completion = self._get_fallback_completion(command)
-        
-        # For commands with context sequences, prefer AI over training data
-        # Check if we have recent command context that suggests a sequence
-        has_context_sequence = False
-        if self.history and len(self.history) > 1:
-            recent = self.history[-2:-1] if len(self.history) > 1 else []
-            last_cmd = recent[0].lower() if recent else ""
-            # If user just ran "git commit" and now types "git", suggest "git push"
-            if "git commit" in last_cmd and command.strip() == "git":
-                has_context_sequence = True
-            # If user just ran "git add" and now types "git", suggest "git commit"
-            elif "git add" in last_cmd and command.strip() == "git":
-                has_context_sequence = True
-        
-        # Use training data only if no contextual sequence detected
-        if fallback_completion and not has_context_sequence:
-            self._save_command(command, fallback_completion, {
-                'project_type': self.project_context['project_type'],
-                'source': 'training_data'
-            })
-            return fallback_completion
-        
-        # Try AI only if no training data match, with very short timeout
+        # ALWAYS try AI model first - let the fine-tuned model make intelligent decisions
+        # Only fallback to training data if AI completely fails
         try:
             prompt = self._build_enhanced_prompt(command)
             
-            # Use very short timeout for interactive use (3 seconds)
+            # Use reasonable timeout for AI completion (5 seconds for better quality)
             original_timeout = self.client.timeout
-            self.client.timeout = 3
+            self.client.timeout = 5
             
             try:
                 completion = self.client.generate_completion(
                     prompt, self.model, use_cache=use_cache
                 )
-            except Exception:
+            except Exception as e:
+                logger.debug(f"AI completion error: {e}")
                 completion = None
             finally:
                 self.client.timeout = original_timeout
@@ -1215,12 +1193,15 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                     lines = completion.strip().split('\n')
                     for line in lines:
                         line = line.strip().replace('```', '').strip()
-                        if (line and len(line) > len(command) and ' ' in line and
-                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently')) and
+                        # More lenient filtering - accept most reasonable completions
+                        if (line and len(line) > len(command) and 
+                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:')) and
                             not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
                             not line.endswith(':') and not line.startswith('$') and
                             not line.startswith('`') and not line.endswith('`') and
-                            '|' not in line[:20]):
+                            '|' not in line[:20] and
+                            # Must contain the command or be a completion of it
+                            (command.lower() in line.lower() or line.startswith(command.split()[0] if command.split() else command))):
                             result = line
                             git_info = self._get_git_info()
                             git_branch = None
@@ -1234,11 +1215,23 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                                 'git_branch': git_branch,
                                 'source': 'ai'
                             })
+                            logger.debug(f"AI completion: {command} -> {result}")
                             return result
                 except Exception as e:
                     logger.warning(f"AI completion processing failed: {e}")
         except Exception as e:
             logger.warning(f"AI completion failed: {e}")
+        
+        # LAST RESORT: Only use training data if AI completely failed
+        # This should rarely happen with a working fine-tuned model
+        fallback_completion = self._get_fallback_completion(command)
+        if fallback_completion:
+            logger.debug(f"AI failed, using training data fallback: {command} -> {fallback_completion}")
+            self._save_command(command, fallback_completion, {
+                'project_type': self.project_context['project_type'],
+                'source': 'training_data'
+            })
+            return fallback_completion
         
         # Return original command if no completion found
         return command
