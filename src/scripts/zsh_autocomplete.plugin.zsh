@@ -126,40 +126,78 @@ fi
 
 # Function to auto-start Ollama if not running
 _model_completion_start_ollama() {
-    if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-        # Check if ollama command exists
-        if command -v ollama &> /dev/null; then
-            # Start Ollama in background
-            nohup ollama serve > /tmp/ollama.log 2>&1 &
-            # Wait a moment for it to start
-            sleep 2
-            # Check again
-            if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-                return 0
-            fi
-        fi
+    # Check if already running
+    if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+        return 0
+    fi
+    
+    # Check if ollama command exists
+    if ! command -v ollama &> /dev/null; then
         return 1
     fi
-    return 0
+    
+    # Check if Ollama process already exists (might be starting)
+    if pgrep -x ollama > /dev/null 2>&1; then
+        # Wait for it to be ready (max 10 seconds)
+        local wait_time=0
+        while [[ $wait_time -lt 10 ]]; do
+            if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+                return 0
+            fi
+            sleep 1
+            wait_time=$((wait_time + 1))
+        done
+    fi
+    
+    # Start Ollama in background
+    nohup ollama serve > /tmp/ollama.log 2>&1 &
+    local ollama_pid=$!
+    
+    # Wait for server to be ready (max 15 seconds)
+    local max_wait=15
+    local waited=0
+    while [[ $waited -lt $max_wait ]]; do
+        if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+            return 0
+        fi
+        
+        # Check if process is still running
+        if ! kill -0 $ollama_pid > /dev/null 2>&1; then
+            # Process died
+            return 1
+        fi
+        
+        sleep 1
+        waited=$((waited + 1))
+    done
+    
+    # Timeout
+    return 1
 }
 
 # Function to check if Ollama is available
 _model_completion_check_ollama() {
-    if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-        return 1
+    if curl -s --max-time 2 http://localhost:11434/api/tags > /dev/null 2>&1; then
+        return 0
     fi
-    return 0
+    return 1
 }
 
 # Function to check if zsh-assistant model is available
 _model_completion_check_zsh_assistant() {
     local models
-    models=$(curl -s http://localhost:11434/api/tags 2>/dev/null)
+    models=$(curl -s --max-time 3 http://localhost:11434/api/tags 2>/dev/null)
     if [[ -z "$models" ]]; then
         return 1
     fi
-    # Check if zsh-assistant is in the list
-    if echo "$models" | grep -q "zsh-assistant"; then
+    # Try proper JSON parsing if Python available
+    if command -v python3 &> /dev/null; then
+        if echo "$models" | python3 -c "import sys, json; data = json.load(sys.stdin); exit(0 if any('zsh-assistant' in str(m.get('name', '')) for m in data.get('models', [])) else 1)" 2>/dev/null; then
+            return 0
+        fi
+    fi
+    # Fallback to grep
+    if echo "$models" | grep -q '"name"[[:space:]]*:[[:space:]]*"zsh-assistant"'; then
         return 0
     fi
     return 1
@@ -192,157 +230,10 @@ _model_completion_ensure_ready() {
     return 0
 }
 
-# Simple completion function
-_model_completion_simple() {
-    # Always allow normal completion if buffer is empty or very short
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 3 ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    # Check Ollama but don't block if it's not available
-    if ! _model_completion_check_ollama; then
-        # Still try completion (will use training data fallback)
-    fi
-    
-    # Get AI completion using the existing completer
-    # Python code now handles timeouts internally and uses training data first
-    local completion
-    # Use python3 as fallback if venv python not found
-    local py_cmd="$MODEL_COMPLETION_PYTHON"
-    if [[ ! -f "$py_cmd" ]] || [[ "$py_cmd" == "/venv/bin/python"* ]]; then
-        py_cmd="python3"
-    fi
-    # Suppress ALL output - stderr, warnings, and Python runtime messages
-    # Only capture clean completion text
-    # Filter aggressively to remove all Python/Warning/Log messages
-    completion=$($py_cmd -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$" | \
-        head -1)
-    
-    # Check if we got a valid completion
-    if [[ -n "$completion" && "$completion" != "$BUFFER" && ${#completion} -gt ${#BUFFER} ]]; then
-        BUFFER="$completion"
-        CURSOR=${#BUFFER}
-        zle reset-prompt
-    else
-        # Fall back to normal zsh completion
-        zle expand-or-complete
-    fi
-}
-
-# UI completion function with multiple suggestions
-_model_completion_ui() {
-    if ! _model_completion_check_ollama; then
-        zle expand-or-complete
-        return
-    fi
-    
-    if [[ -z "$BUFFER" ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    # Get multiple suggestions
-    local suggestions
-    local py_cmd="$MODEL_COMPLETION_PYTHON"
-    if [[ ! -f "$py_cmd" ]] || [[ "$py_cmd" == "/venv/bin/python"* ]]; then
-        py_cmd="python3"
-    fi
-    # Suppress all output except suggestions
-    suggestions=$($py_cmd -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" --suggestions 5 "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$")
-    
-    if [[ -n "$suggestions" ]]; then
-        # Parse suggestions and create completion menu
-        local -a completion_options
-        local line_num=1
-        while IFS= read -r line; do
-            if [[ -n "$line" ]]; then
-                completion_options+=("$line")
-            fi
-        done <<< "$suggestions"
-        
-        if [[ ${#completion_options[@]} -gt 0 ]]; then
-            # Use Zsh's built-in completion menu
-            _describe 'AI suggestions' completion_options
-        else
-            zle expand-or-complete
-        fi
-    else
-        zle expand-or-complete
-    fi
-}
-
-# Advanced completion with confidence scores
-_model_completion_advanced() {
-    if ! _model_completion_check_ollama; then
-        zle expand-or-complete
-        return
-    fi
-    
-    if [[ -z "$BUFFER" ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    # Get completion with confidence
-    local completion_info
-    local py_cmd="$MODEL_COMPLETION_PYTHON"
-    if [[ ! -f "$py_cmd" ]] || [[ "$py_cmd" == "/venv/bin/python"* ]]; then
-        py_cmd="python3"
-    fi
-    # Suppress all warnings and debug output
-    completion_info=$($py_cmd -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" --advanced "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$" | \
-        head -1)
-    
-    if [[ -n "$completion_info" ]]; then
-        # Parse completion and confidence
-        local completion="${completion_info%%|*}"
-        local confidence="${completion_info##*|}"
-        
-        if [[ -n "$completion" && "$completion" != "$BUFFER" ]]; then
-            BUFFER="$completion"
-            CURSOR=${#BUFFER}
-            zle reset-prompt
-            
-            # Show confidence if available
-            if [[ "$confidence" =~ ^[0-9]+$ ]] && [[ $confidence -gt 0 ]]; then
-                echo "🎯 Confidence: ${confidence}%"
-            fi
-        else
-            zle expand-or-complete
-        fi
-    else
-        zle expand-or-complete
-    fi
-}
-
-# Create widgets
-zle -N _model_completion_simple
-zle -N _model_completion_ui
-zle -N _model_completion_advanced
-
-# Bind keys
-bindkey '^I' _model_completion_simple        # Tab for simple completion
-bindkey '^[[Z' _model_completion_ui          # Shift+Tab for UI mode
-bindkey '^[[1;5I' _model_completion_advanced # Ctrl+Tab for advanced mode
 
 # Utility functions
 ai-completion-test() {
     echo "🧪 Testing AI completions..."
-    echo "Try these commands with different keys:"
-    echo "  git comm[Tab]        -> Simple completion"
-    echo "  docker run[Shift+Tab] -> UI mode with multiple suggestions"
-    echo "  npm run[Ctrl+Tab]     -> Advanced mode with confidence"
-    echo ""
     echo "Direct test:"
     $MODEL_COMPLETION_PYTHON "$MODEL_COMPLETION_SCRIPT" "git comm"
 }
@@ -377,25 +268,17 @@ ai-completion-status() {
     fi
     
     echo ""
-    echo "🎯 Completion Modes:"
-    echo "   Tab        - Simple completion"
-    echo "   Shift+Tab  - UI mode (multiple suggestions)"
-    echo "   Ctrl+Tab   - Advanced mode (with confidence)"
-    echo ""
     echo "✨ Enhanced Features:"
-    echo "   - Smart commit messages (git comm[Tab])"
+    echo "   - Smart commit messages"
     echo "   - Context-aware completions"
     echo "   - Personalized suggestions"
     echo "   - History learning"
     echo ""
-    echo "💡 Just type commands and use the keys above!"
+    echo "💡 Use CLI commands to test completions!"
 }
 
 ai-completion-help() {
     echo "🎯 AI Autocomplete Help:"
-    echo "   Tab                 - Simple AI completion"
-    echo "   Shift+Tab           - UI mode with multiple suggestions"
-    echo "   Ctrl+Tab            - Advanced mode with confidence scores"
     echo "   ai-completion-test  - Test the system"
     echo "   ai-completion-status - Check status"
     echo "   ai-completion-help  - Show this help"
@@ -405,6 +288,10 @@ ai-completion-help() {
     echo "   ai-completion-data - Generate training data"
     echo "   ai-completion-models - List available models"
     echo "   ai-completion-setup - Setup Ollama and models"
+    echo ""
+    echo "💡 Use CLI directly:"
+    echo "   model-completer \"git comm\""
+    echo "   model-completer --commit-message"
 }
 
 ai-completion-train() {
@@ -485,11 +372,15 @@ ai-completion-setup() {
     echo ""
     
     echo "✅ Setup complete! Your AI autocomplete is ready."
-    echo "   Try: git comm[Tab]"
+    echo "   Try: model-completer \"git comm\""
 }
 
-# Auto-completion for the utility functions
+# Auto-completion for the utility functions (only register if ZLE is active)
 _ai_completion_utils() {
+    # Only work in ZLE context
+    if [[ -z "$ZLE_STATE" ]] && ! zle; then
+        return 1
+    fi
     local -a utils
     utils=(
         'test:Test AI completions'
@@ -503,36 +394,78 @@ _ai_completion_utils() {
     _describe 'AI completion utilities' utils
 }
 
-compdef _ai_completion_utils ai-completion
+# Only register completion if in interactive shell with ZLE
+if [[ -o interactive ]] && zle; then
+    compdef _ai_completion_utils ai-completion 2>/dev/null || true
+fi
+
+# Function to import LoRA model to Ollama
+_model_completion_import_lora() {
+    if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" || -z "$MODEL_COMPLETION_PYTHON" ]]; then
+        return 1
+    fi
+    
+    local lora_path="${MODEL_COMPLETION_PROJECT_DIR}/zsh-lora-output"
+    if [[ ! -d "$lora_path" || ! -f "$lora_path/adapter_config.json" ]]; then
+        return 1
+    fi
+    
+    # Import model synchronously
+    cd "${MODEL_COMPLETION_PROJECT_DIR}" 2>/dev/null || return 1
+    
+    local import_output
+    import_output=$($MODEL_COMPLETION_PYTHON -c "
+import sys
+import os
+from pathlib import Path
+sys.path.insert(0, os.path.join('${MODEL_COMPLETION_PROJECT_DIR}', 'src'))
+try:
+    from model_completer.ollama_lora_import import import_lora_to_ollama
+    base_dir = Path('${MODEL_COMPLETION_PROJECT_DIR}')
+    success = import_lora_to_ollama(base_dir)
+    sys.exit(0 if success else 1)
+except Exception as e:
+    print(f'Import error: {e}', file=sys.stderr)
+    sys.exit(1)
+" 2>&1)
+    
+    local import_result=$?
+    
+    # Wait a moment for Ollama to register the model
+    if [[ $import_result -eq 0 ]]; then
+        sleep 2
+        # Verify model is now available
+        if _model_completion_check_zsh_assistant; then
+            return 0
+        fi
+    fi
+    
+    return 1
+}
 
 # Function to ensure fine-tuned model is in Ollama
 _model_completion_ensure_ollama_model() {
-    # Check if Ollama is running
+    # Step 1: Ensure Ollama is running
     if ! _model_completion_check_ollama; then
-        # Try to start Ollama
-        _model_completion_start_ollama > /dev/null 2>&1
+        if ! _model_completion_start_ollama > /dev/null 2>&1; then
+            return 1
+        fi
+        # Wait for Ollama to be fully ready
         sleep 2
     fi
     
-    # Check if fine-tuned model exists in Ollama
+    # Step 2: Check if fine-tuned model exists in Ollama
     if _model_completion_check_zsh_assistant; then
         return 0
     fi
     
-    # Model not in Ollama - check if LoRA training completed
+    # Step 3: Model not in Ollama - check if LoRA training completed and import it
     local lora_path="${MODEL_COMPLETION_PROJECT_DIR}/zsh-lora-output"
-    if [[ -d "$lora_path" && -f "$lora_path/adapter_config.json" ]]; then
-        # LoRA model trained but not imported to Ollama
-        # Import it in background
-        (
-            $MODEL_COMPLETION_PYTHON -c "
-import sys
-sys.path.insert(0, '${MODEL_COMPLETION_PROJECT_DIR}/src')
-from model_completer.ollama_lora_import import import_lora_to_ollama
-import_lora_to_ollama()
-" > /dev/null 2>&1
-        ) &!
-        return 1  # Not ready yet
+    if [[ -n "$MODEL_COMPLETION_PROJECT_DIR" && -d "$lora_path" && -f "$lora_path/adapter_config.json" ]]; then
+        # LoRA model trained but not imported to Ollama - import it now
+        if _model_completion_import_lora; then
+            return 0
+        fi
     fi
     
     return 1  # Model not available
@@ -540,25 +473,49 @@ import_lora_to_ollama()
 
 # Auto-check on plugin load (silent, in background)
 {
-    # Ensure Ollama is running (start if needed)
+    set +e  # Don't exit on errors
+    
+    # Step 1: Start Ollama if not running
+    local ollama_ready=0
     if ! _model_completion_check_ollama; then
-        _model_completion_start_ollama > /dev/null 2>&1
-        sleep 2
+        if _model_completion_start_ollama > /dev/null 2>&1; then
+            ollama_ready=1
+            # Wait for Ollama to be fully ready
+            sleep 3
+        else
+            # Wait a bit more in case it's still starting
+            sleep 2
+            if _model_completion_check_ollama; then
+                ollama_ready=1
+            fi
+        fi
+    else
+        ollama_ready=1
     fi
     
-    # Ensure fine-tuned model is in Ollama
-    if _model_completion_ensure_ollama_model; then
-        # Fine-tuned model is ready in Ollama - best case
-        echo "✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)"
-    elif _model_completion_check_ollama && _model_completion_check_zsh_assistant; then
-        # Ollama with zsh-assistant model available
-        echo "✅ AI Autocomplete ready (Ollama model: zsh-assistant)"
-    elif _model_completion_check_ollama; then
-        # Ollama running but no fine-tuned model
-        echo "⚠️  AI Autocomplete ready (Ollama available, fine-tuned model not found - run 'ai-completion-setup')"
+    # Step 2: Ensure fine-tuned model is in Ollama (with auto-import)
+    local model_ready=0
+    if [[ $ollama_ready -eq 1 ]]; then
+        if _model_completion_ensure_ollama_model; then
+            model_ready=1
+        elif _model_completion_check_zsh_assistant; then
+            model_ready=1
+        fi
+    fi
+    
+    # Step 3: Show status message
+    local status_msg=""
+    if [[ $ollama_ready -eq 1 && $model_ready -eq 1 ]]; then
+        status_msg="✅ AI Autocomplete ready (Ollama + Fine-tuned model: zsh-assistant)"
+    elif [[ $ollama_ready -eq 1 ]]; then
+        status_msg="⚠️  AI Autocomplete ready (Ollama running, fine-tuned model not found - run 'ai-completion-setup')"
     else
-        # Only training data fallback
-        echo "⚠️  AI Autocomplete ready (training data fallback mode)"
+        status_msg="⚠️  AI Autocomplete ready (Ollama not running - using training data fallback)"
+    fi
+    
+    # Only print to interactive terminals
+    if [[ -t 1 ]]; then
+        echo "$status_msg"
     fi
 } &!
 
