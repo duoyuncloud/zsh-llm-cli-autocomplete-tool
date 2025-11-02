@@ -36,32 +36,17 @@ else
     fi
 fi
 
-# If still not found, try to find from current directory or any recent location
-# PRIORITIZE: zsh-llm-cli-autocomplete-tool over old model-cli-autocomplete
+# If still not found, skip slow find operations during plugin load
+# These are deferred to background initialization to avoid blocking
+# Quick checks only - no filesystem searches
 if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
-    # First search for current project name (zsh-llm-cli-autocomplete-tool)
-    for dir in "$HOME/Desktop" "$HOME"; do
-        if [[ -d "$dir" ]]; then
-            found=$(find "$dir" -maxdepth 3 -name "zsh-llm-cli-autocomplete-tool" -type d 2>/dev/null | head -1)
-            if [[ -n "$found" && -f "$found/src/model_completer/cli.py" ]]; then
-                MODEL_COMPLETION_PROJECT_DIR="$found"
-                break
-            fi
+    # Quick path checks only (no find commands - they block!)
+    for quick_path in "$HOME/zsh-llm-cli-autocomplete-tool" "$HOME/Desktop/zsh-llm-cli-autocomplete-tool"; do
+        if [[ -f "$quick_path/src/model_completer/cli.py" ]]; then
+            MODEL_COMPLETION_PROJECT_DIR="$quick_path"
+            break
         fi
     done
-    
-    # If still not found, try old project name (model-cli-autocomplete) as fallback
-    if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
-        for dir in "$HOME/Desktop" "$HOME"; do
-            if [[ -d "$dir" ]]; then
-                found=$(find "$dir" -maxdepth 3 -name "model_completer" -type d -path "*/src/model_completer" 2>/dev/null | head -1)
-                if [[ -n "$found" ]]; then
-                    MODEL_COMPLETION_PROJECT_DIR="$(dirname "$(dirname "$found")")"
-                    break
-                fi
-            fi
-        done
-    fi
 fi
 
 export MODEL_COMPLETION_DIR="${MODEL_COMPLETION_PROJECT_DIR}"
@@ -540,7 +525,9 @@ _model_completion_ensure_ollama_model() {
     return 1  # Model not available
 }
 
-# Comprehensive initialization function that ensures all steps complete
+# Lightweight initialization function (only checks, no training)
+# Training should be done manually via ai-completion-setup
+# CRITICAL: This function must NEVER block - all operations use minimal timeouts
 _model_completion_full_init() {
     local status_file="/tmp/model-completer-init.status"
     local log_file="/tmp/model-completer-init.log"
@@ -549,210 +536,132 @@ _model_completion_full_init() {
     echo "" > "$status_file" 2>/dev/null
     echo "Initializing AI Autocomplete..." > "$log_file" 2>&1
     
-    # Step 1: Ensure Ollama is running (with waiting)
-    echo "step1:starting_ollama" > "$status_file"
+    # Step 1: Ensure Ollama is running (quick check and start if needed)
+    echo "step1:checking_ollama" > "$status_file"
     if ! command -v ollama >/dev/null 2>&1; then
         echo "step1:ollama_not_found" > "$status_file"
-        echo "⚠️  Ollama not installed. Install from https://ollama.ai" >> "$log_file"
-        return 1
+        echo "⚠️  Ollama not installed" >> "$log_file"
+        return 0  # Don't fail - return success to avoid blocking
     fi
     
-    # Check if Ollama is already running
-    if curl -s --max-time 2 http://localhost:11434/api/tags >/dev/null 2>&1; then
+    # Quick check if Ollama is already running (non-blocking with ultra-short timeout)
+    # Use connection timeout to prevent DNS/network blocking
+    if curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags >/dev/null 2>&1; then
         echo "step1:ollama_running" > "$status_file"
     else
-        # Start Ollama and wait for it
-        echo "Starting Ollama server..." >> "$log_file"
+        # Start Ollama in background without waiting (non-blocking)
+        echo "step1:starting_ollama" > "$status_file"
+        echo "Starting Ollama server (background)..." >> "$log_file"
         nohup ollama serve >/tmp/ollama.log 2>&1 </dev/null &
-        local ollama_pid=$!
-        
-        # Wait for Ollama to be ready (max 30 seconds)
-        local waited=0
-        local max_wait=30
-        while [[ $waited -lt $max_wait ]]; do
-            if curl -s --max-time 2 http://localhost:11434/api/tags >/dev/null 2>&1; then
-                echo "step1:ollama_ready" > "$status_file"
-                break
-            fi
-            
-            # Check if process died
-            if ! kill -0 $ollama_pid >/dev/null 2>&1; then
-                echo "step1:ollama_failed" > "$status_file"
-                echo "Failed to start Ollama" >> "$log_file"
-                return 1
-            fi
-            
-            sleep 1
-            waited=$((waited + 1))
-        done
-        
-        if [[ $waited -eq $max_wait ]]; then
-            echo "step1:ollama_timeout" > "$status_file"
-            echo "Ollama start timeout" >> "$log_file"
-            return 1
-        fi
+        # Don't wait - let it start in background
+        echo "step1:ollama_starting" > "$status_file"
     fi
     
-    # Step 2: Check if model exists, train if needed, import if needed
+    # Step 2: Quick check if model exists (non-blocking, no training)
     echo "step2:checking_model" > "$status_file"
     
-    # Check if model exists in Ollama
+    # Quick check with ultra-short timeout (0.5 second max, completely non-blocking)
     local models
-    models=$(curl -s --max-time 5 http://localhost:11434/api/tags 2>/dev/null)
+    # Use connection timeout to prevent DNS blocking, and very short max-time
+    # If curl hangs, we want it to fail fast
+    if command -v timeout >/dev/null 2>&1; then
+        models=$(timeout 0.5 curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags 2>/dev/null || echo "")
+    else
+        models=$(curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags 2>/dev/null || echo "")
+    fi
+    
     local model_exists=0
     
-    if [[ -n "$models" ]]; then
-        # Try to parse with jq if available
-        if command -v jq >/dev/null 2>&1; then
-            if echo "$models" 2>/dev/null | jq -e '.models[] | select(.name=="zsh-assistant")' >/dev/null 2>&1; then
+    # Only check if we got a valid JSON response (Ollama is ready and responded)
+    if [[ -n "$models" ]] && [[ "$models" == "{"* ]] && [[ "$models" != *"connection refused"* ]] && [[ "$models" != *"curl:"* ]] && [[ "$models" != *"timeout"* ]]; then
+        # Quick parse - check for zsh-assistant (with or without :latest tag)
+        # Use simple grep first (fastest)
+        if echo "$models" | grep -q 'zsh-assistant' 2>/dev/null; then
+            model_exists=1
+        elif command -v jq >/dev/null 2>&1; then
+            # If grep didn't work, try jq (but this is slower, use timeout)
+            if echo "$models" 2>/dev/null | timeout 0.3 jq -e '.models[] | select(.name | startswith("zsh-assistant"))' >/dev/null 2>&1; then
                 model_exists=1
-            fi
-        else
-            # Fallback to grep
-            if echo "$models" | grep -q '"name"[[:space:]]*:[[:space:]]*"zsh-assistant"'; then
-                model_exists=1
-            fi
-        fi
-    fi
-    
-    if [[ $model_exists -eq 1 ]]; then
-        echo "step2:model_ready" > "$status_file"
-        echo "✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)" >> "$log_file"
-        return 0
-    fi
-    
-    # Model not found - check if LoRA training data exists
-    echo "step2:model_not_found" > "$status_file"
-    
-    if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" || -z "$MODEL_COMPLETION_PYTHON" ]]; then
-        echo "step2:config_missing" > "$status_file"
-        echo "⚠️  Project directory or Python not configured" >> "$log_file"
-        return 1
-    fi
-    
-    local lora_path="${MODEL_COMPLETION_PROJECT_DIR}/zsh-lora-output"
-    local training_data="${MODEL_COMPLETION_PROJECT_DIR}/src/training/zsh_training_data.jsonl"
-    
-    # Step 2a: Generate training data if needed
-    if [[ ! -f "$training_data" ]]; then
-        echo "step2:generating_data" > "$status_file"
-        echo "Generating training data..." >> "$log_file"
-        cd "${MODEL_COMPLETION_PROJECT_DIR}" 2>/dev/null || return 1
-        if ! $MODEL_COMPLETION_PYTHON "$MODEL_COMPLETION_SCRIPT" --generate-data >> "$log_file" 2>&1; then
-            echo "step2:data_generation_failed" > "$status_file"
-            echo "Failed to generate training data" >> "$log_file"
-            return 1
-        fi
-    fi
-    
-    # Step 2b: Train LoRA model if needed
-    if [[ ! -d "$lora_path" || ! -f "$lora_path/adapter_config.json" ]]; then
-        echo "step2:training_lora" > "$status_file"
-        echo "Training LoRA model (this may take several minutes)..." >> "$log_file"
-        cd "${MODEL_COMPLETION_PROJECT_DIR}" 2>/dev/null || return 1
-        if ! $MODEL_COMPLETION_PYTHON "$MODEL_COMPLETION_SCRIPT" --train >> "$log_file" 2>&1; then
-            echo "step2:training_failed" > "$status_file"
-            echo "LoRA training failed" >> "$log_file"
-            return 1
-        fi
-    fi
-    
-    # Step 2c: Import model to Ollama if needed
-    if [[ -d "$lora_path" && -f "$lora_path/adapter_config.json" ]]; then
-        echo "step2:importing_model" > "$status_file"
-        echo "Importing model to Ollama..." >> "$log_file"
-        cd "${MODEL_COMPLETION_PROJECT_DIR}" 2>/dev/null || return 1
-        if ! $MODEL_COMPLETION_PYTHON "$MODEL_COMPLETION_SCRIPT" --import-to-ollama >> "$log_file" 2>&1; then
-            echo "step2:import_failed" > "$status_file"
-            echo "Failed to import model to Ollama" >> "$log_file"
-            return 1
-        fi
-        
-        # Wait a bit for Ollama to register the model
-        sleep 3
-        
-        # Verify model is now available
-        models=$(curl -s --max-time 5 http://localhost:11434/api/tags 2>/dev/null)
-        model_exists=0
-        if [[ -n "$models" ]]; then
-            if command -v jq >/dev/null 2>&1; then
-                if echo "$models" 2>/dev/null | jq -e '.models[] | select(.name=="zsh-assistant")' >/dev/null 2>&1; then
-                    model_exists=1
-                fi
-            else
-                if echo "$models" | grep -q '"name"[[:space:]]*:[[:space:]]*"zsh-assistant"'; then
-                    model_exists=1
-                fi
             fi
         fi
         
         if [[ $model_exists -eq 1 ]]; then
             echo "step2:model_ready" > "$status_file"
-            echo "✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)" >> "$log_file"
+            echo "✅ Model ready in Ollama" >> "$log_file"
             return 0
-        else
-            echo "step2:verification_failed" > "$status_file"
-            echo "Model imported but verification failed" >> "$log_file"
-            return 1
         fi
     else
-        echo "step2:lora_not_found" > "$status_file"
-        echo "⚠️  LoRA model not found. Run: ai-completion-setup" >> "$log_file"
-        return 1
+        # Ollama not ready or no response - that's OK, just note it
+        echo "step2:ollama_not_ready" > "$status_file"
+        echo "Ollama not ready or starting..." >> "$log_file"
+        # Don't fail - Ollama might still be starting
     fi
+    
+    # Model not found in Ollama - don't try to import automatically
+    # Import should be done manually via ai-completion-setup
+    echo "step2:model_not_found_in_ollama" > "$status_file"
+    echo "⚠️  Model not in Ollama - run 'ai-completion-setup' if needed" >> "$log_file"
+    return 0  # Don't fail - plugin can work with fallback
 }
 
 # Auto-initialization on plugin load (completely non-blocking)
 # CRITICAL: This MUST NOT block the prompt - everything runs asynchronously
-# All output is redirected to log files to prevent any terminal interaction
-(
-    # Redirect ALL output immediately to prevent any blocking
-    exec >/tmp/model-completer-init.log 2>&1
-    
-    # Fork to background
+# Use multiple levels of forking and immediate disown to ensure complete detachment
+{
+    # First fork: redirect all output
     (
-        # Set error handling
-        set +e
+        exec >/tmp/model-completer-init.log 2>&1
         
-        # Change to a safe directory to avoid blocking on cwd
-        cd /tmp 2>/dev/null || cd ~ 2>/dev/null || true
-        
-        # Run initialization (this may take time)
-        local status_file="/tmp/model-completer-init.status"
-        local log_file="/tmp/model-completer-init.log"
-        
-        # Initialize everything
-        _model_completion_full_init
-        local init_result=$?
-        
-        # Write result to status file
-        echo "result:$init_result" >> "$status_file" 2>/dev/null
-        
-        # Prepare status message (write to file, don't print)
-        local message=""
-        local last_step=""
-        if [[ -f "$status_file" ]]; then
-            last_step=$(cat "$status_file" 2>/dev/null | grep "^step" | tail -1)
-        fi
-        
-        # Determine message based on result
-        if [[ $init_result -eq 0 ]]; then
-            message="✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)"
-        elif [[ "$last_step" == *"step2:lora_not_found"* ]] || [[ "$last_step" == *"step2:config_missing"* ]]; then
-            message="⚠️  AI Autocomplete ready (Fine-tuned model not found - run 'ai-completion-setup')"
-        elif [[ "$last_step" == *"step1:ollama_not_found"* ]] || [[ "$last_step" == *"step1:ollama_failed"* ]]; then
-            message="⚠️  AI Autocomplete ready (Ollama not available - will use training data fallback)"
-        else
-            message="⚠️  AI Autocomplete ready (Setup incomplete - check with 'ai-completion-status')"
-        fi
-        
-        # Write message to file (can be read by user with: cat /tmp/model-completer-init.msg)
-        echo "$message" > /tmp/model-completer-init.msg 2>/dev/null
+        # Second fork: background process
+        (
+            # Third fork: complete isolation
+            (
+                # Set error handling - never fail
+                set +e
+                
+                # Change directory immediately to avoid any cwd blocking
+                cd /tmp 2>/dev/null || cd ~ 2>/dev/null || true
+                
+                # Variables
+                local status_file="/tmp/model-completer-init.status"
+                local log_file="/tmp/model-completer-init.log"
+                
+                # Initialize (quick check only)
+                _model_completion_full_init
+                local init_result=$?
+                
+                # Write result
+                echo "result:$init_result" >> "$status_file" 2>/dev/null
+                
+                # Prepare message
+                local message=""
+                local last_step=""
+                if [[ -f "$status_file" ]]; then
+                    last_step=$(cat "$status_file" 2>/dev/null | grep "^step" | tail -1)
+                fi
+                
+                # Determine message
+                if [[ "$last_step" == *"step2:model_ready"* ]]; then
+                    message="✅ AI Autocomplete ready (Fine-tuned model loaded in Ollama)"
+                elif [[ "$last_step" == *"step2:lora_not_found"* ]] || [[ "$last_step" == *"step2:config_missing"* ]]; then
+                    message="⚠️  AI Autocomplete ready (Fine-tuned model not found - run 'ai-completion-setup')"
+                elif [[ "$last_step" == *"step1:ollama_not_found"* ]] || [[ "$last_step" == *"step1:ollama_failed"* ]]; then
+                    message="⚠️  AI Autocomplete ready (Ollama not available - will use training data fallback)"
+                elif [[ "$last_step" == *"step2:ollama_not_ready"* ]] || [[ "$last_step" == *"step1:ollama_starting"* ]]; then
+                    message="⏳ AI Autocomplete ready (Ollama starting in background)"
+                else
+                    message="✅ AI Autocomplete ready (check 'ai-completion-status' for details)"
+                fi
+                
+                # Write message
+                echo "$message" > /tmp/model-completer-init.msg 2>/dev/null
+            ) &
+        ) &
     ) &
-    
-    # Disown immediately to prevent any blocking
-    disown %- 2>/dev/null || true
-) &!
+} &!
+
+# Immediately disown all background jobs to prevent any blocking
+disown -a 2>/dev/null || true
 
 # Set up precmd hook to show initialization message when ready (non-blocking)
 # This runs before each prompt, but only shows message once
