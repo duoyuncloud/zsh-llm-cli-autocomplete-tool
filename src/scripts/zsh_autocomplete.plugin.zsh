@@ -7,6 +7,7 @@
 MODEL_COMPLETION_PROJECT_DIR=""
 
 # First, try to find the project from the plugin location
+# Priority: current project dir (zsh-llm-cli-autocomplete-tool) > old project dirs
 if [[ -f "${0:A:h}/../../src/model_completer/cli.py" ]]; then
     # Running from src/scripts/
     MODEL_COMPLETION_PROJECT_DIR="${0:A:h}/../.."
@@ -17,27 +18,50 @@ elif [[ -f "$HOME/.local/share/model-completer/src/model_completer/cli.py" ]]; t
     # Installed system-wide
     MODEL_COMPLETION_PROJECT_DIR="$HOME/.local/share/model-completer"
 else
-    # Try common project locations
-    for dir in "$HOME/Desktop/model-cli-autocomplete" "$HOME/model-cli-autocomplete" "$HOME/.model-cli-autocomplete" "/opt/model-cli-autocomplete" "/Users/duoyun/Desktop/model-cli-autocomplete"; do
+    # Try current project first (zsh-llm-cli-autocomplete-tool)
+    for dir in "$HOME/zsh-llm-cli-autocomplete-tool" "$HOME/Desktop/zsh-llm-cli-autocomplete-tool" "$HOME/zsh-llm-cli-autocomplete-tool"; do
         if [[ -f "$dir/src/model_completer/cli.py" ]]; then
             MODEL_COMPLETION_PROJECT_DIR="$dir"
             break
         fi
     done
+    # Then try old project locations (lower priority)
+    if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
+        for dir in "$HOME/Desktop/model-cli-autocomplete" "$HOME/model-cli-autocomplete" "$HOME/.model-cli-autocomplete" "/opt/model-cli-autocomplete" "/Users/duoyun/Desktop/model-cli-autocomplete"; do
+            if [[ -f "$dir/src/model_completer/cli.py" ]]; then
+                MODEL_COMPLETION_PROJECT_DIR="$dir"
+                break
+            fi
+        done
+    fi
 fi
 
 # If still not found, try to find from current directory or any recent location
+# PRIORITIZE: zsh-llm-cli-autocomplete-tool over old model-cli-autocomplete
 if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
-    # Try to find by searching common paths
+    # First search for current project name (zsh-llm-cli-autocomplete-tool)
     for dir in "$HOME/Desktop" "$HOME"; do
         if [[ -d "$dir" ]]; then
-            found=$(find "$dir" -maxdepth 3 -name "model_completer" -type d -path "*/src/model_completer" 2>/dev/null | head -1)
-            if [[ -n "$found" ]]; then
-                MODEL_COMPLETION_PROJECT_DIR="$(dirname "$(dirname "$found")")"
+            found=$(find "$dir" -maxdepth 3 -name "zsh-llm-cli-autocomplete-tool" -type d 2>/dev/null | head -1)
+            if [[ -n "$found" && -f "$found/src/model_completer/cli.py" ]]; then
+                MODEL_COMPLETION_PROJECT_DIR="$found"
                 break
             fi
         fi
     done
+    
+    # If still not found, try old project name (model-cli-autocomplete) as fallback
+    if [[ -z "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
+        for dir in "$HOME/Desktop" "$HOME"; do
+            if [[ -d "$dir" ]]; then
+                found=$(find "$dir" -maxdepth 3 -name "model_completer" -type d -path "*/src/model_completer" 2>/dev/null | head -1)
+                if [[ -n "$found" ]]; then
+                    MODEL_COMPLETION_PROJECT_DIR="$(dirname "$(dirname "$found")")"
+                    break
+                fi
+            fi
+        done
+    fi
 fi
 
 export MODEL_COMPLETION_DIR="${MODEL_COMPLETION_PROJECT_DIR}"
@@ -46,9 +70,11 @@ export MODEL_COMPLETION_DIR="${MODEL_COMPLETION_PROJECT_DIR}"
 if [[ -n "$MODEL_COMPLETION_PROJECT_DIR" ]]; then
     export MODEL_COMPLETION_SCRIPT="${MODEL_COMPLETION_PROJECT_DIR}/src/model_completer/cli.py"
 else
-    # Fallback: try to find it
+    # Fallback: try to find it (prioritize current project)
     export MODEL_COMPLETION_SCRIPT=""
-    for script_path in "$HOME/Desktop/model-cli-autocomplete/src/model_completer/cli.py" \
+    for script_path in "$HOME/zsh-llm-cli-autocomplete-tool/src/model_completer/cli.py" \
+                       "$HOME/Desktop/zsh-llm-cli-autocomplete-tool/src/model_completer/cli.py" \
+                       "$HOME/Desktop/model-cli-autocomplete/src/model_completer/cli.py" \
                        "$HOME/model-cli-autocomplete/src/model_completer/cli.py" \
                        "/Users/duoyun/Desktop/model-cli-autocomplete/src/model_completer/cli.py"; do
         if [[ -f "$script_path" ]]; then

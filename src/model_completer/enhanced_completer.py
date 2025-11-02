@@ -230,6 +230,15 @@ class EnhancedCompleter(ModelCompleter):
         if git_status and 'M' in git_status:
             context_parts.append("Has uncommitted changes")
         
+        # Add detailed git status for "git" command
+        if command.strip() == "git":
+            if self.project_context.get('git_unstaged', 0) > 0:
+                context_parts.append(f"Has {self.project_context.get('git_unstaged')} unstaged file(s) - suggest 'git add'")
+            if self.project_context.get('git_staged', 0) > 0:
+                context_parts.append(f"Has {self.project_context.get('git_staged')} staged file(s) - suggest 'git commit'")
+            if self.project_context.get('git_unstaged', 0) == 0 and self.project_context.get('git_staged', 0) == 0:
+                context_parts.append("No uncommitted changes")
+        
         # User patterns
         if patterns['similar_commands']:
             context_parts.append(f"Recent similar: {patterns['similar_commands'][-1]}")
@@ -994,15 +1003,15 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
         # Refresh project context
         self.project_context = self._detect_project_context()
         
-        # Special handling for "git" command - suggest workflow-aware commands
-        # MUST return early to avoid falling back to training data
+        # For "git" command, enhance the prompt with git status context
+        # Let AI model make intelligent decision based on actual git state
         if command.strip() == "git":
             try:
-                # Check if we're in a git repo
+                # Check if we're in a git repo and get status
                 subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'], 
                              check=True, capture_output=True, text=True, timeout=2)
                 
-                # Check for unstaged changes FIRST (highest priority)
+                # Check for unstaged changes
                 diff_result = subprocess.run(['git', 'diff', '--name-only'],
                                            capture_output=True, text=True, timeout=2)
                 unstaged_files = [f.strip() for f in diff_result.stdout.strip().split('\n') if f.strip()]
@@ -1012,95 +1021,13 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                                              capture_output=True, text=True, timeout=2)
                 staged_files = [f.strip() for f in staged_result.stdout.strip().split('\n') if f.strip()]
                 
-                # HIGHEST PRIORITY: If there are ANY unstaged changes → suggest "git add"
-                # This comes first because you need to stage before committing
+                # Store git context in project_context for prompt building
                 if unstaged_files:
-                    result = 'git add .'
-                    self._save_command(command, result, {
-                        'project_type': self.project_context['project_type'],
-                        'source': 'git_workflow'
-                    })
-                    return result
-                
-                # SECOND PRIORITY: If we have ONLY staged changes (no unstaged) → suggest "git commit"
+                    self.project_context['git_unstaged'] = len(unstaged_files)
                 if staged_files:
-                    # Try smart commit message for staged changes
-                    try:
-                        smart_message = self.get_smart_commit_message(command)
-                        if smart_message and smart_message.strip():
-                            rejected = ['commit message', 'message', 'wip']
-                            if not any(p in smart_message.lower() for p in rejected):
-                                result = f'git commit -m "{smart_message}"'
-                            else:
-                                result = 'git commit -m "commit message"'
-                        else:
-                            result = 'git commit -m "commit message"'
-                    except:
-                        result = 'git commit -m "commit message"'
-                    self._save_command(command, result, {
-                        'project_type': self.project_context['project_type'],
-                        'source': 'git_workflow'
-                    })
-                    return result
-                
-                # If no changes at all, try AI completion instead of training data
-                # Try AI to get smart suggestion
-                try:
-                    prompt = self._build_enhanced_prompt(command)
-                    original_timeout = self.client.timeout
-                    self.client.timeout = 3
-                    try:
-                        completion = self.client.generate_completion(prompt, self.model, use_cache=use_cache)
-                        if completion:
-                            lines = completion.strip().split('\n')
-                            for line in lines:
-                                line = line.strip().replace('```', '').strip()
-                                if (line and len(line) > len(command) and ' ' in line and
-                                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Suggestion:', 'Format:', 'Here', 'Sure')) and
-                                    not line.startswith(('1.', '2.', '3.', '- ', '* ', '• ')) and
-                                    '|' not in line[:20]):
-                                    result = line
-                                    self._save_command(command, result, {
-                                        'project_type': self.project_context['project_type'],
-                                        'source': 'ai'
-                                    })
-                                    return result
-                    finally:
-                        self.client.timeout = original_timeout
-                except Exception:
-                    pass
-                
-                # No changes and AI failed - return original command (don't fallback to training data)
-                return command
+                    self.project_context['git_staged'] = len(staged_files)
             except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-                # Not in git repo - try AI completion instead of training data
-                try:
-                    prompt = self._build_enhanced_prompt(command)
-                    original_timeout = self.client.timeout
-                    self.client.timeout = 3
-                    try:
-                        completion = self.client.generate_completion(prompt, self.model, use_cache=use_cache)
-                        if completion:
-                            lines = completion.strip().split('\n')
-                            for line in lines:
-                                line = line.strip().replace('```', '').strip()
-                                if (line and len(line) > len(command) and ' ' in line and
-                                    not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Suggestion:', 'Format:', 'Here', 'Sure')) and
-                                    not line.startswith(('1.', '2.', '3.', '- ', '* ', '• ')) and
-                                    '|' not in line[:20]):
-                                    result = line
-                                    self._save_command(command, result, {
-                                        'project_type': self.project_context['project_type'],
-                                        'source': 'ai'
-                                    })
-                                    return result
-                    finally:
-                        self.client.timeout = original_timeout
-                except Exception:
-                    pass
-                
-                # Return original, don't fallback to training data
-                return command
+                pass
         
         # Special handling for git commit commands - ALWAYS prioritize smart commit messages
         # Skip training data check for git commit commands to ensure smart commit runs
@@ -1193,15 +1120,34 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                     lines = completion.strip().split('\n')
                     for line in lines:
                         line = line.strip().replace('```', '').strip()
-                        # More lenient filtering - accept most reasonable completions
+                        
+                        # REJECT any line containing "commit message" as placeholder
+                        if 'commit message' in line.lower():
+                            logger.debug(f"Rejecting line with placeholder 'commit message': {line}")
+                            continue
+                        
+                        # REJECT explanatory text or prompts, not actual commands
+                        reject_prefixes = ('Complete command:', 'The command', 'The logical', 'You should', 'Next step', 'Run:', 'To complete', 'This will', 'You can', 'Enter', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:')
+                        if line.startswith(reject_prefixes):
+                            logger.debug(f"Rejecting explanatory line: {line}")
+                            continue
+                        
+                        # REJECT lines that look like explanations rather than commands
+                        if any(phrase in line.lower() for phrase in ('the logical', 'next step', 'to commit', 'you should', 'the command to', 'complete command:')):
+                            logger.debug(f"Rejecting explanatory phrase in line: {line}")
+                            continue
+                        
+                        # More strict filtering - accept only actual command completions
                         if (line and len(line) > len(command) and 
-                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:')) and
+                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:', 'Complete command:', 'The logical')) and
                             not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
                             not line.endswith(':') and not line.startswith('$') and
                             not line.startswith('`') and not line.endswith('`') and
                             '|' not in line[:20] and
                             # Must contain the command or be a completion of it
-                            (command.lower() in line.lower() or line.startswith(command.split()[0] if command.split() else command))):
+                            (command.lower() in line.lower() or line.startswith(command.split()[0] if command.split() else command)) and
+                            # Must look like an actual command (starts with a letter and contains action)
+                            (line[0].isalpha() or line[0] in './')):
                             result = line
                             git_info = self._get_git_info()
                             git_branch = None

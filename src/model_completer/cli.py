@@ -204,10 +204,13 @@ def main():
                         # Remove "Conventional Commit Message:" prefix if present
                         parts[1] = re.sub(r'^\s*Conventional Commit Message:\s*', '', parts[1], flags=re.IGNORECASE)
                         parts[1] = parts[1].strip()
-                        # If message is now empty or only whitespace, use default
+                        # If message is now empty or only whitespace, reject the completion entirely
+                        # Don't use placeholder - let AI model generate a proper message
                         if not parts[1] or parts[1].isspace():
-                            parts[1] = "commit message"
-                        completion = '"'.join(parts)
+                            # Reject this completion - it has invalid commit message
+                            completion = args.command
+                        else:
+                            completion = '"'.join(parts)
                 else:
                     # No quotes, safe to remove from end
                     completion = re.sub(r'\s*\(Added by[^)]*\)\s*$', '', completion)
@@ -215,11 +218,10 @@ def main():
                 
                 completion = completion.strip()
                 
-                # Final check: if completion is still too similar to input, use a clean default
+                # REMOVED: Don't add hardcode fallback - let AI model decide or return original
+                # If completion is too similar to input, just return original command
                 if completion == args.command or len(completion) <= len(args.command):
-                    # Fallback to simple completion
-                    if args.command.startswith("git comm"):
-                        completion = 'git commit -m "commit message"'
+                    completion = args.command
                 
                 print(completion, flush=True)
             else:
