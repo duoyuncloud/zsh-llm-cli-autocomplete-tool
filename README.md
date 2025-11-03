@@ -6,6 +6,7 @@
 ![AI](https://img.shields.io/badge/AI-Ollama-green)
 ![Python](https://img.shields.io/badge/Python-3.8%2B-yellow)
 ![LoRA](https://img.shields.io/badge/LoRA-Fine--tuning-purple)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ## ✨ Features
 

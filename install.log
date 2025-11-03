@@ -1,289 +1,479 @@
 === Zsh AI Autocomplete Installation Log ===
-Started at: Tue Oct 21 16:02:48 BST 2025
+Started at: Mon Nov  3 12:11:41 GMT 2025
 
+=== Creating virtual environment ===
+>>> python3 -m venv '/Users/duoyun/zsh-llm-cli-autocomplete-tool/venv'
+>>> Exit code: 0
 === Installing requests>=2.28.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'requests>=2.28.0'
-Requirement already satisfied: requests>=2.28.0 in ./venv/lib/python3.13/site-packages (2.32.5)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0) (2025.10.5)
->>> Exit code: 0
+>>> pip3 install 'requests>=2.28.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing pyyaml>=6.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'pyyaml>=6.0'
-Requirement already satisfied: pyyaml>=6.0 in ./venv/lib/python3.13/site-packages (6.0.3)
->>> Exit code: 0
+>>> pip3 install 'pyyaml>=6.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing argcomplete>=2.0.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'argcomplete>=2.0.0'
-Requirement already satisfied: argcomplete>=2.0.0 in ./venv/lib/python3.13/site-packages (3.6.3)
->>> Exit code: 0
+>>> pip3 install 'argcomplete>=2.0.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing python-dotenv>=0.19.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'python-dotenv>=0.19.0'
-Requirement already satisfied: python-dotenv>=0.19.0 in ./venv/lib/python3.13/site-packages (1.1.1)
->>> Exit code: 0
+>>> pip3 install 'python-dotenv>=0.19.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing prompt-toolkit>=3.0.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'prompt-toolkit>=3.0.0'
-Requirement already satisfied: prompt-toolkit>=3.0.0 in ./venv/lib/python3.13/site-packages (3.0.52)
-Requirement already satisfied: wcwidth in ./venv/lib/python3.13/site-packages (from prompt-toolkit>=3.0.0) (0.2.14)
->>> Exit code: 0
+>>> pip3 install 'prompt-toolkit>=3.0.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency torch>=2.0.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'torch>=2.0.0'
-Requirement already satisfied: torch>=2.0.0 in ./venv/lib/python3.13/site-packages (2.9.0)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (3.20.0)
-Requirement already satisfied: typing-extensions>=4.10.0 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (4.15.0)
-Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (80.9.0)
-Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (1.14.0)
-Requirement already satisfied: networkx>=2.5.1 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (3.5)
-Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (3.1.6)
-Requirement already satisfied: fsspec>=0.8.5 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0) (2025.9.0)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=2.0.0) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=2.0.0) (3.0.3)
->>> Exit code: 0
+>>> pip3 install 'torch>=2.0.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency transformers>=4.30.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'transformers>=4.30.0'
-Requirement already satisfied: transformers>=4.30.0 in ./venv/lib/python3.13/site-packages (4.57.1)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (3.20.0)
-Requirement already satisfied: huggingface-hub<1.0,>=0.34.0 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (0.35.3)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (1.26.4)
-Requirement already satisfied: packaging>=20.0 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (25.0)
-Requirement already satisfied: pyyaml>=5.1 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (6.0.3)
-Requirement already satisfied: regex!=2019.12.17 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (2025.10.22)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (2.32.5)
-Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (0.22.1)
-Requirement already satisfied: safetensors>=0.4.3 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (0.6.2)
-Requirement already satisfied: tqdm>=4.27 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (4.67.1)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0) (2025.9.0)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0) (1.1.10)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (2025.10.5)
->>> Exit code: 0
+>>> pip3 install 'transformers>=4.30.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency accelerate>=0.20.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'accelerate>=0.20.0'
-Requirement already satisfied: accelerate>=0.20.0 in ./venv/lib/python3.13/site-packages (1.11.0)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (1.26.4)
-Requirement already satisfied: packaging>=20.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (25.0)
-Requirement already satisfied: psutil in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (7.1.1)
-Requirement already satisfied: pyyaml in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (6.0.3)
-Requirement already satisfied: torch>=2.0.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (2.9.0)
-Requirement already satisfied: huggingface_hub>=0.21.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (0.35.3)
-Requirement already satisfied: safetensors>=0.4.3 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (0.6.2)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.20.0)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (2025.9.0)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (2.32.5)
-Requirement already satisfied: tqdm>=4.42.1 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (4.67.1)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (1.1.10)
-Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (80.9.0)
-Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (1.14.0)
-Requirement already satisfied: networkx>=2.5.1 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (3.5)
-Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (3.1.6)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=2.0.0->accelerate>=0.20.0) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=2.0.0->accelerate>=0.20.0) (3.0.3)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (2025.10.5)
->>> Exit code: 0
+>>> pip3 install 'accelerate>=0.20.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency datasets>=2.12.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'datasets>=2.12.0'
-Requirement already satisfied: datasets>=2.12.0 in ./venv/lib/python3.13/site-packages (4.2.0)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (3.20.0)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (1.26.4)
-Requirement already satisfied: pyarrow>=21.0.0 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (21.0.0)
-Requirement already satisfied: dill<0.4.1,>=0.3.0 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (0.4.0)
-Requirement already satisfied: pandas in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (2.3.3)
-Requirement already satisfied: requests>=2.32.2 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (2.32.5)
-Requirement already satisfied: httpx<1.0.0 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (0.28.1)
-Requirement already satisfied: tqdm>=4.66.3 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (4.67.1)
-Requirement already satisfied: xxhash in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (3.6.0)
-Requirement already satisfied: multiprocess<0.70.17 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (0.70.16)
-Requirement already satisfied: fsspec<=2025.9.0,>=2023.1.0 in ./venv/lib/python3.13/site-packages (from fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (2025.9.0)
-Requirement already satisfied: huggingface-hub<2.0,>=0.25.0 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (0.35.3)
-Requirement already satisfied: packaging in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (25.0)
-Requirement already satisfied: pyyaml>=5.1 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (6.0.3)
-Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in ./venv/lib/python3.13/site-packages (from fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (3.13.1)
-Requirement already satisfied: anyio in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (4.11.0)
-Requirement already satisfied: certifi in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (2025.10.5)
-Requirement already satisfied: httpcore==1.* in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (1.0.9)
-Requirement already satisfied: idna in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (3.11)
-Requirement already satisfied: h11>=0.16 in ./venv/lib/python3.13/site-packages (from httpcore==1.*->httpx<1.0.0->datasets>=2.12.0) (0.16.0)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<2.0,>=0.25.0->datasets>=2.12.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<2.0,>=0.25.0->datasets>=2.12.0) (1.1.10)
-Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (2.6.1)
-Requirement already satisfied: aiosignal>=1.4.0 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (1.4.0)
-Requirement already satisfied: attrs>=17.3.0 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (25.4.0)
-Requirement already satisfied: frozenlist>=1.1.1 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (1.8.0)
-Requirement already satisfied: multidict<7.0,>=4.5 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (6.7.0)
-Requirement already satisfied: propcache>=0.2.0 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (0.4.1)
-Requirement already satisfied: yarl<2.0,>=1.17.0 in ./venv/lib/python3.13/site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.9.0,>=2023.1.0->datasets>=2.12.0) (1.22.0)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests>=2.32.2->datasets>=2.12.0) (3.4.4)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests>=2.32.2->datasets>=2.12.0) (2.5.0)
-Requirement already satisfied: sniffio>=1.1 in ./venv/lib/python3.13/site-packages (from anyio->httpx<1.0.0->datasets>=2.12.0) (1.3.1)
-Requirement already satisfied: python-dateutil>=2.8.2 in ./venv/lib/python3.13/site-packages (from pandas->datasets>=2.12.0) (2.9.0.post0)
-Requirement already satisfied: pytz>=2020.1 in ./venv/lib/python3.13/site-packages (from pandas->datasets>=2.12.0) (2025.2)
-Requirement already satisfied: tzdata>=2022.7 in ./venv/lib/python3.13/site-packages (from pandas->datasets>=2.12.0) (2025.2)
-Requirement already satisfied: six>=1.5 in ./venv/lib/python3.13/site-packages (from python-dateutil>=2.8.2->pandas->datasets>=2.12.0) (1.17.0)
->>> Exit code: 0
+>>> pip3 install 'datasets>=2.12.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency peft>=0.4.0 ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'peft>=0.4.0'
-Requirement already satisfied: peft>=0.4.0 in ./venv/lib/python3.13/site-packages (0.17.1)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (1.26.4)
-Requirement already satisfied: packaging>=20.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (25.0)
-Requirement already satisfied: psutil in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (7.1.1)
-Requirement already satisfied: pyyaml in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (6.0.3)
-Requirement already satisfied: torch>=1.13.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (2.9.0)
-Requirement already satisfied: transformers in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (4.57.1)
-Requirement already satisfied: tqdm in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (4.67.1)
-Requirement already satisfied: accelerate>=0.21.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (1.11.0)
-Requirement already satisfied: safetensors in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (0.6.2)
-Requirement already satisfied: huggingface_hub>=0.25.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (0.35.3)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (3.20.0)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (2025.9.0)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (2.32.5)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (1.1.10)
-Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (80.9.0)
-Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (1.14.0)
-Requirement already satisfied: networkx>=2.5.1 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (3.5)
-Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (3.1.6)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=1.13.0->peft>=0.4.0) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=1.13.0->peft>=0.4.0) (3.0.3)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (2025.10.5)
-Requirement already satisfied: regex!=2019.12.17 in ./venv/lib/python3.13/site-packages (from transformers->peft>=0.4.0) (2025.10.22)
-Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in ./venv/lib/python3.13/site-packages (from transformers->peft>=0.4.0) (0.22.1)
->>> Exit code: 0
+>>> pip3 install 'peft>=0.4.0'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency axolotl ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install 'axolotl'
-Collecting axolotl
-  Using cached axolotl-0.12.2.tar.gz (385 kB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-  Preparing metadata (pyproject.toml): started
-  Preparing metadata (pyproject.toml): finished with status 'done'
-Collecting packaging==23.2 (from axolotl)
-  Using cached packaging-23.2-py3-none-any.whl.metadata (3.2 kB)
-Requirement already satisfied: huggingface_hub>=0.33.0 in ./venv/lib/python3.13/site-packages (from axolotl) (0.35.3)
-Collecting peft==0.17.0 (from axolotl)
-  Using cached peft-0.17.0-py3-none-any.whl.metadata (14 kB)
-Collecting transformers==4.55.2 (from axolotl)
-  Using cached transformers-4.55.2-py3-none-any.whl.metadata (41 kB)
-Requirement already satisfied: tokenizers>=0.21.1 in ./venv/lib/python3.13/site-packages (from axolotl) (0.22.1)
-Collecting accelerate==1.10.0 (from axolotl)
-  Using cached accelerate-1.10.0-py3-none-any.whl.metadata (19 kB)
-Collecting datasets==4.0.0 (from axolotl)
-  Using cached datasets-4.0.0-py3-none-any.whl.metadata (19 kB)
-Collecting trl==0.21.0 (from axolotl)
-  Using cached trl-0.21.0-py3-none-any.whl.metadata (11 kB)
-Collecting hf_xet==1.1.5 (from axolotl)
-  Using cached hf_xet-1.1.5-cp37-abi3-macosx_11_0_arm64.whl.metadata (879 bytes)
-Collecting kernels==0.9.0 (from axolotl)
-  Using cached kernels-0.9.0-py3-none-any.whl.metadata (3.3 kB)
-Collecting trackio (from axolotl)
-  Using cached trackio-0.6.0-py3-none-any.whl.metadata (8.1 kB)
-Collecting optimum==1.16.2 (from axolotl)
-  Using cached optimum-1.16.2-py3-none-any.whl.metadata (17 kB)
-Collecting hf_transfer (from axolotl)
-  Using cached hf_transfer-0.1.9-cp38-abi3-macosx_11_0_arm64.whl.metadata (1.7 kB)
-Collecting sentencepiece (from axolotl)
-  Using cached sentencepiece-0.2.1-cp313-cp313-macosx_11_0_arm64.whl.metadata (10 kB)
-Collecting gradio==5.41.1 (from axolotl)
-  Using cached gradio-5.41.1-py3-none-any.whl.metadata (16 kB)
-Collecting modal==1.0.2 (from axolotl)
-  Using cached modal-1.0.2-py3-none-any.whl.metadata (2.4 kB)
-Collecting pydantic==2.10.6 (from axolotl)
-  Using cached pydantic-2.10.6-py3-none-any.whl.metadata (30 kB)
-Collecting addict (from axolotl)
-  Using cached addict-2.4.0-py3-none-any.whl.metadata (1.0 kB)
-Collecting fire (from axolotl)
-  Using cached fire-0.7.1-py3-none-any.whl.metadata (5.8 kB)
-Requirement already satisfied: PyYAML>=6.0 in ./venv/lib/python3.13/site-packages (from axolotl) (6.0.3)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from axolotl) (2.32.5)
-Collecting wandb (from axolotl)
-  Using cached wandb-0.22.2-py3-none-macosx_12_0_arm64.whl.metadata (10 kB)
-Collecting einops (from axolotl)
-  Using cached einops-0.8.1-py3-none-any.whl.metadata (13 kB)
-Collecting colorama (from axolotl)
-  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
-Collecting numba (from axolotl)
-  Using cached numba-0.62.1-cp313-cp313-macosx_12_0_arm64.whl.metadata (2.8 kB)
-Requirement already satisfied: numpy<=2.0.1,>=1.24.4 in ./venv/lib/python3.13/site-packages (from axolotl) (1.26.4)
-Collecting evaluate==0.4.1 (from axolotl)
-  Using cached evaluate-0.4.1-py3-none-any.whl.metadata (9.4 kB)
-Collecting scipy (from axolotl)
-  Using cached scipy-1.16.2-cp313-cp313-macosx_14_0_arm64.whl.metadata (62 kB)
-Collecting scikit-learn==1.4.2 (from axolotl)
-  Using cached scikit-learn-1.4.2.tar.gz (7.8 MB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'error'
-  error: subprocess-exited-with-error
-  
-  × pip subprocess to install build dependencies did not run successfully.
-  │ exit code: 1
-  ╰─> [9 lines of output]
-      Collecting setuptools
-        Using cached setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
-      Collecting wheel
-        Using cached wheel-0.45.1-py3-none-any.whl.metadata (2.3 kB)
-      Collecting Cython>=3.0.8
-        Using cached cython-3.1.5-cp313-cp313-macosx_11_0_arm64.whl.metadata (4.3 kB)
-      ERROR: Ignored the following versions that require a different python version: 1.21.2 Requires-Python >=3.7,<3.11; 1.21.3 Requires-Python >=3.7,<3.11; 1.21.4 Requires-Python >=3.7,<3.11; 1.21.5 Requires-Python >=3.7,<3.11; 1.21.6 Requires-Python >=3.7,<3.11; 1.26.0 Requires-Python >=3.9,<3.13; 1.26.1 Requires-Python >=3.9,<3.13
-      ERROR: Could not find a version that satisfies the requirement numpy==2.0.0rc1 (from versions: 1.3.0, 1.4.1, 1.5.0, 1.5.1, 1.6.0, 1.6.1, 1.6.2, 1.7.0, 1.7.1, 1.7.2, 1.8.0, 1.8.1, 1.8.2, 1.9.0, 1.9.1, 1.9.2, 1.9.3, 1.10.0.post2, 1.10.1, 1.10.2, 1.10.4, 1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, 1.12.1, 1.13.0, 1.13.1, 1.13.3, 1.14.0, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.14.5, 1.14.6, 1.15.0, 1.15.1, 1.15.2, 1.15.3, 1.15.4, 1.16.0, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.16.5, 1.16.6, 1.17.0, 1.17.1, 1.17.2, 1.17.3, 1.17.4, 1.17.5, 1.18.0, 1.18.1, 1.18.2, 1.18.3, 1.18.4, 1.18.5, 1.19.0, 1.19.1, 1.19.2, 1.19.3, 1.19.4, 1.19.5, 1.20.0, 1.20.1, 1.20.2, 1.20.3, 1.21.0, 1.21.1, 1.22.0, 1.22.1, 1.22.2, 1.22.3, 1.22.4, 1.23.0, 1.23.1, 1.23.2, 1.23.3, 1.23.4, 1.23.5, 1.24.0, 1.24.1, 1.24.2, 1.24.3, 1.24.4, 1.25.0, 1.25.1, 1.25.2, 1.26.2, 1.26.3, 1.26.4, 2.0.0, 2.0.1, 2.0.2, 2.1.0, 2.1.1, 2.1.2, 2.1.3, 2.2.0, 2.2.1, 2.2.2, 2.2.3, 2.2.4, 2.2.5, 2.2.6, 2.3.0, 2.3.1, 2.3.2, 2.3.3, 2.3.4)
-      ERROR: No matching distribution found for numpy==2.0.0rc1
-      [end of output]
-  
-  note: This error originates from a subprocess, and is likely not a problem with pip.
-error: subprocess-exited-with-error
+>>> pip3 install 'axolotl'
+error: externally-managed-environment
 
-× pip subprocess to install build dependencies did not run successfully.
-│ exit code: 1
-╰─> See above for output.
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-note: This error originates from a subprocess, and is likely not a problem with pip.
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
 >>> Exit code: 1
 === Installing package in development mode ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/pip install -e .
-Obtaining file:///Users/duoyun/Desktop/model-cli-autocomplete
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Checking if build backend supports build_editable: started
-  Checking if build backend supports build_editable: finished with status 'done'
-  Getting requirements to build editable: started
-  Getting requirements to build editable: finished with status 'done'
-  Preparing editable metadata (pyproject.toml): started
-  Preparing editable metadata (pyproject.toml): finished with status 'done'
-Requirement already satisfied: requests>=2.28.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (2.32.5)
-Requirement already satisfied: pyyaml>=6.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (6.0.3)
-Requirement already satisfied: argcomplete>=2.0.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (3.6.3)
-Requirement already satisfied: python-dotenv>=0.19.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (1.1.1)
-Requirement already satisfied: prompt-toolkit>=3.0.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (3.0.52)
-Requirement already satisfied: wcwidth in ./venv/lib/python3.13/site-packages (from prompt-toolkit>=3.0.0->model-cli-autocomplete==0.1.0) (0.2.14)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (2025.10.5)
-Building wheels for collected packages: model-cli-autocomplete
-  Building editable for model-cli-autocomplete (pyproject.toml): started
-  Building editable for model-cli-autocomplete (pyproject.toml): finished with status 'done'
-  Created wheel for model-cli-autocomplete: filename=model_cli_autocomplete-0.1.0-0.editable-py3-none-any.whl size=1603 sha256=751644ed564ee02be90efaa8ffd2a73d08e95f76f7dab0787850781428505905
-  Stored in directory: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-ephem-wheel-cache-5_1k5t1x/wheels/b1/76/19/dbd8f1c9545219bc4f69196e2344bc986b8b66975bd211ae0f
-Successfully built model-cli-autocomplete
-Installing collected packages: model-cli-autocomplete
-  Attempting uninstall: model-cli-autocomplete
-    Found existing installation: model-cli-autocomplete 0.1.0
-    Uninstalling model-cli-autocomplete-0.1.0:
-      Successfully uninstalled model-cli-autocomplete-0.1.0
-Successfully installed model-cli-autocomplete-0.1.0
->>> Exit code: 0
+>>> pip3 install -e .
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
+=== Installing package regularly ===
+>>> pip3 install .
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Setting up Ollama and models ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.ollama_manager import create_ollama_manager
@@ -321,7 +511,7 @@ Setting up default models...
 Default models setup completed
 >>> Exit code: 0
 === Generating training data ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.training import TrainingDataManager
@@ -333,7 +523,7 @@ print(f'Training data generated: {data_file}')
 Training data generated: src/training/zsh_training_data.jsonl
 >>> Exit code: 0
 === Creating configuration ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.utils import load_config
@@ -392,26 +582,19 @@ else:
 Configuration already exists
 >>> Exit code: 0
 === Testing Python package ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -c "import model_completer; print('Python package: ✅')"
-Python package: ✅
->>> Exit code: 0
+>>> python3 -c "import model_completer; print('Python package: ✅')"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import model_completer; print('Python package: ✅')
+    ^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'model_completer'
+>>> Exit code: 1
 === Testing CLI ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -m model_completer.cli --test
-<frozen runpy>:128: RuntimeWarning: 'model_completer.cli' found in sys.modules after import of package 'model_completer', but prior to execution of 'model_completer.cli'; this may result in unpredictable behaviour
-Testing AI completions:
-  git comm -> git comm```
-git commit -m "Added new feature"
-```
-  docker run -> docker run --restart=always
-```
-
-Replace `--restart=always` with your desired restart policy (e.g., always, on-failure, never).
-  npm run -> npm runRun npm run in your terminal or command prompt to execute the command.
-  python -m -> python -mEnter your command: python -m
-  kubectl get -> kubectl getProvide only the completed command, nothing else.
->>> Exit code: 0
+>>> python3 -m model_completer.cli --test
+/opt/homebrew/opt/python@3.13/bin/python3.13: Error while finding module specification for 'model_completer.cli' (ModuleNotFoundError: No module named 'model_completer')
+>>> Exit code: 1
 === Testing Ollama connection ===
->>> /Users/duoyun/Desktop/model-cli-autocomplete/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.ollama_manager import create_ollama_manager

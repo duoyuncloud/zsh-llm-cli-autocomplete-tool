@@ -7,8 +7,11 @@ name = "model-cli-autocomplete"
 version = "0.1.0"
 description = "AI-powered CLI autocomplete tool with Ollama integration"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "duoyuncloud", email = "dy325@cam.ac.uk"},
 ]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
 dependencies = [
     "requests>=2.28.0",
     "pyyaml>=6.0",
