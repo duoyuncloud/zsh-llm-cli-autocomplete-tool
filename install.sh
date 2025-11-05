@@ -273,48 +273,21 @@ fi
 print_step "Phase 5: Installing Zsh plugin..."
 
 install_zsh_plugin() {
-    local plugin_dir
+    local plugin_file="$SCRIPT_DIR/src/scripts/zsh_autocomplete.plugin.zsh"
     
-    # Determine plugin directory
-    if [[ -n "$ZSH" && -d "$ZSH" ]]; then
-        plugin_dir="$ZSH/custom/plugins/zsh-autocomplete"
-        PLUGIN_TYPE="oh-my-zsh"
-    elif [[ -d "$HOME/.oh-my-zsh" ]]; then
-        plugin_dir="$HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete"
-        PLUGIN_TYPE="oh-my-zsh"
-    else
-        plugin_dir="$HOME/.zsh-plugins/zsh-autocomplete"
-        PLUGIN_TYPE="standard"
-        mkdir -p "$HOME/.zsh-plugins"
-    fi
-
-    mkdir -p "$plugin_dir"
-
-    # Copy the existing plugin file
-    if [[ -f "$SCRIPT_DIR/src/scripts/zsh_autocomplete.plugin.zsh" ]]; then
-        cp "$SCRIPT_DIR/src/scripts/zsh_autocomplete.plugin.zsh" "$plugin_dir/"
-        chmod +x "$plugin_dir/zsh_autocomplete.plugin.zsh"
-        print_success "Zsh plugin installed to: $plugin_dir"
-    else
-        print_error "Plugin file not found"
+    if [[ ! -f "$plugin_file" ]]; then
+        print_error "Plugin file not found: $plugin_file"
         return 1
     fi
     
-    # Add to .zshrc
-    if [[ "$PLUGIN_TYPE" == "oh-my-zsh" ]]; then
-        if ! grep -q "zsh-autocomplete" ~/.zshrc 2>/dev/null; then
-            if grep -q "^plugins=" ~/.zshrc; then
-                sed -i.bak 's/^plugins=(/plugins=(zsh-autocomplete /' ~/.zshrc
-            else
-                echo "plugins=(zsh-autocomplete)" >> ~/.zshrc
-            fi
-            print_info "Added 'zsh-autocomplete' to plugins in ~/.zshrc"
-        fi
+    # Add to .zshrc if not already there
+    if ! grep -q "zsh_autocomplete.plugin.zsh" ~/.zshrc 2>/dev/null; then
+        echo "" >> ~/.zshrc
+        echo "# Zsh AI Autocomplete Plugin" >> ~/.zshrc
+        echo "source \"$plugin_file\"" >> ~/.zshrc
+        print_success "Added plugin to ~/.zshrc"
     else
-        if ! grep -q "zsh_autocomplete.plugin.zsh" ~/.zshrc 2>/dev/null; then
-            echo "source $plugin_dir/zsh_autocomplete.plugin.zsh" >> ~/.zshrc
-            print_info "Added plugin source to ~/.zshrc"
-        fi
+        print_info "Plugin already configured in ~/.zshrc"
     fi
 }
 
@@ -485,25 +458,15 @@ chmod +x "$SCRIPT_DIR/install.sh"
 # Setup PATH for model-completer command
 print_step "Setting up PATH for model-completer command..."
 
-# Check if PATH setup script exists
-if [[ -f "$SCRIPT_DIR/setup_path.sh" ]]; then
-    source "$SCRIPT_DIR/setup_path.sh"
-    
-    # Add to ~/.zshrc if not already there
-    if ! grep -q "model-cli-autocomplete.*setup_path" ~/.zshrc 2>/dev/null; then
-        echo "" >> ~/.zshrc
-        echo "# Model CLI Autocomplete PATH setup" >> ~/.zshrc
-        echo "export PATH=\"$SCRIPT_DIR/venv/bin:\$PATH\"" >> ~/.zshrc
-        echo "export PATH=\"$SCRIPT_DIR/bin:\$PATH\"" >> ~/.zshrc
-        print_success "Added model-completer to PATH in ~/.zshrc"
-    else
-        print_info "PATH already configured in ~/.zshrc"
-    fi
+# Add to ~/.zshrc if not already there
+if ! grep -q "zsh-llm-cli-autocomplete-tool.*PATH" ~/.zshrc 2>/dev/null; then
+    echo "" >> ~/.zshrc
+    echo "# Model CLI Autocomplete PATH setup" >> ~/.zshrc
+    echo "export PATH=\"$SCRIPT_DIR/venv/bin:\$PATH\"" >> ~/.zshrc
+    echo "export PATH=\"$SCRIPT_DIR/bin:\$PATH\"" >> ~/.zshrc
+    print_success "Added model-completer to PATH in ~/.zshrc"
 else
-    # Manual PATH setup
-    print_info "To use 'model-completer' command, add to ~/.zshrc:"
-    echo "  export PATH=\"$SCRIPT_DIR/venv/bin:\$PATH\""
-    echo "  export PATH=\"$SCRIPT_DIR/bin:\$PATH\""
+    print_info "PATH already configured in ~/.zshrc"
 fi
 
 print_success "🎉 Installation complete! Reload your shell and start using AI completions!"

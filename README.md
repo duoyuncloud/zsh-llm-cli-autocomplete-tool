@@ -26,10 +26,7 @@ git clone https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool.git
 cd zsh-llm-cli-autocomplete-tool
 ./install.sh
 
-# 2. Load plugin into ~/.zshrc
-echo 'source '"$(pwd)"'/src/scripts/zsh_autocomplete.plugin.zsh' >> ~/.zshrc
-
-# 3. Reload shell (or open new terminal)
+# 2. Reload shell (plugin is automatically added to ~/.zshrc)
 source ~/.zshrc
 
 # Plugin will automatically:
@@ -52,7 +49,7 @@ If the install script didn't auto-configure, you can add manually:
 source /path/to/zsh-llm-cli-autocomplete-tool/src/scripts/zsh_autocomplete.plugin.zsh
 ```
 
-Replace the path with your actual project path. The plugin will automatically start Ollama and load the model after loading, **without blocking the prompt**.
+Replace the path with your actual project path. The plugin will automatically start Ollama in the background, **without blocking the prompt**.
 
 ## 🛠️ Installation
 
