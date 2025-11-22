@@ -262,13 +262,16 @@ class OllamaManager:
                 logger.warning(f"Failed to pull {model}")
         
         # Create custom zsh-assistant model
-        modelfile_content = """FROM codellama:7b
+        modelfile_content = """FROM qwen3:1.7b
 
 SYSTEM \"\"\"You are a Zsh command completion expert. Always respond with complete executable commands. Never explain, just provide the command.\"\"\"
 
 PARAMETER temperature 0.1
 PARAMETER top_p 0.9
 PARAMETER top_k 40
+PARAMETER num_predict 30
+PARAMETER num_ctx 512
+PARAMETER repeat_penalty 1.1
 """
         
         if self.create_model("zsh-assistant", modelfile_content):

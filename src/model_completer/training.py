@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TrainingConfig:
     """Configuration for LoRA training."""
-    base_model: str = "codellama/CodeLlama-7b-hf"
-    model_type: str = "LlamaForCausalLM"
-    tokenizer_type: str = "LlamaTokenizer"
+    base_model: str = "Qwen/Qwen3-1.7B"
+    model_type: str = "AutoModelForCausalLM"
+    tokenizer_type: str = "AutoTokenizer"
     trust_remote_code: bool = True
     
     # LoRA parameters
@@ -40,8 +40,8 @@ class TrainingConfig:
     lr_scheduler: str = "cosine"
     
     # Memory optimization
-    load_in_8bit: bool = True
-    load_in_4bit: bool = False
+    load_in_8bit: bool = False
+    load_in_4bit: bool = True
     bf16: str = "auto"
     gradient_checkpointing: bool = True
     

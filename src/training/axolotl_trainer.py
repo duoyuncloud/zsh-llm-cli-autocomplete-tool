@@ -137,9 +137,9 @@ class AxolotlTrainer:
             gradient_accumulation = 4
         
         config = {
-            "base_model": "codellama/CodeLlama-7b-hf",
-            "model_type": "LlamaForCausalLM",
-            "tokenizer_type": "LlamaTokenizer",
+            "base_model": "Qwen/Qwen3-1.7B",
+            "model_type": "AutoModelForCausalLM",
+            "tokenizer_type": "AutoTokenizer",
             "trust_remote_code": True,
             
             "datasets": [

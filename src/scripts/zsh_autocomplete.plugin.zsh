@@ -232,14 +232,23 @@ ai-completion-setup() {
     if _model_completion_check_model; then
         echo "✅ zsh-assistant model ready"
     else
-        echo "📊 Generating training data..."
-        "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --generate-data
+        # Check if HF repo is configured
+        HF_REPO="$("$PYTHON_CMD" -c "import sys; sys.path.insert(0, 'src'); from model_completer.utils import load_config; config = load_config(); print(config.get('hf_lora_repo', ''))" 2>/dev/null || echo "")"
         
-        echo "🚀 Training LoRA model (this may take a few minutes)..."
-        "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --train
-        
-        echo "📦 Importing to Ollama..."
-        "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --import-to-ollama
+        if [ -n "$HF_REPO" ]; then
+            echo "📥 Downloading pre-trained model from Hugging Face: $HF_REPO"
+            echo "📦 Importing to Ollama (this will download adapter and base model)..."
+            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --import-to-ollama
+        else
+            echo "📊 Generating training data..."
+            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --generate-data
+            
+            echo "🚀 Training LoRA model (this may take a few minutes)..."
+            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --train
+            
+            echo "📦 Importing to Ollama..."
+            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --import-to-ollama
+        fi
         
         sleep 2
         if _model_completion_check_model; then

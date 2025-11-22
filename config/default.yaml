@@ -4,6 +4,9 @@ ollama:
 
 model: "zsh-assistant"
 
+# Hugging Face repository ID for pre-trained LoRA adapter
+hf_lora_repo: "duoyuncloud/zsh-assistant-lora"
+
 cache:
   enabled: true
   ttl: 3600

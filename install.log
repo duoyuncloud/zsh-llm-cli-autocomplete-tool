@@ -1,5 +1,5 @@
 === Zsh AI Autocomplete Installation Log ===
-Started at: Sat Nov 22 11:23:24 GMT 2025
+Started at: Sat Nov 22 16:04:46 GMT 2025
 
 === Installing requests>=2.28.0 ===
 >>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'requests>=2.28.0'
@@ -37,6 +37,25 @@ Requirement already satisfied: python-dotenv>=0.19.0 in ./venv/lib/python3.13/si
 >>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'prompt-toolkit>=3.0.0'
 Requirement already satisfied: prompt-toolkit>=3.0.0 in ./venv/lib/python3.13/site-packages (3.0.52)
 Requirement already satisfied: wcwidth in ./venv/lib/python3.13/site-packages (from prompt-toolkit>=3.0.0) (0.2.14)
+
+[notice] A new release of pip is available: 25.1.1 -> 25.3
+[notice] To update, run: pip install --upgrade pip
+>>> Exit code: 0
+=== Installing huggingface_hub>=0.16.0 ===
+>>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'huggingface_hub>=0.16.0'
+Requirement already satisfied: huggingface_hub>=0.16.0 in ./venv/lib/python3.13/site-packages (0.36.0)
+Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (3.20.0)
+Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (2025.10.0)
+Requirement already satisfied: packaging>=20.9 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (25.0)
+Requirement already satisfied: pyyaml>=5.1 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (6.0.3)
+Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (2.32.5)
+Requirement already satisfied: tqdm>=4.42.1 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (4.15.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.16.0) (1.2.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.16.0) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.16.0) (3.11)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.16.0) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.16.0) (2025.11.12)
 
 [notice] A new release of pip is available: 25.1.1 -> 25.3
 [notice] To update, run: pip install --upgrade pip
@@ -188,6 +207,15 @@ Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in ./venv/lib/python3
 [notice] A new release of pip is available: 25.1.1 -> 25.3
 [notice] To update, run: pip install --upgrade pip
 >>> Exit code: 0
+=== Installing training dependency bitsandbytes>=0.41.0 ===
+>>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'bitsandbytes>=0.41.0'
+Requirement already satisfied: bitsandbytes>=0.41.0 in ./venv/lib/python3.13/site-packages (0.42.0)
+Requirement already satisfied: scipy in ./venv/lib/python3.13/site-packages (from bitsandbytes>=0.41.0) (1.16.3)
+Requirement already satisfied: numpy<2.6,>=1.25.2 in ./venv/lib/python3.13/site-packages (from scipy->bitsandbytes>=0.41.0) (2.3.5)
+
+[notice] A new release of pip is available: 25.1.1 -> 25.3
+[notice] To update, run: pip install --upgrade pip
+>>> Exit code: 0
 === Installing training dependency axolotl ===
 >>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'axolotl'
 Collecting axolotl
@@ -258,12 +286,12 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
   
   × Preparing metadata (pyproject.toml) did not run successfully.
   │ exit code: 1
-  ╰─> [633 lines of output]
-      + /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/vendored-meson/meson/meson.py setup /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/.mesonpy-spya7rjt -Dbuildtype=release -Db_ndebug=if-release -Db_vscrt=md --native-file=/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/.mesonpy-spya7rjt/meson-python-native-file.ini
+  ╰─> [634 lines of output]
+      + /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/vendored-meson/meson/meson.py setup /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/.mesonpy-hdhw433m -Dbuildtype=release -Db_ndebug=if-release -Db_vscrt=md --native-file=/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/.mesonpy-hdhw433m/meson-python-native-file.ini
       The Meson build system
       Version: 1.4.99
-      Source dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d
-      Build dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/.mesonpy-spya7rjt
+      Source dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8
+      Build dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/.mesonpy-hdhw433m
       Build type: native build
       Project name: NumPy
       Project version: 2.0.1
@@ -302,8 +330,8 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
       Run-time dependency accelerate found: YES
       ../numpy/meson.build:135: WARNING: Project targets '>=1.2.99' but uses feature introduced in '1.3.0': dep 'accelerate' custom lookup.
       Message: BLAS symbol suffix: $NEWLAPACK
-      Program _build_utils/process_src_template.py found: YES (/Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/_build_utils/process_src_template.py)
-      Program _build_utils/tempita.py found: YES (/Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/_build_utils/tempita.py)
+      Program _build_utils/process_src_template.py found: YES (/Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/_build_utils/process_src_template.py)
+      Program _build_utils/tempita.py found: YES (/Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/_build_utils/tempita.py)
       Configuring __config__.py using configuration
       Checking for size of "short" : 2
       Checking for size of "int" : 4
@@ -507,94 +535,94 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
       NumPy 2.0.1
       
         User defined options
-          Native files: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/.mesonpy-spya7rjt/meson-python-native-file.ini
+          Native files: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/.mesonpy-hdhw433m/meson-python-native-file.ini
           buildtype   : release
           b_ndebug    : if-release
           b_vscrt     : md
       
-      Found ninja-1.13.0.git.kitware.jobserver-pipe-1 at /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-ia9lir6m/normal/bin/ninja
-      + /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-ia9lir6m/normal/bin/ninja
-      [1/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/arraytypes.h'
-      [2/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/npy_sort.h'
-      [3/322] Generating numpy/_core/npy_math_internal.h with a custom command
-      [4/322] Generating 'numpy/_core/libnpymath.a.p/ieee754.c'
-      [5/322] Generating 'numpy/_core/libnpymath.a.p/npy_math_complex.c'
-      [6/322] Copying file numpy/__init__.py
-      [7/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/arraytypes.h'
-      [8/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/argfunc.dispatch.c'
-      [9/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/npy_sort.h'
+      Found ninja-1.13.0.git.kitware.jobserver-pipe-1 at /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-juam8sv7/normal/bin/ninja
+      + /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-juam8sv7/normal/bin/ninja
+      [1/322] Generating numpy/_core/npy_math_internal.h with a custom command
+      [2/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/arraytypes.h'
+      [3/322] Generating 'numpy/_core/libnpymath.a.p/ieee754.c'
+      [4/322] Generating 'numpy/_core/libnpymath.a.p/npy_math_complex.c'
+      [5/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/npy_sort.h'
+      [6/322] Copying file numpy/__init__.cython-30.pxd
+      [7/322] Copying file numpy/__init__.pxd
+      [8/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/npy_sort.h'
+      [9/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/argfunc.dispatch.c'
       [10/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/arraytypes.h'
-      [11/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/npy_sort.h'
-      [12/322] Copying file numpy/__init__.cython-30.pxd
-      [13/322] Copying file numpy/__init__.pxd
-      [14/322] Generating numpy/_core/__umath_generated with a custom command
+      [11/322] Generating numpy/_core/__umath_generated with a custom command
+      [12/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/arraytypes.h'
+      [13/322] Copying file numpy/__init__.py
+      [14/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/npy_sort.h'
       [15/322] Generating 'numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/arraytypes.h'
       [16/322] Generating 'numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/npy_sort.h'
       [17/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops_utils.h'
       [18/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops_arithm_fp.dispatch.c'
-      [19/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_utils.h'
-      [20/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_arithmetic.dispatch.c'
-      [21/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops.h'
-      [22/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops.h'
-      [23/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_utils.h'
-      [24/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops_utils.h'
-      [25/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_exponent_log.dispatch.c'
+      [19/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops.h'
+      [20/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_utils.h'
+      [21/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_arithmetic.dispatch.c'
+      [22/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops.h'
+      [23/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops_utils.h'
+      [24/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_utils.h'
+      [25/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops.h'
       [26/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops.h'
-      [27/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops.h'
+      [27/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_exponent_log.dispatch.c'
       [28/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops_comparison.dispatch.c'
-      [29/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops.h'
-      [30/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_utils.h'
-      [31/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_hyperbolic.dispatch.c'
-      [32/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops_utils.h'
-      [33/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops.h'
+      [29/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_hyperbolic.dispatch.c'
+      [30/322] Generating numpy/_core/__ufunc_api with a custom command
+      [31/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_utils.h'
+      [32/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops.h'
+      [33/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops_utils.h'
       [34/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops_logical.dispatch.c'
-      [35/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_utils.h'
-      [36/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops.h'
-      [37/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_utils.h'
-      [38/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_modulo.dispatch.c'
+      [35/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops.h'
+      [36/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_utils.h'
+      [37/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops.h'
+      [38/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_utils.h'
       [39/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops_utils.h'
-      [40/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops.h'
-      [41/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops_trigonometric.dispatch.c'
-      [42/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_minmax.dispatch.c'
-      [43/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops.h'
-      [44/322] Generating numpy/_core/__ufunc_api with a custom command
-      [45/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops_utils.h'
+      [40/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_modulo.dispatch.c'
+      [41/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops.h'
+      [42/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops_trigonometric.dispatch.c'
+      [43/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops_utils.h'
+      [44/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops.h'
+      [45/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops.h'
       [46/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops_umath_fp.dispatch.c'
-      [47/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops.h'
-      [48/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_utils.h'
-      [49/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_utils.h'
-      [50/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops.h'
+      [47/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_minmax.dispatch.c'
+      [48/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops.h'
+      [49/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_utils.h'
+      [50/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_utils.h'
       [51/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops.h'
-      [52/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_unary.dispatch.c'
-      [53/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_utils.h'
+      [52/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_utils.h'
+      [53/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_unary.dispatch.c'
       [54/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops.h'
-      [55/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_unary_fp_le.dispatch.c'
-      [56/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_unary_fp.dispatch.c'
-      [57/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_unary_complex.dispatch.c'
-      [58/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_utils.h'
+      [55/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_unary_fp.dispatch.c'
+      [56/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_unary_fp_le.dispatch.c'
+      [57/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_utils.h'
+      [58/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_unary_complex.dispatch.c'
       [59/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops.h'
       [60/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops_utils.h'
-      [61/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops.h'
-      [62/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd_inc.h'
+      [61/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd_inc.h'
+      [62/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops_autovec.dispatch.c'
       [63/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd_data.inc'
-      [64/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops_autovec.dispatch.c'
+      [64/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops.h'
       [65/322] Generating numpy/_core/__multiarray_api with a custom command
-      [66/322] Copying file numpy/random/__init__.py
-      [67/322] Copying file numpy/random/_common.pxd
-      [68/322] Generating numpy/random/_bounded_integer_pxd with a custom command
-      [69/322] Generating numpy/random/_bounded_integer_pyx with a custom command
-      [70/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd.dispatch.c'
-      [71/322] Copying file numpy/random/__init__.pxd
-      [72/322] Copying file numpy/random/bit_generator.pxd
-      [73/322] Copying file numpy/random/c_distributions.pxd
-      [74/322] Copying file numpy/random/_generator.pyx
-      [75/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/_multiarray_tests.c'
-      [76/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/templ_common.h'
+      [66/322] Generating numpy/random/_bounded_integer_pxd with a custom command
+      [67/322] Generating numpy/random/_bounded_integer_pyx with a custom command
+      [68/322] Copying file numpy/random/__init__.pxd
+      [69/322] Copying file numpy/random/__init__.py
+      [70/322] Copying file numpy/random/_common.pxd
+      [71/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd.dispatch.c'
+      [72/322] Copying file numpy/random/c_distributions.pxd
+      [73/322] Copying file numpy/random/_generator.pyx
+      [74/322] Copying file numpy/random/bit_generator.pxd
+      [75/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/templ_common.h'
+      [76/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/_multiarray_tests.c'
       [77/322] Generating numpy/_core/_umath_doc_generated with a custom command
       [78/322] Copying file numpy/random/mtrand.pyx
       [79/322] Generating 'numpy/_core/_umath_tests.cpython-313-darwin.so.p/_umath_tests.c'
-      [80/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_ASIMDHP.a.p/src_umath__umath_tests.dispatch.c.o
-      [81/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_baseline.a.p/src_umath__umath_tests.dispatch.c.o
+      [80/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_baseline.a.p/src_umath__umath_tests.dispatch.c.o
+      [81/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_ASIMDHP.a.p/src_umath__umath_tests.dispatch.c.o
       [82/322] Compiling C object numpy/_core/libnpymath.a.p/meson-generated_ieee754.c.o
       [83/322] Compiling C object numpy/_core/libnpymath.a.p/meson-generated_npy_math_complex.c.o
       [84/322] Compiling C object numpy/_core/libnpymath.a.p/src_npymath_npy_math.c.o
@@ -605,8 +633,8 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
       [89/322] Compiling C object numpy/_core/libargfunc.dispatch.h_baseline.a.p/meson-generated_argfunc.dispatch.c.o
       [90/322] Compiling C object numpy/_core/libloops_logical.dispatch.h_baseline.a.p/meson-generated_loops_logical.dispatch.c.o
       [91/322] Compiling C++ object numpy/_core/libnpymath.a.p/src_npymath_halffloat.cpp.o
-      [92/322] Compiling C object numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/meson-generated_loops_arithm_fp.dispatch.c.o
-      [93/322] Compiling C object numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/meson-generated_loops_trigonometric.dispatch.c.o
+      [92/322] Compiling C object numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/meson-generated_loops_trigonometric.dispatch.c.o
+      [93/322] Compiling C object numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/meson-generated_loops_arithm_fp.dispatch.c.o
       [94/322] Compiling C object numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/meson-generated_loops_modulo.dispatch.c.o
       [95/322] Compiling C object numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/meson-generated_loops_umath_fp.dispatch.c.o
       [96/322] Compiling C object numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/meson-generated_loops_unary_complex.dispatch.c.o
@@ -616,153 +644,154 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
       [100/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/einsum.c'
       [101/322] Compiling C object numpy/_core/libloops_unary.dispatch.h_baseline.a.p/meson-generated_loops_unary.dispatch.c.o
       [102/322] Compiling C object numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/meson-generated_loops_unary_fp_le.dispatch.c.o
-      [103/322] Compiling C object numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/meson-generated_loops_comparison.dispatch.c.o
-      [104/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/nditer_templ.c'
-      [105/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/templ_common.h'
-      [106/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/scalartypes.c'
-      [107/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops_utils.h'
-      [108/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops.h'
-      [109/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/einsum_sumprod.c'
+      [103/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/nditer_templ.c'
+      [104/322] Compiling C object numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/meson-generated_loops_comparison.dispatch.c.o
+      [105/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/scalartypes.c'
+      [106/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/templ_common.h'
+      [107/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops.h'
+      [108/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/einsum_sumprod.c'
+      [109/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops_utils.h'
       [110/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/funcs.inc'
       [111/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops.c'
-      [112/322] Compiling C object numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/meson-generated_loops_unary_fp.dispatch.c.o
-      [113/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.c'
-      [114/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.h'
+      [112/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.c'
+      [113/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.h'
+      [114/322] Compiling C object numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/meson-generated_loops_unary_fp.dispatch.c.o
       [115/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_logfactorial.c.o
       [116/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/scalarmath.c'
       [117/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_mvhg_count.c.o
-      [118/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_mvhg_marginals.c.o
-      [119/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/lowlevel_strided_loops.c'
+      [118/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/lowlevel_strided_loops.c'
+      [119/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_mvhg_marginals.c.o
       [120/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_hypergeometric.c.o
       [121/322] Compiling C object numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/meson-generated_loops_minmax.dispatch.c.o
       [122/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_distributions.c.o
-      [123/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/_mt19937.pyx
-      [124/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/_philox.pyx
-      [125/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/_pcg64.pyx
+      [123/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/_mt19937.pyx
+      [124/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/_philox.pyx
+      [125/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/_pcg64.pyx
       [126/322] Compiling Cython source numpy/random/_bounded_integers.pyx
-      [127/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/_common.pyx
-      [128/322] Linking static target numpy/_core/libhighway.a
-      [129/322] Linking static target numpy/_core/libnpymath.a
-      [130/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/_sfc64.pyx
-      [131/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/numpy/random/bit_generator.pyx
-      [132/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/meson-generated__multiarray_tests.c.o
-      [133/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_mem_overlap.c.o
-      [134/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
-      [135/322] Linking static target numpy/_core/lib_umath_tests_mtargets.a
+      [127/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/_common.pyx
+      [128/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/_sfc64.pyx
+      [129/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/numpy/random/bit_generator.pyx
+      [130/322] Compiling C++ object numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/src_npysort_highway_qsort_16bit.dispatch.cpp.o
+      [131/322] Compiling C object numpy/_core/lib_simd.dispatch.h_baseline.a.p/meson-generated__simd.dispatch.c.o
+      [132/322] Linking static target numpy/_core/libhighway.a
+      [133/322] Linking static target numpy/_core/libnpymath.a
+      [134/322] Linking static target numpy/_core/lib_umath_tests_mtargets.a
+      [135/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
       [136/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_npy_hashtable.c.o
-      [137/322] Compiling C++ object numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/src_npysort_highway_qsort_16bit.dispatch.cpp.o
-      [138/322] Compiling C object numpy/_core/lib_simd.dispatch.h_baseline.a.p/meson-generated__simd.dispatch.c.o
+      [137/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/meson-generated__multiarray_tests.c.o
+      [138/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_mem_overlap.c.o
       [139/322] Compiling C object numpy/_core/_umath_tests.cpython-313-darwin.so.p/src_common_npy_cpu_features.c.o
-      [140/322] Compiling C object numpy/_core/_struct_ufunc_tests.cpython-313-darwin.so.p/src_umath__struct_ufunc_tests.c.o
+      [140/322] Compiling Cython source numpy/random/mtrand.pyx
       [141/322] Compiling C object numpy/_core/_operand_flag_tests.cpython-313-darwin.so.p/src_umath__operand_flag_tests.c.o
-      [142/322] Compiling C object numpy/_core/_umath_tests.cpython-313-darwin.so.p/meson-generated__umath_tests.c.o
-      [143/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum.c.o
-      [144/322] Compiling C object numpy/_core/_rational_tests.cpython-313-darwin.so.p/src_umath__rational_tests.c.o
-      [145/322] Compiling Cython source numpy/random/mtrand.pyx
-      [146/322] Compiling C++ object numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/src_npysort_highway_qsort.dispatch.cpp.o
+      [142/322] Compiling C object numpy/_core/_struct_ufunc_tests.cpython-313-darwin.so.p/src_umath__struct_ufunc_tests.c.o
+      [143/322] Compiling C object numpy/_core/_umath_tests.cpython-313-darwin.so.p/meson-generated__umath_tests.c.o
+      [144/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum.c.o
+      [145/322] Compiling C++ object numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/src_npysort_highway_qsort.dispatch.cpp.o
+      [146/322] Compiling C object numpy/_core/_rational_tests.cpython-313-darwin.so.p/src_umath__rational_tests.c.o
       [147/322] Compiling C++ object numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/src_npysort_highway_qsort.dispatch.cpp.o
       [148/322] Compiling Cython source numpy/random/_generator.pyx
-      [149/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_nditer_templ.c.o
-      [150/322] Compiling C object numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/meson-generated_loops_autovec.dispatch.c.o
-      [151/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_abstractdtypes.c.o
-      [152/322] Linking static target numpy/_core/lib_multiarray_umath_mtargets.a
-      [153/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_alloc.c.o
-      [154/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalartypes.c.o
-      [155/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arrayobject.c.o
-      [156/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_coercion.c.o
-      [157/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_converter.c.o
-      [158/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_matmul.c.o
-      [159/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_method.c.o
-      [160/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_scalar.c.o
-      [161/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_array.c.o
+      [149/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_abstractdtypes.c.o
+      [150/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_nditer_templ.c.o
+      [151/322] Compiling C object numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/meson-generated_loops_autovec.dispatch.c.o
+      [152/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_alloc.c.o
+      [153/322] Linking static target numpy/_core/lib_multiarray_umath_mtargets.a
+      [154/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arrayobject.c.o
+      [155/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_matmul.c.o
+      [156/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_converter.c.o
+      [157/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalartypes.c.o
+      [158/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_coercion.c.o
+      [159/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_scalar.c.o
+      [160/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_array.c.o
+      [161/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_method.c.o
       [162/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arraywrap.c.o
       [163/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arrayfunction_override.c.o
-      [164/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_loops.c.o
-      [165/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_calculation.c.o
-      [166/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_buffer.c.o
-      [167/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common_dtype.c.o
-      [168/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common.c.o
+      [164/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_buffer.c.o
+      [165/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common.c.o
+      [166/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common_dtype.c.o
+      [167/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_calculation.c.o
+      [168/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_loops.c.o
       [169/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_convert.c.o
       [170/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_conversion_utils.c.o
-      [171/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_arraytypes.c.o
-      [172/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_compiled_base.c.o
-      [173/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_strings.c.o
-      [174/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busdaycal.c.o
-      [175/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busday.c.o
-      [176/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_convert_datatype.c.o
-      [177/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime.c.o
+      [171/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_compiled_base.c.o
+      [172/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_strings.c.o
+      [173/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busdaycal.c.o
+      [174/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_arraytypes.c.o
+      [175/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_convert_datatype.c.o
+      [176/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busday.c.o
+      [177/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_ctors.c.o
       [178/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dlpack.c.o
-      [179/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_ctors.c.o
-      [180/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_public_dtype_api.c.o
-      [181/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum_sumprod.c.o
+      [179/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime.c.o
+      [180/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalarmath.c.o
+      [181/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtypemeta.c.o
       [182/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtype_traversal.c.o
-      [183/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtypemeta.c.o
+      [183/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_public_dtype_api.c.o
       [184/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_flagsobject.c.o
-      [185/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalarmath.c.o
-      [186/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_descriptor.c.o
-      [187/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_hashdescr.c.o
+      [185/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum_sumprod.c.o
+      [186/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_hashdescr.c.o
+      [187/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_getset.c.o
       [188/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dragon4.c.o
-      [189/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_legacy_dtype_implementation.c.o
-      [190/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_getset.c.o
+      [189/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_descriptor.c.o
+      [190/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_legacy_dtype_implementation.c.o
       [191/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtype_transfer.c.o
       [192/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_iterators.c.o
-      [193/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_methods.c.o
-      [194/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_number.c.o
+      [193/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_number.c.o
+      [194/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_methods.c.o
       [195/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_pywrap.c.o
-      [196/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_mapping.c.o
+      [196/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_api.c.o
       [197/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_refcount.c.o
-      [198/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_sequence.c.o
-      [199/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_api.c.o
+      [198/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_mapping.c.o
+      [199/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_sequence.c.o
       [200/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_item_selection.c.o
-      [201/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_strfuncs.c.o
+      [201/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_constr.c.o
       [202/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_scalarapi.c.o
-      [203/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_constr.c.o
+      [203/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_strfuncs.c.o
       [204/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_utf8_utils.c.o
-      [205/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_shape.c.o
-      [206/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_dtype.c.o
-      [207/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_temp_elide.c.o
+      [205/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_dtype.c.o
+      [206/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_shape.c.o
+      [207/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_multiarraymodule.c.o
       [208/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_static_string.c.o
-      [209/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_multiarraymodule.c.o
-      [210/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_usertypes.c.o
-      [211/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_vdot.c.o
+      [209/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_temp_elide.c.o
+      [210/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_vdot.c.o
+      [211/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_usertypes.c.o
       [212/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_casts.c.o
       [213/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_conversions.c.o
       [214/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_field_types.c.o
       [215/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_growth.c.o
-      [216/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_lowlevel_strided_loops.c.o
-      [217/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_readtext.c.o
-      [218/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_stream_pyobject.c.o
-      [219/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_rows.c.o
+      [216/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_readtext.c.o
+      [217/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_lowlevel_strided_loops.c.o
+      [218/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_rows.c.o
+      [219/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_stream_pyobject.c.o
       [220/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npymath_arm64_exports.c.o
       [221/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_radixsort.cpp.o
       [222/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_str_to_int.c.o
-      [223/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_array_assign.c.o
-      [224/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_gil_utils.c.o
+      [223/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_gil_utils.c.o
+      [224/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_array_assign.c.o
       [225/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_heapsort.cpp.o
-      [226/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
-      [227/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_tokenize.cpp.o
-      [228/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_hashtable.c.o
-      [229/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_mergesort.cpp.o
+      [226/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_mergesort.cpp.o
+      [227/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_hashtable.c.o
+      [228/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
+      [229/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_tokenize.cpp.o
       [230/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_longdouble.c.o
       [231/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_mem_overlap.c.o
       [232/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_ucsnarrow.c.o
-      [233/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_ufunc_override.c.o
-      [234/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_cpu_features.c.o
+      [233/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_cpu_features.c.o
+      [234/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_ufunc_override.c.o
       [235/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_cpu_dispatch.c.o
       [236/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_numpyos.c.o
       [237/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_python_xerbla.c.o
-      [238/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_binsearch.cpp.o
-      [239/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_cblasfuncs.c.o
+      [238/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_cblasfuncs.c.o
+      [239/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_binsearch.cpp.o
       [240/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_extobj.c.o
       [241/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_legacy_array_method.c.o
       [242/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_dispatching.c.o
-      [243/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_reduction.c.o
-      [244/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_override.c.o
+      [243/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_override.c.o
+      [244/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_reduction.c.o
       [245/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_ufunc_type_resolution.c.o
-      [246/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_wrapping_array_method.c.o
-      [247/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o
+      [246/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_clip.cpp.o
+      [247/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_wrapping_array_method.c.o
+      [248/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o
       FAILED: [code=1] numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o
-      c++ -Inumpy/_core/_multiarray_umath.cpython-313-darwin.so.p -Inumpy/_core -I../numpy/_core -Inumpy/_core/include -I../numpy/_core/include -I../numpy/_core/src/common -I../numpy/_core/src/multiarray -I../numpy/_core/src/npymath -I../numpy/_core/src/umath -I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13 -I/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-n6yhi36_/numpy_148979cfb1a441b686182309621a030d/.mesonpy-spya7rjt/meson_cpu -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -DNDEBUG -Wall -Winvalid-pch -std=c++17 -O3 -ftrapping-math -DNPY_HAVE_CLANG_FPSTRICT -DNPY_HAVE_NEON_VFPV4 -DNPY_HAVE_NEON_FP16 -DNPY_HAVE_NEON -DNPY_HAVE_ASIMD -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework -idirafter/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Headers -DACCELERATE_NEW_LAPACK -DHAVE_CBLAS '-DBLAS_SYMBOL_SUFFIX=$NEWLAPACK' -DNPY_INTERNAL_BUILD -DHAVE_NPY_CONFIG_H -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D__STDC_VERSION__=0 -fno-exceptions -fno-rtti -MD -MQ numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -MF numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o.d -o numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -c ../numpy/_core/src/umath/string_ufuncs.cpp
+      c++ -Inumpy/_core/_multiarray_umath.cpython-313-darwin.so.p -Inumpy/_core -I../numpy/_core -Inumpy/_core/include -I../numpy/_core/include -I../numpy/_core/src/common -I../numpy/_core/src/multiarray -I../numpy/_core/src/npymath -I../numpy/_core/src/umath -I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13 -I/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-7i_m97h0/numpy_751dcd4c5a2e43cab4f453f4c44b62f8/.mesonpy-hdhw433m/meson_cpu -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -DNDEBUG -Wall -Winvalid-pch -std=c++17 -O3 -ftrapping-math -DNPY_HAVE_CLANG_FPSTRICT -DNPY_HAVE_NEON_VFPV4 -DNPY_HAVE_NEON_FP16 -DNPY_HAVE_NEON -DNPY_HAVE_ASIMD -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework -idirafter/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Headers -DACCELERATE_NEW_LAPACK -DHAVE_CBLAS '-DBLAS_SYMBOL_SUFFIX=$NEWLAPACK' -DNPY_INTERNAL_BUILD -DHAVE_NPY_CONFIG_H -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D__STDC_VERSION__=0 -fno-exceptions -fno-rtti -MD -MQ numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -MF numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o.d -o numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -c ../numpy/_core/src/umath/string_ufuncs.cpp
       In file included from ../numpy/_core/src/umath/string_ufuncs.cpp:20:
       ../numpy/_core/src/umath/string_fastsearch.h:132:5: error: no type named 'ptrdiff_t' in namespace 'std'; did you mean simply 'ptrdiff_t'?
         132 |     std::ptrdiff_t
@@ -882,15 +911,15 @@ Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
         831 | string_find(Buffer<enc> buf1, Buffer<enc> buf2, npy_int64 start, npy_int64 end)
             | ^
       7 errors generated.
-      [248/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_clip.cpp.o
       [249/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_special_integer_comparisons.cpp.o
-      [250/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath__scaled_float_dtype.c.o
-      [251/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_umathmodule.c.o
-      [252/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_stringdtype_ufuncs.cpp.o
+      [250/322] Linking static target numpy/_core/lib_simd_mtargets.a
+      [251/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath__scaled_float_dtype.c.o
+      [252/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_umathmodule.c.o
       [253/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_quicksort.cpp.o
-      [254/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_ufunc_object.c.o
-      [255/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_selection.cpp.o
-      [256/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_timsort.cpp.o
+      [254/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_stringdtype_ufuncs.cpp.o
+      [255/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_ufunc_object.c.o
+      [256/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_selection.cpp.o
+      [257/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_timsort.cpp.o
       ninja: build stopped: subcommand failed.
       [end of output]
   
@@ -930,8 +959,8 @@ Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-
 Building wheels for collected packages: model-cli-autocomplete
   Building editable for model-cli-autocomplete (pyproject.toml): started
   Building editable for model-cli-autocomplete (pyproject.toml): finished with status 'done'
-  Created wheel for model-cli-autocomplete: filename=model_cli_autocomplete-0.1.0-0.editable-py3-none-any.whl size=4811 sha256=b1b9a75fde39a83d82daa3804e0525dbbf51df719f5041b554793f284486e7d8
-  Stored in directory: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-ephem-wheel-cache-nwg0azwp/wheels/7b/30/b8/389c773b1000711155b8d3be4714d00b1328ca731526ecdd33
+  Created wheel for model-cli-autocomplete: filename=model_cli_autocomplete-0.1.0-0.editable-py3-none-any.whl size=7035 sha256=6f2e546bc953c8c876786232c05ee116402e56d32bced1fd8926b9aeaaf0c91a
+  Stored in directory: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-ephem-wheel-cache-8wy3gv7y/wheels/7b/30/b8/389c773b1000711155b8d3be4714d00b1328ca731526ecdd33
 Successfully built model-cli-autocomplete
 Installing collected packages: model-cli-autocomplete
   Attempting uninstall: model-cli-autocomplete
@@ -976,6 +1005,7 @@ if manager.setup_default_models():
 else:
     print('Failed to setup default models')
 "
+Failed to create model zsh-assistant: Command '['ollama', 'create', 'zsh-assistant', '-f', 'Modelfile']' timed out after 60 seconds
 Ollama already installed
 Ollama server already running
 Setting up default models...
@@ -1014,7 +1044,8 @@ if not os.path.exists(config_file):
             'timeout': 10
         },
         'model': 'zsh-assistant',
-        'fallback_model': 'codellama:7b',
+        'fallback_model': 'qwen3:1.7b',
+        'hf_lora_repo': 'duoyuncloud/zsh-assistant-lora',  # Pre-trained LoRA adapter from Hugging Face
         'cache': {
             'enabled': True,
             'ttl': 3600
@@ -1059,12 +1090,13 @@ Python package: ✅
 === Testing CLI ===
 >>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python -m model_completer.cli --test
 <frozen runpy>:128: RuntimeWarning: 'model_completer.cli' found in sys.modules after import of package 'model_completer', but prior to execution of 'model_completer.cli'; this may result in unpredictable behaviour
-2025-11-22 11:24:32,767 - model_completer.enhanced_completer - INFO - Generating smart commit message for 1 changed files
-2025-11-22 11:24:47,826 - model_completer.enhanced_completer - INFO - ✅ Generated smart commit message: feat: enhance git diff analysis
-2025-11-22 11:24:47,829 - model_completer.enhanced_completer - INFO - Smart commit returned: feat: enhance git diff analysis
-2025-11-22 11:24:47,832 - model_completer.enhanced_completer - INFO - Using smart commit: feat: enhance git diff analysis
+2025-11-22 16:07:06,324 - model_completer.enhanced_completer - INFO - Generating smart commit message for 15 changed files
+2025-11-22 16:07:21,384 - model_completer.enhanced_completer - INFO - ✅ Valid commit message generated: feat: add new functionality
+2025-11-22 16:07:21,385 - model_completer.enhanced_completer - INFO - ✅ Generated smart commit message: feat: add new functionality
+2025-11-22 16:07:21,386 - model_completer.enhanced_completer - INFO - Smart commit returned: feat: add new functionality
+2025-11-22 16:07:21,387 - model_completer.enhanced_completer - INFO - Using smart commit: feat: add new functionality
 Testing AI completions:
-  git comm -> git commit -m "feat: enhance git diff analysis"
+  git comm -> git commit -m "feat: add new functionality"
   docker run -> docker run -it --name container image:tag
   npm run -> npm run dev
   python -m -> python -m http.server 8000
@@ -1082,4 +1114,24 @@ else:
     print('Ollama server: ❌ Not running')
 "
 Ollama server: ✅ Running
+>>> Exit code: 0
+=== Ensuring Ollama is running ===
+>>> /Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "
+import sys
+sys.path.insert(0, 'src')
+from model_completer.ollama_manager import create_ollama_manager
+manager = create_ollama_manager()
+if not manager.is_running():
+    print('Starting Ollama server...')
+    if manager.start_server():
+        import time
+        time.sleep(3)  # Wait for server to start
+        print('Ollama server started')
+    else:
+        print('Failed to start Ollama server')
+        sys.exit(1)
+else:
+    print('Ollama server already running')
+"
+Ollama server already running
 >>> Exit code: 0

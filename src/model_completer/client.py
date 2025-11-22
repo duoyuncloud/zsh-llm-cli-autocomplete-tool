@@ -36,7 +36,7 @@ class OllamaClient:
                 logger.debug("Cache hit for prompt: %s", prompt[:50])
                 return cached_result
         
-        # Prepare request data
+        # Prepare request data with optimized parameters for speed
         data = {
             "model": model,
             "prompt": prompt,
@@ -44,6 +44,10 @@ class OllamaClient:
             "options": {
                 "temperature": 0.1,
                 "top_p": 0.9,
+                "top_k": 40,
+                "num_predict": 30,  # Reduced from default for faster completion
+                "num_ctx": 512,     # Limit context window for speed
+                "repeat_penalty": 1.1,
             }
         }
         

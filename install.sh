@@ -157,6 +157,7 @@ CORE_DEPS=(
     "argcomplete>=2.0.0"
     "python-dotenv>=0.19.0"
     "prompt-toolkit>=3.0.0"
+    "huggingface_hub>=0.16.0"
 )
 
 for dep in "${CORE_DEPS[@]}"; do
@@ -175,6 +176,7 @@ TRAINING_DEPS=(
     "accelerate>=0.20.0"
     "datasets>=2.12.0"
     "peft>=0.4.0"
+    "bitsandbytes>=0.41.0"
     "axolotl"
 )
 
@@ -320,7 +322,8 @@ if not os.path.exists(config_file):
             'timeout': 10
         },
         'model': 'zsh-assistant',
-        'fallback_model': 'codellama:7b',
+        'fallback_model': 'qwen3:1.7b',
+        'hf_lora_repo': 'duoyuncloud/zsh-assistant-lora',  # Pre-trained LoRA adapter from Hugging Face
         'cache': {
             'enabled': True,
             'ttl': 3600
@@ -401,43 +404,181 @@ else
 fi
 
 # ============================================================================
+# PHASE 8: DOWNLOAD AND SETUP PRE-TRAINED MODEL
+# ============================================================================
+
+print_step "Phase 8: Downloading and setting up pre-trained LoRA model..."
+
+# Ensure Ollama is running before checking for model
+print_info "Ensuring Ollama server is running..."
+if run_command "$PYTHON_CMD -c \"
+import sys
+sys.path.insert(0, 'src')
+from model_completer.ollama_manager import create_ollama_manager
+manager = create_ollama_manager()
+if not manager.is_running():
+    print('Starting Ollama server...')
+    if manager.start_server():
+        import time
+        time.sleep(3)  # Wait for server to start
+        print('Ollama server started')
+    else:
+        print('Failed to start Ollama server')
+        sys.exit(1)
+else:
+    print('Ollama server already running')
+\"" "Ensuring Ollama is running"; then
+    print_success "Ollama server ready"
+else
+    print_warning "Ollama server may not be running, model check may fail"
+fi
+
+print_info "Checking if zsh-assistant model is already available..."
+MODEL_EXISTS=$($PYTHON_CMD -c "
+import sys
+sys.path.insert(0, 'src')
+import requests
+try:
+    response = requests.get('http://localhost:11434/api/tags', timeout=2)
+    if response.status_code == 200:
+        models = response.json().get('models', [])
+        model_names = [m.get('name', '') for m in models]
+        if 'zsh-assistant' in model_names or 'zsh-assistant:latest' in model_names:
+            print('yes')
+        else:
+            print('no')
+    else:
+        print('no')
+except:
+    print('no')
+" 2>/dev/null || echo "no")
+
+if [ "$MODEL_EXISTS" = "yes" ]; then
+    print_success "zsh-assistant model already exists, skipping download"
+else
+    print_info "zsh-assistant model not found, downloading from Hugging Face..."
+    
+    # Get HF repo ID from config
+    HF_REPO=$($PYTHON_CMD -c "
+import sys
+sys.path.insert(0, 'src')
+from model_completer.utils import load_config
+try:
+    config = load_config()
+    repo = config.get('hf_lora_repo', '')
+    if repo:
+        print(repo)
+    else:
+        print('')
+except:
+    print('')
+" 2>/dev/null || echo "")
+    
+    if [ -z "$HF_REPO" ]; then
+        # Try to get from default config
+        HF_REPO=$($PYTHON_CMD -c "
+import sys
+sys.path.insert(0, 'src')
+import yaml
+import os
+try:
+    config_file = os.path.join('config', 'default.yaml')
+    if os.path.exists(config_file):
+        with open(config_file, 'r') as f:
+            config = yaml.safe_load(f) or {}
+            repo = config.get('hf_lora_repo', '')
+            if repo:
+                print(repo)
+            else:
+                print('')
+        else:
+            print('')
+    else:
+        print('')
+except:
+    print('')
+" 2>/dev/null || echo "")
+    fi
+    
+    if [ -z "$HF_REPO" ]; then
+        print_warning "No Hugging Face repo configured. Model will not be downloaded."
+        print_info "You can manually run: ai-completion-setup"
+    else
+        print_info "Downloading LoRA adapter from: $HF_REPO"
+        print_info "This may take a few minutes (downloading adapter and base model)..."
+        
+        if run_command "$PYTHON_CMD -c \"
+import sys
+sys.path.insert(0, 'src')
+from model_completer.ollama_lora_import import import_lora_to_ollama
+import logging
+logging.basicConfig(level=logging.INFO)
+
+print('📥 Starting model download and import...')
+print('   This includes:')
+print('   1. Downloading LoRA adapter from Hugging Face')
+print('   2. Downloading base model (Qwen3-1.7B)')
+print('   3. Merging adapter with base model')
+print('   4. Importing to Ollama as zsh-assistant')
+print('')
+print('   This may take 5-15 minutes depending on your internet speed...')
+print('')
+
+success = import_lora_to_ollama(hf_repo_id='$HF_REPO', use_merged_model=True)
+if success:
+    print('')
+    print('✅ Model successfully imported to Ollama!')
+    print('   You can now use zsh-assistant for completions')
+    sys.exit(0)
+else:
+    print('')
+    print('❌ Failed to import model')
+    print('   You can try running manually: ai-completion-setup')
+    sys.exit(1)
+\"" "Downloading and importing pre-trained model"; then
+            print_success "Pre-trained model downloaded and imported successfully!"
+        else
+            print_warning "Model download/import had issues"
+            print_info "You can try running manually: ai-completion-setup"
+        fi
+    fi
+fi
+
+# ============================================================================
 # COMPLETION MESSAGE
 # ============================================================================
 
 print_success "🎉 COMPLETE SETUP FINISHED!"
 echo ""
-echo "🚀 YOUR AI AUTOCOMPLETE WITH NAVIGATABLE UI IS READY!"
+echo "🚀 YOUR AI AUTOCOMPLETE IS READY!"
 echo ""
 print_feature "✨ Features Installed:"
-echo "   🤖 Ollama integration with multiple models"
-echo "   🎯 LoRA fine-tuning capabilities"
-echo "   🖥️  Navigatable UI with multiple completion modes"
-echo "   ⚡ Real-time command completion"
+echo "   🤖 Ollama integration with pre-trained LoRA model"
+echo "   🎯 Fine-tuned zsh-assistant model for CLI completion"
+echo "   ⚡ Real-time command completion with grey preview"
+echo "   📝 Smart commit message generation"
 echo "   🔧 Training and management tools"
 echo ""
-print_step "📋 IMMEDIATE ACTIONS:"
+print_step "📋 NEXT STEPS:"
 echo "   1. Reload your shell:"
 echo "      source ~/.zshrc"
 echo ""
-echo "   2. Test the installation:"
-echo "      ai-completion-test"
+echo "   2. Start using AI completions immediately!"
+echo "      Just type a command and press Tab:"
+echo "      git comm[Tab]     -> Smart commit with auto-generated message"
+echo "      docker run[Tab]   -> Personalized completion"
+echo "      npm run[Tab]      -> Smart predictions"
 echo ""
-echo "   3. Check system status:"
-echo "      ai-completion-status"
-echo ""
-print_step "🎯 START USING IT NOW:"
-echo "   Try these commands with different keys:"
-echo "     git comm[Tab]        -> Simple completion"
-echo "     docker run[Shift+Tab] -> UI mode with multiple suggestions"
-echo "     npm run[Ctrl+Tab]     -> Advanced mode with confidence"
-echo "     python -m[Tab]        -> Basic completion"
-echo "     kubectl get[Tab]      -> Command completion"
+print_step "🎯 QUICK TEST:"
+echo "   After reloading, try:"
+echo "     git comm[Tab]     -> See grey preview, Tab again to accept"
+echo "     docker run[Tab]   -> AI-powered completion"
+echo "     python -m[Tab]    -> Command completion"
 echo ""
 print_step "🔧 MANAGEMENT COMMANDS:"
-echo "   ai-completion-train    -> Start LoRA training"
-echo "   ai-completion-data     -> Generate training data"
-echo "   ai-completion-models   -> List available models"
-echo "   ai-completion-setup    -> Setup Ollama and models"
+echo "   ai-completion-status  -> Check system status"
+echo "   ai-completion-train   -> Re-train LoRA model (optional)"
+echo "   ai-completion-data    -> Generate training data (optional)"
 echo ""
 print_step "🔧 TROUBLESHOOTING:"
 echo "   If commands don't work immediately:"

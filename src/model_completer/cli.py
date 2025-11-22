@@ -37,6 +37,9 @@ def main():
     parser.add_argument('--train', action='store_true', help='Start LoRA training')
     parser.add_argument('--generate-data', action='store_true', help='Generate training data')
     parser.add_argument('--import-to-ollama', action='store_true', help='Import fine-tuned LoRA model to Ollama')
+    parser.add_argument('--upload-to-hf', metavar='REPO_ID', help='Upload LoRA adapter to Hugging Face (e.g., username/model-name)')
+    parser.add_argument('--hf-token', help='Hugging Face API token (or set HF_TOKEN env var)')
+    parser.add_argument('--hf-private', action='store_true', help='Create private Hugging Face repository')
     parser.add_argument('--config', help='Path to config file')
     
     args = parser.parse_args()
@@ -80,14 +83,78 @@ def main():
     elif args.import_to_ollama:
         print("📦 Importing fine-tuned LoRA model to Ollama...")
         from model_completer.ollama_lora_import import import_lora_to_ollama
-        if import_lora_to_ollama():
+        import logging
+        
+        # Enable more verbose logging for debugging
+        logging.basicConfig(level=logging.INFO)
+        
+        # Get HF repo ID from config if available
+        hf_repo_id = config.get('hf_lora_repo', '')
+        if hf_repo_id:
+            print(f"   Using pre-trained model from Hugging Face: {hf_repo_id}")
+        else:
+            print("   No HF repo configured, will use local adapter if available")
+        
+        # Check Ollama first
+        try:
+            import subprocess
+            result = subprocess.run(['ollama', '--version'], capture_output=True, text=True, timeout=5)
+            if result.returncode != 0:
+                print("❌ Ollama is not installed or not working")
+                print("   Install it from: https://ollama.ai")
+                sys.exit(1)
+        except FileNotFoundError:
+            print("❌ Ollama is not installed")
+            print("   Install it from: https://ollama.ai")
+            sys.exit(1)
+        
+        # Check if Ollama server is running
+        try:
+            import requests
+            response = requests.get("http://localhost:11434/api/tags", timeout=2)
+            if response.status_code != 200:
+                print("⚠️  Ollama server may not be running")
+                print("   Starting Ollama server...")
+                subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                import time
+                time.sleep(3)
+        except Exception as e:
+            print(f"⚠️  Cannot connect to Ollama server: {e}")
+            print("   Try starting it manually: ollama serve")
+        
+        # Force merge when HF repo is provided to use actual LoRA adapter
+        if import_lora_to_ollama(hf_repo_id=hf_repo_id if hf_repo_id else None, force_merge=bool(hf_repo_id)):
             print("✅ Model imported to Ollama successfully!")
             print("   You can now use 'zsh-assistant' model for completions")
         else:
             print("❌ Failed to import model to Ollama")
+            print("   Troubleshooting:")
+            print("   1. Check if Ollama is running: ollama list")
+            print("   2. If model already exists, remove it: ollama rm zsh-assistant")
+            print("   3. Check logs above for specific error messages")
+            print("   4. Make sure hf_lora_repo is set in config.yaml")
+            sys.exit(1)
+    elif args.upload_to_hf:
+        print(f"📤 Uploading LoRA adapter to Hugging Face: {args.upload_to_hf}")
+        from model_completer.hf_uploader import upload_lora_to_hf
+        import os
+        
+        # Set token if provided
+        if args.hf_token:
+            os.environ['HF_TOKEN'] = args.hf_token
+        
+        if upload_lora_to_hf(
+            repo_id=args.upload_to_hf,
+            token=args.hf_token,
+            private=args.hf_private
+        ):
+            print(f"✅ Successfully uploaded to: https://huggingface.co/{args.upload_to_hf}")
+        else:
+            print("❌ Failed to upload to Hugging Face")
             print("   Make sure:")
             print("   1. LoRA training is completed (run --train first)")
-            print("   2. Ollama is installed and running")
+            print("   2. You have a Hugging Face account and token")
+            print("   3. Run: huggingface-cli login (or set HF_TOKEN env var)")
             sys.exit(1)
     elif args.test:
         print("Testing AI completions:")
@@ -143,6 +210,9 @@ def main():
         print("  --train           Start LoRA training")
         print("  --generate-data   Generate training data")
         print("  --import-to-ollama Import trained model to Ollama")
+        print("  --upload-to-hf REPO_ID  Upload LoRA adapter to Hugging Face")
+        print("  --hf-token TOKEN  Hugging Face API token (or set HF_TOKEN env var)")
+        print("  --hf-private      Create private Hugging Face repository")
 
 if __name__ == '__main__':
     try:

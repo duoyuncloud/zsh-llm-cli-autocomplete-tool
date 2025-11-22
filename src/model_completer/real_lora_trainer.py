@@ -21,17 +21,21 @@ try:
         TrainingArguments, Trainer, DataCollatorForLanguageModeling
     )
     from peft import LoraConfig, get_peft_model, TaskType
-    from datasets import Dataset
+    try:
+        from datasets import Dataset
+    except ImportError:
+        Dataset = None  # Type hint only
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
+    Dataset = None
 
 logger = logging.getLogger(__name__)
 
 @dataclass
 class LoRAConfig:
     """Configuration for LoRA training."""
-    base_model: str = "distilgpt2"  # Smaller model for testing
+    base_model: str = "Qwen/Qwen3-1.7B"  # Qwen3 1.7B quantized
     model_type: str = "AutoModelForCausalLM"
     tokenizer_type: str = "AutoTokenizer"
     
@@ -51,12 +55,17 @@ class LoRAConfig:
     
     # Memory optimization
     fp16: bool = False  # Disable for compatibility
+    load_in_4bit: bool = True  # Use 4-bit quantization for Qwen3-1.7B (auto-disabled on macOS if bitsandbytes < 0.43.1)
+    load_in_8bit: bool = False
     gradient_checkpointing: bool = False  # Disable for compatibility
     
     def __post_init__(self):
         if self.lora_target_modules is None:
-            # For GPT-2 based models, use these target modules
-            self.lora_target_modules = ["c_attn", "c_proj"]
+            # For Qwen models, use these target modules (similar to LLaMA)
+            self.lora_target_modules = [
+                "q_proj", "k_proj", "v_proj", "o_proj",
+                "gate_proj", "up_proj", "down_proj"
+            ]
 
 class RealLoRATrainer:
     """Real LoRA trainer using transformers and PEFT."""
@@ -74,7 +83,7 @@ class RealLoRATrainer:
             return False
         return True
     
-    def prepare_data(self) -> Optional[Dataset]:
+    def prepare_data(self):
         """Prepare training data from JSONL file."""
         if not self.training_data_path.exists():
             logger.error(f"Training data not found: {self.training_data_path}")
@@ -108,12 +117,78 @@ class RealLoRATrainer:
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
         
-        # Load model
+        # Load model with quantization
+        import platform
+        is_macos = platform.system() == "Darwin"
+        is_apple_silicon = platform.machine() == "arm64"
+        
+        quantization_config = None
+        if self.config.load_in_4bit or self.config.load_in_8bit:
+            try:
+                from transformers import BitsAndBytesConfig
+                import bitsandbytes as bnb
+                
+                # Check if bitsandbytes supports this platform
+                bnb_version = getattr(bnb, '__version__', '0.0.0')
+                bnb_supports_apple = False
+                try:
+                    # Try to check if it's a version that supports Apple Silicon
+                    from packaging import version
+                    bnb_supports_apple = version.parse(bnb_version) >= version.parse("0.43.1")
+                except:
+                    # If packaging not available, try simple check
+                    bnb_supports_apple = int(bnb_version.split('.')[0]) > 0 or (int(bnb_version.split('.')[0]) == 0 and int(bnb_version.split('.')[1]) >= 43)
+                
+                # On macOS/Apple Silicon, only use quantization if bitsandbytes >= 0.43.1
+                if is_macos and is_apple_silicon and not bnb_supports_apple:
+                    logger.warning(f"bitsandbytes {bnb_version} doesn't support Apple Silicon. Loading model without quantization.")
+                    quantization_config = None
+                elif self.config.load_in_4bit:
+                    quantization_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_compute_dtype=torch.float16,
+                        bnb_4bit_use_double_quant=True,
+                        bnb_4bit_quant_type="nf4"
+                    )
+                elif self.config.load_in_8bit:
+                    quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+            except ImportError:
+                logger.warning("bitsandbytes not available, loading model without quantization")
+                quantization_config = None
+            except Exception as e:
+                logger.warning(f"Failed to setup quantization: {e}. Loading model without quantization.")
+                quantization_config = None
+        
+        # Determine device and dtype
+        if torch.cuda.is_available():
+            device_map = "auto"
+            torch_dtype = torch.float16
+        elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            # Apple Silicon GPU (Metal Performance Shaders)
+            device_map = None
+            torch_dtype = torch.float16
+            logger.info("Using Apple Silicon GPU (MPS)")
+        else:
+            # CPU fallback
+            device_map = None
+            torch_dtype = torch.float32
+            logger.info("Using CPU (no quantization on CPU)")
+            quantization_config = None  # Disable quantization on CPU
+        
+        load_kwargs = {
+            "low_cpu_mem_usage": True,
+            "trust_remote_code": True,
+            "torch_dtype": torch_dtype,
+        }
+        
+        if device_map:
+            load_kwargs["device_map"] = device_map
+        if quantization_config:
+            load_kwargs["quantization_config"] = quantization_config
+        
         model = AutoModelForCausalLM.from_pretrained(
             self.config.base_model,
-            dtype=torch.float16 if self.config.fp16 else torch.float32,
-            device_map="auto" if torch.cuda.is_available() else None,
-            low_cpu_mem_usage=True
+            **load_kwargs
         )
         
         # Configure LoRA

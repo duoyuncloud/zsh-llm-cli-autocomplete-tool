@@ -884,7 +884,7 @@ Write ONLY the commit message:"""
         try:
             # Use longer timeout for commit message generation (needs more time for quality)
             original_timeout = self.client.timeout
-            self.client.timeout = 15  # Give more time for commit message generation
+            self.client.timeout = 20  # Increased timeout for commit message generation
             
             try:
                 # Ensure we use the fine-tuned model
@@ -895,9 +895,12 @@ Write ONLY the commit message:"""
                         zsh_model = model
                         break
                 model_to_use = zsh_model if zsh_model else self.model
+                logger.debug(f"Using model: {model_to_use} for commit message generation")
+                logger.debug(f"Prompt length: {len(prompt)} characters")
                 completion = self.client.generate_completion(
                     prompt, model_to_use, use_cache=False
                 )
+                logger.debug(f"Raw completion: {completion[:200]}")
             finally:
                 self.client.timeout = original_timeout
             
@@ -1112,6 +1115,17 @@ Write ONLY the commit message:"""
     def get_smart_commit_message(self, command: str = None) -> Optional[str]:
         """Get smart commit message suggestion based on current git changes."""
         try:
+            # Check if we're in a git repository
+            try:
+                result = subprocess.run(['git', 'rev-parse', '--git-dir'], 
+                                       capture_output=True, text=True, timeout=2)
+                if result.returncode != 0:
+                    logger.debug("Not in a git repository")
+                    return None
+            except Exception as e:
+                logger.debug(f"Git check failed: {e}")
+                return None
+            
             changes = self._analyze_git_changes()
             
             if not changes['files_changed']:
@@ -1119,6 +1133,7 @@ Write ONLY the commit message:"""
                 return None
             
             logger.info(f"Generating smart commit message for {len(changes['files_changed'])} changed files")
+            logger.debug(f"Changes: {changes}")
             commit_message = self._generate_commit_message(changes)
             
             # Clean up the message - remove any unwanted prefixes/suffixes

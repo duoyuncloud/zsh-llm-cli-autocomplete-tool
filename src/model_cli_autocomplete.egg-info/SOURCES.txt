@@ -14,6 +14,7 @@ src/model_completer/cli.py
 src/model_completer/client.py
 src/model_completer/completer.py
 src/model_completer/enhanced_completer.py
+src/model_completer/hf_uploader.py
 src/model_completer/ollama_lora_import.py
 src/model_completer/ollama_manager.py
 src/model_completer/real_lora_trainer.py
