@@ -810,28 +810,40 @@ class EnhancedCompleter(ModelCompleter):
             if context_clean.strip():
                 prompt_parts.append(f"Changes: {context_clean}")
         
-        # If we have no context, try to get raw diff for analysis
+        # If we have no context, try to get raw diff for analysis (both staged and unstaged)
         if not prompt_parts:
             try:
+                # Try staged first
                 diff_result = subprocess.run(['git', 'diff', '--cached', '-U3'],
                                            capture_output=True, text=True, timeout=3)
                 if diff_result.returncode == 0 and diff_result.stdout:
                     raw_diff = diff_result.stdout
+                else:
+                    # Try unstaged if no staged changes
+                    diff_result = subprocess.run(['git', 'diff', '-U3'],
+                                               capture_output=True, text=True, timeout=3)
+                    if diff_result.returncode == 0 and diff_result.stdout:
+                        raw_diff = diff_result.stdout
+                    else:
+                        raw_diff = None
+                
+                if raw_diff:
                     # Extract just the code changes (skip file headers)
                     code_lines = []
-                    for line in raw_diff.split('\n')[:200]:
+                    for line in raw_diff.split('\n')[:300]:  # Increased limit
                         if line.startswith('+') and not line.startswith('+++') and not line.startswith('+@@'):
                             code = line[1:].strip()
-                            if code and not code.startswith('#') and len(code) > 5:
-                                # Skip file paths
-                                if '/' not in code and not any(ext in code for ext in ['.py', '.js', '.log', '.txt', '.md']):
-                                    code_lines.append(code[:100])
+                            if code and not code.startswith('#') and len(code) > 3:  # Reduced from 5 to 3
+                                # Skip file paths but allow more code
+                                if not any(ext in code for ext in ['.log', '.txt']):  # Allow .py, .js, .md
+                                    code_lines.append(code[:120])  # Increased from 100
                     if code_lines:
-                        prompt_parts.append(f"Code changes:\n" + '\n'.join(f"  + {line}" for line in code_lines[:15]))
-            except:
+                        prompt_parts.append(f"Code changes:\n" + '\n'.join(f"  + {line}" for line in code_lines[:20]))  # Increased from 15
+            except Exception as e:
+                logger.debug(f"Failed to get raw diff: {e}")
                 pass
         
-        prompt_body = '\n'.join(prompt_parts) if prompt_parts else "No code changes detected"
+        prompt_body = '\n'.join(prompt_parts) if prompt_parts else f"Changes detected: {len(changes['files_changed'])} files changed ({changes['lines_added']} additions, {changes['lines_removed']} deletions)"
         
         prompt = f"""Write a SPECIFIC commit message:
 
@@ -974,10 +986,12 @@ Write ONLY the commit message:"""
                                 
                                 is_placeholder = subject_lower in rejected_exact or 'commit message' in subject_lower
                                 
+                                # Be less strict - accept if it's not obviously generic or placeholder
                                 if (not is_generic and not is_placeholder and
-                                    len(subject.strip()) >= 10):  # Require at least 10 chars for specificity
+                                    len(subject.strip()) >= 5):  # Reduced from 10 to 5 to be less strict
                                     if len(subject) > 72:
                                         subject = subject[:69] + '...'
+                                    logger.info(f"✅ Accepted commit message: {commit_type}: {subject}")
                                     return f"{commit_type}: {subject}"
                                 else:
                                     logger.warning(f"Rejected generic/placeholder commit message: {subject}")
@@ -1134,9 +1148,12 @@ Write ONLY the commit message:"""
                         logger.debug(f"Rejected commit message with too short subject: {commit_message}")
                         return None
                     # Only reject obvious placeholders in subject
-                    if subject.lower().strip() in ['message', 'commit message']:
+                    subject_lower = subject.lower().strip()
+                    if subject_lower in ['message', 'commit message'] or subject_lower == '"commit message"' or subject_lower == "'commit message'":
                         logger.debug(f"Rejected commit message with placeholder subject: {commit_message}")
                         return None
+                    # Accept the message if it passes basic validation
+                    logger.info(f"✅ Valid commit message generated: {commit_message}")
                 
                 logger.info(f"✅ Generated smart commit message: {commit_message}")
                 return commit_message

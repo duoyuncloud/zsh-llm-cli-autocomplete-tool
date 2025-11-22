@@ -160,7 +160,10 @@ _model_completion_simple() {
         CURSOR=${#BUFFER}
         
         # Highlight suffix in grey using region_highlight
-        # Format: "start end style" where fg=240 is grey
+        # Declare as array and set highlight for the suffix portion
+        typeset -a region_highlight
+        # Format: "start end style" where fg=240 is grey (dark grey)
+        # Highlight from original_len to end of buffer in grey
         region_highlight=("${original_len} ${#BUFFER} fg=240")
         
         zle reset-prompt
