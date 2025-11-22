@@ -337,16 +337,23 @@ PARAMETER repeat_penalty 1.1
                         modelfile_content = self.create_modelfile_from_merged_model(model_path)
                     elif merged_path.is_dir():
                         # It's a Hugging Face format directory
-                        # Ollama supports Qwen3 models, but needs to pull them first
-                        # We can't directly import HF format Qwen3 models, but we can:
-                        # 1. Ensure qwen3:1.7b is available in Ollama
-                        # 2. Use FROM qwen3:1.7b with optimized prompts (LoRA knowledge in prompts)
-                        # 3. The merged model is saved for potential future use
+                        # Try to convert to GGUF so we can use the merged LoRA adapter
                         logger.info(f"✅ Merged model saved to: {merged_path}")
-                        logger.info("💡 Ollama supports Qwen3, but needs the base model pulled first")
-                        logger.info("💡 Will use base model (qwen3:1.7b) with LoRA knowledge in optimized prompts")
-                        logger.info("💡 The merged model is saved for potential future conversion to GGUF")
-                        use_merged_model = False  # Use base model approach (Ollama native)
+                        logger.info("🔄 Attempting to convert to GGUF format for Ollama...")
+                        gguf_file = self.convert_to_gguf(merged_path)
+                        
+                        if gguf_file and gguf_file.exists():
+                            # Successfully converted to GGUF!
+                            model_path = gguf_file
+                            logger.info(f"✅ Successfully converted to GGUF: {gguf_file}")
+                            logger.info("   Will use merged LoRA adapter in GGUF format!")
+                            modelfile_content = self.create_modelfile_from_merged_model(model_path)
+                        else:
+                            # Conversion failed, fall back to base model approach
+                            logger.warning("⚠️  Could not convert to GGUF automatically")
+                            logger.info("💡 Will use base model (qwen3:1.7b) with LoRA knowledge in optimized prompts")
+                            logger.info("💡 The merged model is saved for manual conversion later")
+                            use_merged_model = False  # Use base model approach
                 else:
                     logger.warning("⚠️  Failed to merge model, falling back to base model with prompts")
                     logger.info("💡 This may happen if transformers/peft are not installed")
@@ -505,23 +512,20 @@ PARAMETER repeat_penalty 1.1
         """Convert merged model to GGUF format.
         
         Tries multiple methods:
-        1. llama-cpp-python library (if available)
-        2. llama.cpp convert_hf_to_gguf.py script
-        3. Fallback: use merged model directly (Ollama may support it)
+        1. llama.cpp convert_hf_to_gguf.py script (download if needed)
+        2. Fallback: return None (will use base model approach)
         """
-        logger.info("Converting merged model to GGUF format...")
+        logger.info("🔄 Converting merged model to GGUF format...")
+        logger.info("   This will allow Ollama to use the merged LoRA adapter directly")
         
         gguf_file = merged_model_dir / "model.gguf"
         
-        # Method 1: Try using llama-cpp-python if available
-        try:
-            import llama_cpp
-            logger.info("Using llama-cpp-python for conversion...")
-            # llama-cpp-python doesn't have direct conversion, skip
-        except ImportError:
-            pass
+        # Check if already converted
+        if gguf_file.exists():
+            logger.info(f"✅ GGUF file already exists: {gguf_file}")
+            return gguf_file
         
-        # Method 2: Try using llama.cpp convert script
+        # Method 1: Try to find or download llama.cpp convert script
         convert_script = None
         try:
             # Try to find convert_hf_to_gguf.py
@@ -537,39 +541,68 @@ PARAMETER repeat_penalty 1.1
                 common_paths = [
                     Path.home() / 'llama.cpp' / 'convert_hf_to_gguf.py',
                     Path('/usr/local/bin/convert_hf_to_gguf.py'),
+                    self.base_dir / 'llama.cpp' / 'convert_hf_to_gguf.py',
                 ]
                 for path in common_paths:
                     if path.exists():
                         convert_script = str(path)
                         break
-        except Exception:
-            pass
+                
+                # If not found, try to download it
+                if not convert_script:
+                    logger.info("📥 convert_hf_to_gguf.py not found, attempting to download...")
+                    try:
+                        import urllib.request
+                        llama_cpp_dir = self.base_dir / 'llama.cpp'
+                        llama_cpp_dir.mkdir(exist_ok=True)
+                        script_url = "https://raw.githubusercontent.com/ggerganov/llama.cpp/master/convert_hf_to_gguf.py"
+                        script_path = llama_cpp_dir / 'convert_hf_to_gguf.py'
+                        
+                        logger.info(f"   Downloading from: {script_url}")
+                        urllib.request.urlretrieve(script_url, script_path)
+                        if script_path.exists():
+                            script_path.chmod(0o755)  # Make executable
+                            convert_script = str(script_path)
+                            logger.info(f"   ✅ Downloaded to: {convert_script}")
+                    except Exception as e:
+                        logger.warning(f"   ⚠️  Failed to download convert script: {e}")
+        except Exception as e:
+            logger.debug(f"Error finding convert script: {e}")
         
         if convert_script:
             try:
-                logger.info(f"Using convert script: {convert_script}")
+                logger.info(f"🔧 Using convert script: {convert_script}")
+                logger.info(f"   Converting: {merged_model_dir} -> {gguf_file}")
+                logger.info("   This may take several minutes...")
+                
+                # Run conversion
                 result = subprocess.run(
                     ['python3', convert_script, str(merged_model_dir), '--outfile', str(gguf_file)],
                     capture_output=True,
                     text=True,
-                    timeout=600  # 10 minutes timeout
+                    timeout=1800  # 30 minutes timeout for conversion
                 )
+                
                 if result.returncode == 0 and gguf_file.exists():
-                    logger.info(f"✅ Converted to GGUF: {gguf_file}")
+                    file_size_mb = gguf_file.stat().st_size / (1024*1024)
+                    logger.info(f"✅ Successfully converted to GGUF: {gguf_file}")
+                    logger.info(f"   File size: {file_size_mb:.2f} MB")
                     return gguf_file
                 else:
-                    logger.warning(f"Conversion failed: {result.stderr}")
+                    logger.warning(f"⚠️  Conversion failed: {result.stderr}")
+                    if result.stdout:
+                        logger.debug(f"stdout: {result.stdout}")
             except subprocess.TimeoutExpired:
-                logger.error("GGUF conversion timed out")
+                logger.error("❌ GGUF conversion timed out (took > 30 minutes)")
             except Exception as e:
-                logger.warning(f"GGUF conversion failed: {e}")
+                logger.warning(f"⚠️  GGUF conversion failed: {e}")
         
-        # Method 3: Try using transformers + llama.cpp directly
-        # This is more complex and may not work for all models
         logger.warning("⚠️  Could not convert to GGUF automatically")
-        logger.info("💡 You can manually convert using llama.cpp tools")
-        logger.info(f"   Model is saved at: {merged_model_dir}")
-        logger.info("   For now, will use merged model with Ollama's FROM command")
+        logger.info(f"💡 The merged model is saved at: {merged_model_dir}")
+        logger.info("💡 You can manually convert using:")
+        logger.info("   1. Download llama.cpp: git clone https://github.com/ggerganov/llama.cpp.git")
+        logger.info(f"   2. Run: python llama.cpp/convert_hf_to_gguf.py {merged_model_dir} --outfile {gguf_file}")
+        logger.info("💡 For now, will use base model (qwen3:1.7b) with optimized prompts")
         
         return None
     
