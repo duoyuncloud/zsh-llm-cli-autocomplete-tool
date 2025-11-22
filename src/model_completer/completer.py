@@ -240,12 +240,20 @@ Output:"""
                             output = data['output']
                             # Clean up output - remove any "Output:" labels
                             output = output.replace("Output:", "").replace("output:", "").strip()
+                            # Reject "commit message" placeholder
+                            if 'commit message' in output.lower() and '"commit message"' in output:
+                                logger.warning(f"Rejected placeholder from training data: {output}")
+                                continue
                             return output
                         # Try prefix match (but skip "git" and "git comm" - they're handled specially in EnhancedCompleter)
                         elif (command.strip().lower() not in ("git", "git comm") and 
                               (command.lower() in data['input'].lower() or data['input'].lower().startswith(command.lower()))):
                             output = data['output']
                             output = output.replace("Output:", "").replace("output:", "").strip()
+                            # Reject "commit message" placeholder
+                            if 'commit message' in output.lower() and '"commit message"' in output:
+                                logger.warning(f"Rejected placeholder from training data: {output}")
+                                continue
                             return output
         except Exception:
             pass
