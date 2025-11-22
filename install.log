@@ -1,1085 +1,479 @@
 === Zsh AI Autocomplete Installation Log ===
-Started at: Tue Nov  4 12:39:01 GMT 2025
+Started at: Sat Nov 22 10:32:08 GMT 2025
 
+=== Creating virtual environment ===
+>>> python3 -m venv '/Users/duoyun/Desktop/zsh-llm-cli-autocomplete-tool/venv'
+>>> Exit code: 0
 === Installing requests>=2.28.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'requests>=2.28.0'
-Collecting requests>=2.28.0
-  Using cached requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
-Collecting charset_normalizer<4,>=2 (from requests>=2.28.0)
-  Using cached charset_normalizer-3.4.4-cp313-cp313-macosx_10_13_universal2.whl.metadata (37 kB)
-Collecting idna<4,>=2.5 (from requests>=2.28.0)
-  Using cached idna-3.11-py3-none-any.whl.metadata (8.4 kB)
-Collecting urllib3<3,>=1.21.1 (from requests>=2.28.0)
-  Using cached urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
-Collecting certifi>=2017.4.17 (from requests>=2.28.0)
-  Using cached certifi-2025.10.5-py3-none-any.whl.metadata (2.5 kB)
-Using cached requests-2.32.5-py3-none-any.whl (64 kB)
-Using cached charset_normalizer-3.4.4-cp313-cp313-macosx_10_13_universal2.whl (208 kB)
-Using cached idna-3.11-py3-none-any.whl (71 kB)
-Using cached urllib3-2.5.0-py3-none-any.whl (129 kB)
-Using cached certifi-2025.10.5-py3-none-any.whl (163 kB)
-Installing collected packages: urllib3, idna, charset_normalizer, certifi, requests
+>>> pip3 install 'requests>=2.28.0'
+error: externally-managed-environment
 
-Successfully installed certifi-2025.10.5 charset_normalizer-3.4.4 idna-3.11 requests-2.32.5 urllib3-2.5.0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing pyyaml>=6.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'pyyaml>=6.0'
-Collecting pyyaml>=6.0
-  Using cached pyyaml-6.0.3-cp313-cp313-macosx_11_0_arm64.whl.metadata (2.4 kB)
-Using cached pyyaml-6.0.3-cp313-cp313-macosx_11_0_arm64.whl (173 kB)
-Installing collected packages: pyyaml
-Successfully installed pyyaml-6.0.3
+>>> pip3 install 'pyyaml>=6.0'
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing argcomplete>=2.0.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'argcomplete>=2.0.0'
-Collecting argcomplete>=2.0.0
-  Using cached argcomplete-3.6.3-py3-none-any.whl.metadata (16 kB)
-Using cached argcomplete-3.6.3-py3-none-any.whl (43 kB)
-Installing collected packages: argcomplete
-Successfully installed argcomplete-3.6.3
+>>> pip3 install 'argcomplete>=2.0.0'
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing python-dotenv>=0.19.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'python-dotenv>=0.19.0'
-Collecting python-dotenv>=0.19.0
-  Using cached python_dotenv-1.2.1-py3-none-any.whl.metadata (25 kB)
-Using cached python_dotenv-1.2.1-py3-none-any.whl (21 kB)
-Installing collected packages: python-dotenv
-Successfully installed python-dotenv-1.2.1
+>>> pip3 install 'python-dotenv>=0.19.0'
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing prompt-toolkit>=3.0.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'prompt-toolkit>=3.0.0'
-Collecting prompt-toolkit>=3.0.0
-  Using cached prompt_toolkit-3.0.52-py3-none-any.whl.metadata (6.4 kB)
-Collecting wcwidth (from prompt-toolkit>=3.0.0)
-  Using cached wcwidth-0.2.14-py2.py3-none-any.whl.metadata (15 kB)
-Using cached prompt_toolkit-3.0.52-py3-none-any.whl (391 kB)
-Using cached wcwidth-0.2.14-py2.py3-none-any.whl (37 kB)
-Installing collected packages: wcwidth, prompt-toolkit
+>>> pip3 install 'prompt-toolkit>=3.0.0'
+error: externally-managed-environment
 
-Successfully installed prompt-toolkit-3.0.52 wcwidth-0.2.14
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency torch>=2.0.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'torch>=2.0.0'
-Collecting torch>=2.0.0
-  Using cached torch-2.9.0-cp313-none-macosx_11_0_arm64.whl.metadata (30 kB)
-Collecting filelock (from torch>=2.0.0)
-  Using cached filelock-3.20.0-py3-none-any.whl.metadata (2.1 kB)
-Collecting typing-extensions>=4.10.0 (from torch>=2.0.0)
-  Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
-Collecting setuptools (from torch>=2.0.0)
-  Using cached setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
-Collecting sympy>=1.13.3 (from torch>=2.0.0)
-  Using cached sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
-Collecting networkx>=2.5.1 (from torch>=2.0.0)
-  Using cached networkx-3.5-py3-none-any.whl.metadata (6.3 kB)
-Collecting jinja2 (from torch>=2.0.0)
-  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
-Collecting fsspec>=0.8.5 (from torch>=2.0.0)
-  Downloading fsspec-2025.10.0-py3-none-any.whl.metadata (10 kB)
-Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch>=2.0.0)
-  Using cached mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
-Collecting MarkupSafe>=2.0 (from jinja2->torch>=2.0.0)
-  Using cached markupsafe-3.0.3-cp313-cp313-macosx_11_0_arm64.whl.metadata (2.7 kB)
-Using cached torch-2.9.0-cp313-none-macosx_11_0_arm64.whl (74.5 MB)
-Downloading fsspec-2025.10.0-py3-none-any.whl (200 kB)
-Using cached networkx-3.5-py3-none-any.whl (2.0 MB)
-Using cached sympy-1.14.0-py3-none-any.whl (6.3 MB)
-Using cached mpmath-1.3.0-py3-none-any.whl (536 kB)
-Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
-Using cached filelock-3.20.0-py3-none-any.whl (16 kB)
-Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
-Using cached markupsafe-3.0.3-cp313-cp313-macosx_11_0_arm64.whl (12 kB)
-Using cached setuptools-80.9.0-py3-none-any.whl (1.2 MB)
-Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+>>> pip3 install 'torch>=2.0.0'
+error: externally-managed-environment
 
-Successfully installed MarkupSafe-3.0.3 filelock-3.20.0 fsspec-2025.10.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.5 setuptools-80.9.0 sympy-1.14.0 torch-2.9.0 typing-extensions-4.15.0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency transformers>=4.30.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'transformers>=4.30.0'
-Collecting transformers>=4.30.0
-  Using cached transformers-4.57.1-py3-none-any.whl.metadata (43 kB)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (3.20.0)
-Collecting huggingface-hub<1.0,>=0.34.0 (from transformers>=4.30.0)
-  Downloading huggingface_hub-0.36.0-py3-none-any.whl.metadata (14 kB)
-Collecting numpy>=1.17 (from transformers>=4.30.0)
-  Using cached numpy-2.3.4-cp313-cp313-macosx_14_0_arm64.whl.metadata (62 kB)
-Collecting packaging>=20.0 (from transformers>=4.30.0)
-  Using cached packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
-Requirement already satisfied: pyyaml>=5.1 in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (6.0.3)
-Collecting regex!=2019.12.17 (from transformers>=4.30.0)
-  Downloading regex-2025.11.3-cp313-cp313-macosx_11_0_arm64.whl.metadata (40 kB)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from transformers>=4.30.0) (2.32.5)
-Collecting tokenizers<=0.23.0,>=0.22.0 (from transformers>=4.30.0)
-  Using cached tokenizers-0.22.1-cp39-abi3-macosx_11_0_arm64.whl.metadata (6.8 kB)
-Collecting safetensors>=0.4.3 (from transformers>=4.30.0)
-  Using cached safetensors-0.6.2-cp38-abi3-macosx_11_0_arm64.whl.metadata (4.1 kB)
-Collecting tqdm>=4.27 (from transformers>=4.30.0)
-  Using cached tqdm-4.67.1-py3-none-any.whl.metadata (57 kB)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0) (2025.10.0)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0) (4.15.0)
-Collecting hf-xet<2.0.0,>=1.1.3 (from huggingface-hub<1.0,>=0.34.0->transformers>=4.30.0)
-  Downloading hf_xet-1.2.0-cp37-abi3-macosx_11_0_arm64.whl.metadata (4.9 kB)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->transformers>=4.30.0) (2025.10.5)
-Using cached transformers-4.57.1-py3-none-any.whl (12.0 MB)
-Downloading huggingface_hub-0.36.0-py3-none-any.whl (566 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.1/566.1 kB 16.4 MB/s eta 0:00:00
-Downloading hf_xet-1.2.0-cp37-abi3-macosx_11_0_arm64.whl (2.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.7/2.7 MB 23.8 MB/s eta 0:00:00
-Using cached tokenizers-0.22.1-cp39-abi3-macosx_11_0_arm64.whl (2.9 MB)
-Using cached numpy-2.3.4-cp313-cp313-macosx_14_0_arm64.whl (5.1 MB)
-Using cached packaging-25.0-py3-none-any.whl (66 kB)
-Downloading regex-2025.11.3-cp313-cp313-macosx_11_0_arm64.whl (288 kB)
-Using cached safetensors-0.6.2-cp38-abi3-macosx_11_0_arm64.whl (432 kB)
-Using cached tqdm-4.67.1-py3-none-any.whl (78 kB)
-Installing collected packages: tqdm, safetensors, regex, packaging, numpy, hf-xet, huggingface-hub, tokenizers, transformers
+>>> pip3 install 'transformers>=4.30.0'
+error: externally-managed-environment
 
-Successfully installed hf-xet-1.2.0 huggingface-hub-0.36.0 numpy-2.3.4 packaging-25.0 regex-2025.11.3 safetensors-0.6.2 tokenizers-0.22.1 tqdm-4.67.1 transformers-4.57.1
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency accelerate>=0.20.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'accelerate>=0.20.0'
-Collecting accelerate>=0.20.0
-  Using cached accelerate-1.11.0-py3-none-any.whl.metadata (19 kB)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (2.3.4)
-Requirement already satisfied: packaging>=20.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (25.0)
-Collecting psutil (from accelerate>=0.20.0)
-  Downloading psutil-7.1.3-cp36-abi3-macosx_11_0_arm64.whl.metadata (23 kB)
-Requirement already satisfied: pyyaml in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (6.0.3)
-Requirement already satisfied: torch>=2.0.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (2.9.0)
-Requirement already satisfied: huggingface_hub>=0.21.0 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (0.36.0)
-Requirement already satisfied: safetensors>=0.4.3 in ./venv/lib/python3.13/site-packages (from accelerate>=0.20.0) (0.6.2)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.20.0)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (2025.10.0)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (2.32.5)
-Requirement already satisfied: tqdm>=4.42.1 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (4.67.1)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate>=0.20.0) (1.2.0)
-Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (80.9.0)
-Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (1.14.0)
-Requirement already satisfied: networkx>=2.5.1 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (3.5)
-Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate>=0.20.0) (3.1.6)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=2.0.0->accelerate>=0.20.0) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=2.0.0->accelerate>=0.20.0) (3.0.3)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate>=0.20.0) (2025.10.5)
-Using cached accelerate-1.11.0-py3-none-any.whl (375 kB)
-Downloading psutil-7.1.3-cp36-abi3-macosx_11_0_arm64.whl (239 kB)
-Installing collected packages: psutil, accelerate
+>>> pip3 install 'accelerate>=0.20.0'
+error: externally-managed-environment
 
-Successfully installed accelerate-1.11.0 psutil-7.1.3
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency datasets>=2.12.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'datasets>=2.12.0'
-Collecting datasets>=2.12.0
-  Downloading datasets-4.4.0-py3-none-any.whl.metadata (19 kB)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (3.20.0)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (2.3.4)
-Collecting pyarrow>=21.0.0 (from datasets>=2.12.0)
-  Downloading pyarrow-22.0.0-cp313-cp313-macosx_12_0_arm64.whl.metadata (3.2 kB)
-Collecting dill<0.4.1,>=0.3.0 (from datasets>=2.12.0)
-  Using cached dill-0.4.0-py3-none-any.whl.metadata (10 kB)
-Collecting pandas (from datasets>=2.12.0)
-  Using cached pandas-2.3.3-cp313-cp313-macosx_11_0_arm64.whl.metadata (91 kB)
-Requirement already satisfied: requests>=2.32.2 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (2.32.5)
-Collecting httpx<1.0.0 (from datasets>=2.12.0)
-  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
-Requirement already satisfied: tqdm>=4.66.3 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (4.67.1)
-Collecting xxhash (from datasets>=2.12.0)
-  Using cached xxhash-3.6.0-cp313-cp313-macosx_11_0_arm64.whl.metadata (13 kB)
-Collecting multiprocess<0.70.19 (from datasets>=2.12.0)
-  Downloading multiprocess-0.70.18-py313-none-any.whl.metadata (7.2 kB)
-Requirement already satisfied: fsspec<=2025.10.0,>=2023.1.0 in ./venv/lib/python3.13/site-packages (from fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0) (2025.10.0)
-Requirement already satisfied: huggingface-hub<2.0,>=0.25.0 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (0.36.0)
-Requirement already satisfied: packaging in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (25.0)
-Requirement already satisfied: pyyaml>=5.1 in ./venv/lib/python3.13/site-packages (from datasets>=2.12.0) (6.0.3)
-Collecting aiohttp!=4.0.0a0,!=4.0.0a1 (from fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Downloading aiohttp-3.13.2-cp313-cp313-macosx_11_0_arm64.whl.metadata (8.1 kB)
-Collecting anyio (from httpx<1.0.0->datasets>=2.12.0)
-  Using cached anyio-4.11.0-py3-none-any.whl.metadata (4.1 kB)
-Requirement already satisfied: certifi in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (2025.10.5)
-Collecting httpcore==1.* (from httpx<1.0.0->datasets>=2.12.0)
-  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
-Requirement already satisfied: idna in ./venv/lib/python3.13/site-packages (from httpx<1.0.0->datasets>=2.12.0) (3.11)
-Collecting h11>=0.16 (from httpcore==1.*->httpx<1.0.0->datasets>=2.12.0)
-  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<2.0,>=0.25.0->datasets>=2.12.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface-hub<2.0,>=0.25.0->datasets>=2.12.0) (1.2.0)
-Collecting aiohappyeyeballs>=2.5.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
-Collecting aiosignal>=1.4.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
-Collecting attrs>=17.3.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached attrs-25.4.0-py3-none-any.whl.metadata (10 kB)
-Collecting frozenlist>=1.1.1 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached frozenlist-1.8.0-cp313-cp313-macosx_11_0_arm64.whl.metadata (20 kB)
-Collecting multidict<7.0,>=4.5 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached multidict-6.7.0-cp313-cp313-macosx_11_0_arm64.whl.metadata (5.3 kB)
-Collecting propcache>=0.2.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached propcache-0.4.1-cp313-cp313-macosx_11_0_arm64.whl.metadata (13 kB)
-Collecting yarl<2.0,>=1.17.0 (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2025.10.0,>=2023.1.0->datasets>=2.12.0)
-  Using cached yarl-1.22.0-cp313-cp313-macosx_11_0_arm64.whl.metadata (75 kB)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests>=2.32.2->datasets>=2.12.0) (3.4.4)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests>=2.32.2->datasets>=2.12.0) (2.5.0)
-Collecting sniffio>=1.1 (from anyio->httpx<1.0.0->datasets>=2.12.0)
-  Using cached sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
-Collecting python-dateutil>=2.8.2 (from pandas->datasets>=2.12.0)
-  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
-Collecting pytz>=2020.1 (from pandas->datasets>=2.12.0)
-  Using cached pytz-2025.2-py2.py3-none-any.whl.metadata (22 kB)
-Collecting tzdata>=2022.7 (from pandas->datasets>=2.12.0)
-  Using cached tzdata-2025.2-py2.py3-none-any.whl.metadata (1.4 kB)
-Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas->datasets>=2.12.0)
-  Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
-Downloading datasets-4.4.0-py3-none-any.whl (511 kB)
-Using cached dill-0.4.0-py3-none-any.whl (119 kB)
-Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
-Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
-Downloading multiprocess-0.70.18-py313-none-any.whl (151 kB)
-Downloading aiohttp-3.13.2-cp313-cp313-macosx_11_0_arm64.whl (489 kB)
-Using cached multidict-6.7.0-cp313-cp313-macosx_11_0_arm64.whl (43 kB)
-Using cached yarl-1.22.0-cp313-cp313-macosx_11_0_arm64.whl (93 kB)
-Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
-Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
-Using cached attrs-25.4.0-py3-none-any.whl (67 kB)
-Using cached frozenlist-1.8.0-cp313-cp313-macosx_11_0_arm64.whl (49 kB)
-Using cached h11-0.16.0-py3-none-any.whl (37 kB)
-Using cached propcache-0.4.1-cp313-cp313-macosx_11_0_arm64.whl (46 kB)
-Downloading pyarrow-22.0.0-cp313-cp313-macosx_12_0_arm64.whl (34.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 34.2/34.2 MB 20.8 MB/s eta 0:00:00
-Using cached anyio-4.11.0-py3-none-any.whl (109 kB)
-Using cached sniffio-1.3.1-py3-none-any.whl (10 kB)
-Using cached pandas-2.3.3-cp313-cp313-macosx_11_0_arm64.whl (10.7 MB)
-Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
-Using cached pytz-2025.2-py2.py3-none-any.whl (509 kB)
-Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
-Using cached tzdata-2025.2-py2.py3-none-any.whl (347 kB)
-Using cached xxhash-3.6.0-cp313-cp313-macosx_11_0_arm64.whl (30 kB)
-Installing collected packages: pytz, xxhash, tzdata, sniffio, six, pyarrow, propcache, multidict, h11, frozenlist, dill, attrs, aiohappyeyeballs, yarl, python-dateutil, multiprocess, httpcore, anyio, aiosignal, pandas, httpx, aiohttp, datasets
+>>> pip3 install 'datasets>=2.12.0'
+error: externally-managed-environment
 
-Successfully installed aiohappyeyeballs-2.6.1 aiohttp-3.13.2 aiosignal-1.4.0 anyio-4.11.0 attrs-25.4.0 datasets-4.4.0 dill-0.4.0 frozenlist-1.8.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 multidict-6.7.0 multiprocess-0.70.18 pandas-2.3.3 propcache-0.4.1 pyarrow-22.0.0 python-dateutil-2.9.0.post0 pytz-2025.2 six-1.17.0 sniffio-1.3.1 tzdata-2025.2 xxhash-3.6.0 yarl-1.22.0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency peft>=0.4.0 ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'peft>=0.4.0'
-Collecting peft>=0.4.0
-  Using cached peft-0.17.1-py3-none-any.whl.metadata (14 kB)
-Requirement already satisfied: numpy>=1.17 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (2.3.4)
-Requirement already satisfied: packaging>=20.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (25.0)
-Requirement already satisfied: psutil in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (7.1.3)
-Requirement already satisfied: pyyaml in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (6.0.3)
-Requirement already satisfied: torch>=1.13.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (2.9.0)
-Requirement already satisfied: transformers in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (4.57.1)
-Requirement already satisfied: tqdm in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (4.67.1)
-Requirement already satisfied: accelerate>=0.21.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (1.11.0)
-Requirement already satisfied: safetensors in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (0.6.2)
-Requirement already satisfied: huggingface_hub>=0.25.0 in ./venv/lib/python3.13/site-packages (from peft>=0.4.0) (0.36.0)
-Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (3.20.0)
-Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (2025.10.0)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (2.32.5)
-Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (4.15.0)
-Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.25.0->peft>=0.4.0) (1.2.0)
-Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (80.9.0)
-Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (1.14.0)
-Requirement already satisfied: networkx>=2.5.1 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (3.5)
-Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=1.13.0->peft>=0.4.0) (3.1.6)
-Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=1.13.0->peft>=0.4.0) (1.3.0)
-Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=1.13.0->peft>=0.4.0) (3.0.3)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.25.0->peft>=0.4.0) (2025.10.5)
-Requirement already satisfied: regex!=2019.12.17 in ./venv/lib/python3.13/site-packages (from transformers->peft>=0.4.0) (2025.11.3)
-Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in ./venv/lib/python3.13/site-packages (from transformers->peft>=0.4.0) (0.22.1)
-Using cached peft-0.17.1-py3-none-any.whl (504 kB)
-Installing collected packages: peft
-Successfully installed peft-0.17.1
+>>> pip3 install 'peft>=0.4.0'
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Installing training dependency axolotl ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install 'axolotl'
-Collecting axolotl
-  Using cached axolotl-0.12.2.tar.gz (385 kB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-  Preparing metadata (pyproject.toml): started
-  Preparing metadata (pyproject.toml): finished with status 'done'
-Collecting packaging==23.2 (from axolotl)
-  Using cached packaging-23.2-py3-none-any.whl.metadata (3.2 kB)
-Requirement already satisfied: huggingface_hub>=0.33.0 in ./venv/lib/python3.13/site-packages (from axolotl) (0.36.0)
-Collecting peft==0.17.0 (from axolotl)
-  Using cached peft-0.17.0-py3-none-any.whl.metadata (14 kB)
-Collecting transformers==4.55.2 (from axolotl)
-  Using cached transformers-4.55.2-py3-none-any.whl.metadata (41 kB)
-Requirement already satisfied: tokenizers>=0.21.1 in ./venv/lib/python3.13/site-packages (from axolotl) (0.22.1)
-Collecting accelerate==1.10.0 (from axolotl)
-  Using cached accelerate-1.10.0-py3-none-any.whl.metadata (19 kB)
-Collecting datasets==4.0.0 (from axolotl)
-  Using cached datasets-4.0.0-py3-none-any.whl.metadata (19 kB)
-Collecting trl==0.21.0 (from axolotl)
-  Using cached trl-0.21.0-py3-none-any.whl.metadata (11 kB)
-Collecting hf_xet==1.1.5 (from axolotl)
-  Using cached hf_xet-1.1.5-cp37-abi3-macosx_11_0_arm64.whl.metadata (879 bytes)
-Collecting kernels==0.9.0 (from axolotl)
-  Using cached kernels-0.9.0-py3-none-any.whl.metadata (3.3 kB)
-Collecting trackio (from axolotl)
-  Downloading trackio-0.7.0-py3-none-any.whl.metadata (8.4 kB)
-Collecting optimum==1.16.2 (from axolotl)
-  Using cached optimum-1.16.2-py3-none-any.whl.metadata (17 kB)
-Collecting hf_transfer (from axolotl)
-  Using cached hf_transfer-0.1.9-cp38-abi3-macosx_11_0_arm64.whl.metadata (1.7 kB)
-Collecting sentencepiece (from axolotl)
-  Using cached sentencepiece-0.2.1-cp313-cp313-macosx_11_0_arm64.whl.metadata (10 kB)
-Collecting gradio==5.41.1 (from axolotl)
-  Using cached gradio-5.41.1-py3-none-any.whl.metadata (16 kB)
-Collecting modal==1.0.2 (from axolotl)
-  Using cached modal-1.0.2-py3-none-any.whl.metadata (2.4 kB)
-Collecting pydantic==2.10.6 (from axolotl)
-  Using cached pydantic-2.10.6-py3-none-any.whl.metadata (30 kB)
-Collecting addict (from axolotl)
-  Using cached addict-2.4.0-py3-none-any.whl.metadata (1.0 kB)
-Collecting fire (from axolotl)
-  Using cached fire-0.7.1-py3-none-any.whl.metadata (5.8 kB)
-Requirement already satisfied: PyYAML>=6.0 in ./venv/lib/python3.13/site-packages (from axolotl) (6.0.3)
-Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from axolotl) (2.32.5)
-Collecting wandb (from axolotl)
-  Downloading wandb-0.22.3-py3-none-macosx_12_0_arm64.whl.metadata (10 kB)
-Collecting einops (from axolotl)
-  Using cached einops-0.8.1-py3-none-any.whl.metadata (13 kB)
-Collecting colorama (from axolotl)
-  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
-Collecting numba (from axolotl)
-  Using cached numba-0.62.1-cp313-cp313-macosx_12_0_arm64.whl.metadata (2.8 kB)
-Collecting numpy<=2.0.1,>=1.24.4 (from axolotl)
-  Using cached numpy-2.0.1.tar.gz (18.9 MB)
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Getting requirements to build wheel: started
-  Getting requirements to build wheel: finished with status 'done'
-  Installing backend dependencies: started
-  Installing backend dependencies: finished with status 'done'
-  Preparing metadata (pyproject.toml): started
-  Preparing metadata (pyproject.toml): finished with status 'error'
-  error: subprocess-exited-with-error
-  
-  × Preparing metadata (pyproject.toml) did not run successfully.
-  │ exit code: 1
-  ╰─> [633 lines of output]
-      + /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/vendored-meson/meson/meson.py setup /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/.mesonpy-tlm4ojq2 -Dbuildtype=release -Db_ndebug=if-release -Db_vscrt=md --native-file=/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/.mesonpy-tlm4ojq2/meson-python-native-file.ini
-      The Meson build system
-      Version: 1.4.99
-      Source dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87
-      Build dir: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/.mesonpy-tlm4ojq2
-      Build type: native build
-      Project name: NumPy
-      Project version: 2.0.1
-      C compiler for the host machine: cc (clang 17.0.0 "Apple clang version 17.0.0 (clang-1700.0.13.5)")
-      C linker for the host machine: cc ld64 1167.5
-      C++ compiler for the host machine: c++ (clang 17.0.0 "Apple clang version 17.0.0 (clang-1700.0.13.5)")
-      C++ linker for the host machine: c++ ld64 1167.5
-      Cython compiler for the host machine: cython (cython 3.1.6)
-      Host machine cpu family: aarch64
-      Host machine cpu: aarch64
-      Program python found: YES (/Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13)
-      Found pkg-config: YES (/opt/homebrew/bin/pkg-config) 2.5.1
-      Run-time dependency python found: YES 3.13
-      Has header "Python.h" with dependency python-3.13: YES
-      Compiler for C supports arguments -fno-strict-aliasing: YES
-      Compiler for C supports arguments -ftrapping-math: YES
-      Compiler for C supports link arguments -Wl,-ld_classic: YES
-      Message: During parsing cpu-dispatch: The following CPU features were ignored due to platform incompatibility or lack of support:
-      "XOP FMA4"
-      Test features "NEON NEON_FP16 NEON_VFPV4 ASIMD" : Supported
-      Test features "ASIMDHP" : Supported
-      Test features "ASIMDFHM" : Supported
-      Test features "SVE" : Supported
-      Configuring npy_cpu_dispatch_config.h using configuration
-      Message:
-      CPU Optimization Options
-        baseline:
-          Requested : min
-          Enabled   : NEON NEON_FP16 NEON_VFPV4 ASIMD
-        dispatch:
-          Requested : max -xop -fma4
-          Enabled   : ASIMDHP ASIMDFHM SVE
-      
-      Library m found: YES
-      Run-time dependency scipy-openblas found: NO (tried pkgconfig)
-      Run-time dependency accelerate found: YES
-      ../numpy/meson.build:135: WARNING: Project targets '>=1.2.99' but uses feature introduced in '1.3.0': dep 'accelerate' custom lookup.
-      Message: BLAS symbol suffix: $NEWLAPACK
-      Program _build_utils/process_src_template.py found: YES (/Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/_build_utils/process_src_template.py)
-      Program _build_utils/tempita.py found: YES (/Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python3.13 /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/_build_utils/tempita.py)
-      Configuring __config__.py using configuration
-      Checking for size of "short" : 2
-      Checking for size of "int" : 4
-      Checking for size of "long" : 8
-      Checking for size of "long long" : 8
-      Checking for size of "float" : 4
-      Checking for size of "double" : 8
-      Checking for size of "long double" : 8
-      Checking for size of "size_t" : 8
-      Checking for size of "size_t" : 8 (cached)
-      Checking for size of "wchar_t" : 4
-      Checking for size of "off_t" : 8
-      Checking for size of "Py_intptr_t" with dependency python-3.13: 8
-      Checking for size of "PY_LONG_LONG" with dependency python-3.13: 8
-      Has header "complex.h" : YES
-      Checking for type "complex float" : YES
-      Checking for size of "complex float" : 8
-      Checking for type "complex double" : YES
-      Checking for size of "complex double" : 16
-      Checking for type "complex long double" : YES
-      Checking for size of "complex long double" : 16
-      Checking for function "sin" with dependency -lm: YES
-      Checking for function "cos" with dependency -lm: YES
-      Checking for function "tan" with dependency -lm: YES
-      Checking for function "sinh" with dependency -lm: YES
-      Checking for function "cosh" with dependency -lm: YES
-      Checking for function "tanh" with dependency -lm: YES
-      Checking for function "fabs" with dependency -lm: YES
-      Checking for function "floor" with dependency -lm: YES
-      Checking for function "ceil" with dependency -lm: YES
-      Checking for function "sqrt" with dependency -lm: YES
-      Checking for function "log10" with dependency -lm: YES
-      Checking for function "log" with dependency -lm: YES
-      Checking for function "exp" with dependency -lm: YES
-      Checking for function "asin" with dependency -lm: YES
-      Checking for function "acos" with dependency -lm: YES
-      Checking for function "atan" with dependency -lm: YES
-      Checking for function "fmod" with dependency -lm: YES
-      Checking for function "modf" with dependency -lm: YES
-      Checking for function "frexp" with dependency -lm: YES
-      Checking for function "ldexp" with dependency -lm: YES
-      Checking for function "expm1" with dependency -lm: YES
-      Checking for function "log1p" with dependency -lm: YES
-      Checking for function "acosh" with dependency -lm: YES
-      Checking for function "asinh" with dependency -lm: YES
-      Checking for function "atanh" with dependency -lm: YES
-      Checking for function "rint" with dependency -lm: YES
-      Checking for function "trunc" with dependency -lm: YES
-      Checking for function "exp2" with dependency -lm: YES
-      Checking for function "copysign" with dependency -lm: YES
-      Checking for function "nextafter" with dependency -lm: YES
-      Checking for function "cbrt" with dependency -lm: YES
-      Checking for function "log2" with dependency -lm: YES
-      Checking for function "pow" with dependency -lm: YES
-      Checking for function "hypot" with dependency -lm: YES
-      Checking for function "atan2" with dependency -lm: YES
-      Checking for function "csin" with dependency -lm: YES
-      Checking for function "csinh" with dependency -lm: YES
-      Checking for function "ccos" with dependency -lm: YES
-      Checking for function "ccosh" with dependency -lm: YES
-      Checking for function "ctan" with dependency -lm: YES
-      Checking for function "ctanh" with dependency -lm: YES
-      Checking for function "creal" with dependency -lm: YES
-      Checking for function "cimag" with dependency -lm: YES
-      Checking for function "conj" with dependency -lm: YES
-      Checking for function "strtoll" : YES
-      Checking for function "strtoull" : YES
-      Checking for function "cabs" with dependency -lm: YES
-      Checking for function "cabsf" with dependency -lm: YES
-      Checking for function "cabsl" with dependency -lm: YES
-      Checking for function "cacos" with dependency -lm: YES
-      Checking for function "cacosf" with dependency -lm: YES
-      Checking for function "cacosl" with dependency -lm: YES
-      Checking for function "cacosh" with dependency -lm: YES
-      Checking for function "cacoshf" with dependency -lm: YES
-      Checking for function "cacoshl" with dependency -lm: YES
-      Checking for function "carg" with dependency -lm: YES
-      Checking for function "cargf" with dependency -lm: YES
-      Checking for function "cargl" with dependency -lm: YES
-      Checking for function "casin" with dependency -lm: YES
-      Checking for function "casinf" with dependency -lm: YES
-      Checking for function "casinl" with dependency -lm: YES
-      Checking for function "casinh" with dependency -lm: YES
-      Checking for function "casinhf" with dependency -lm: YES
-      Checking for function "casinhl" with dependency -lm: YES
-      Checking for function "catan" with dependency -lm: YES
-      Checking for function "catanf" with dependency -lm: YES
-      Checking for function "catanl" with dependency -lm: YES
-      Checking for function "catanh" with dependency -lm: YES
-      Checking for function "catanhf" with dependency -lm: YES
-      Checking for function "catanhl" with dependency -lm: YES
-      Checking for function "cexp" with dependency -lm: YES
-      Checking for function "cexpf" with dependency -lm: YES
-      Checking for function "cexpl" with dependency -lm: YES
-      Checking for function "clog" with dependency -lm: YES
-      Checking for function "clogf" with dependency -lm: YES
-      Checking for function "clogl" with dependency -lm: YES
-      Checking for function "cpow" with dependency -lm: YES
-      Checking for function "cpowf" with dependency -lm: YES
-      Checking for function "cpowl" with dependency -lm: YES
-      Checking for function "csqrt" with dependency -lm: YES
-      Checking for function "csqrtf" with dependency -lm: YES
-      Checking for function "csqrtl" with dependency -lm: YES
-      Checking for function "csin" with dependency -lm: YES (cached)
-      Checking for function "csinf" with dependency -lm: YES
-      Checking for function "csinl" with dependency -lm: YES
-      Checking for function "csinh" with dependency -lm: YES (cached)
-      Checking for function "csinhf" with dependency -lm: YES
-      Checking for function "csinhl" with dependency -lm: YES
-      Checking for function "ccos" with dependency -lm: YES (cached)
-      Checking for function "ccosf" with dependency -lm: YES
-      Checking for function "ccosl" with dependency -lm: YES
-      Checking for function "ccosh" with dependency -lm: YES (cached)
-      Checking for function "ccoshf" with dependency -lm: YES
-      Checking for function "ccoshl" with dependency -lm: YES
-      Checking for function "ctan" with dependency -lm: YES (cached)
-      Checking for function "ctanf" with dependency -lm: YES
-      Checking for function "ctanl" with dependency -lm: YES
-      Checking for function "ctanh" with dependency -lm: YES (cached)
-      Checking for function "ctanhf" with dependency -lm: YES
-      Checking for function "ctanhl" with dependency -lm: YES
-      Checking for function "isfinite" with dependency -lm: YES
-      Header "Python.h" has symbol "isfinite" with dependency python-3.13: YES
-      Checking for function "isinf" with dependency -lm: YES
-      Header "Python.h" has symbol "isinf" with dependency python-3.13: YES
-      Checking for function "isnan" with dependency -lm: YES
-      Header "Python.h" has symbol "isnan" with dependency python-3.13: YES
-      Checking for function "signbit" with dependency -lm: YES
-      Header "Python.h" has symbol "signbit" with dependency python-3.13: YES
-      Checking for function "fallocate" : NO
-      Header "Python.h" has symbol "HAVE_FTELLO" with dependency python-3.13: YES
-      Header "Python.h" has symbol "HAVE_FSEEKO" with dependency python-3.13: YES
-      Checking for function "backtrace" : YES
-      Checking for function "madvise" : YES
-      Has header "features.h" : NO
-      Has header "xlocale.h" : YES
-      Has header "dlfcn.h" : YES
-      Has header "execinfo.h" : YES
-      Has header "libunwind.h" : YES
-      Has header "sys/mman.h" : YES
-      Checking for function "strtold_l" : YES
-      Compiler for C supports arguments -O3: YES
-      Has header "endian.h" : NO
-      Has header "sys/endian.h" : NO
-      Compiler for C supports function attribute visibility:hidden: YES
-      Configuring config.h using configuration
-      Configuring _numpyconfig.h using configuration
-      Configuring npymath.ini using configuration
-      Configuring mlib.ini using configuration
-      Configuring numpy.pc using configuration
-      Generating multi-targets for "_umath_tests.dispatch.h"
-        Enabled targets: ASIMDHP, baseline
-      Generating multi-targets for "argfunc.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "x86_simd_argsort.dispatch.h"
-        Enabled targets:
-      Generating multi-targets for "x86_simd_qsort.dispatch.h"
-        Enabled targets:
-      Generating multi-targets for "x86_simd_qsort_16bit.dispatch.h"
-        Enabled targets:
-      Generating multi-targets for "highway_qsort.dispatch.h"
-        Enabled targets: SVE, ASIMD
-      Generating multi-targets for "highway_qsort_16bit.dispatch.h"
-        Enabled targets: ASIMDHP
-      Generating multi-targets for "loops_arithm_fp.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_arithmetic.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_comparison.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_exponent_log.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_hyperbolic.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_logical.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_minmax.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_modulo.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_trigonometric.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_umath_fp.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_unary.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_unary_fp.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_unary_fp_le.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_unary_complex.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "loops_autovec.dispatch.h"
-        Enabled targets: baseline
-      Generating multi-targets for "_simd.dispatch.h"
-        Enabled targets: baseline
-      Build targets in project: 64
-      WARNING: Project specifies a minimum meson_version '>=1.2.99' but uses features which were added in newer versions:
-       * 1.3.0: {'dep 'accelerate' custom lookup'}
-      
-      NumPy 2.0.1
-      
-        User defined options
-          Native files: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/.mesonpy-tlm4ojq2/meson-python-native-file.ini
-          buildtype   : release
-          b_ndebug    : if-release
-          b_vscrt     : md
-      
-      Found ninja-1.13.0.git.kitware.jobserver-pipe-1 at /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-rl_z9uah/normal/bin/ninja
-      + /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-build-env-rl_z9uah/normal/bin/ninja
-      [1/322] Generating numpy/_core/npy_math_internal.h with a custom command
-      [2/322] Generating 'numpy/_core/libnpymath.a.p/ieee754.c'
-      [3/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/arraytypes.h'
-      [4/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/npy_sort.h'
-      [5/322] Generating 'numpy/_core/libnpymath.a.p/npy_math_complex.c'
-      [6/322] Copying file numpy/__init__.pxd
-      [7/322] Generating numpy/_core/__umath_generated with a custom command
-      [8/322] Copying file numpy/__init__.py
-      [9/322] Copying file numpy/__init__.cython-30.pxd
-      [10/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/npy_sort.h'
-      [11/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/arraytypes.h'
-      [12/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/arraytypes.h'
-      [13/322] Generating 'numpy/_core/libargfunc.dispatch.h_baseline.a.p/argfunc.dispatch.c'
-      [14/322] Generating 'numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/npy_sort.h'
-      [15/322] Generating 'numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/arraytypes.h'
-      [16/322] Generating 'numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/npy_sort.h'
-      [17/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops.h'
-      [18/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops_utils.h'
-      [19/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops.h'
-      [20/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_utils.h'
-      [21/322] Generating 'numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/loops_arithm_fp.dispatch.c'
-      [22/322] Generating 'numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/loops_arithmetic.dispatch.c'
-      [23/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops.h'
-      [24/322] Generating numpy/_core/__ufunc_api with a custom command
-      [25/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops_utils.h'
-      [26/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_utils.h'
-      [27/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops_exponent_log.dispatch.c'
-      [28/322] Generating 'numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/loops.h'
-      [29/322] Generating 'numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/loops_comparison.dispatch.c'
-      [30/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_utils.h'
-      [31/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops_hyperbolic.dispatch.c'
-      [32/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops_utils.h'
-      [33/322] Generating 'numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/loops.h'
-      [34/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops_logical.dispatch.c'
-      [35/322] Generating 'numpy/_core/libloops_logical.dispatch.h_baseline.a.p/loops.h'
-      [36/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_utils.h'
-      [37/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops.h'
-      [38/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_utils.h'
-      [39/322] Generating numpy/_core/__multiarray_api with a custom command
-      [40/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops_utils.h'
-      [41/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops.h'
-      [42/322] Generating 'numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/loops_trigonometric.dispatch.c'
-      [43/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops_modulo.dispatch.c'
-      [44/322] Generating 'numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/loops.h'
-      [45/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops_umath_fp.dispatch.c'
-      [46/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops_utils.h'
-      [47/322] Generating 'numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/loops_minmax.dispatch.c'
-      [48/322] Generating 'numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/loops.h'
-      [49/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_utils.h'
-      [50/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops.h'
-      [51/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_utils.h'
-      [52/322] Generating 'numpy/_core/libloops_unary.dispatch.h_baseline.a.p/loops_unary.dispatch.c'
-      [53/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops.h'
-      [54/322] Generating 'numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/loops_unary_fp.dispatch.c'
-      [55/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_utils.h'
-      [56/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops.h'
-      [57/322] Generating 'numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/loops_unary_fp_le.dispatch.c'
-      [58/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_unary_complex.dispatch.c'
-      [59/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops_utils.h'
-      [60/322] Generating 'numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/loops.h'
-      [61/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops.h'
-      [62/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops_utils.h'
-      [63/322] Generating 'numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/loops_autovec.dispatch.c'
-      [64/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd_inc.h'
-      [65/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd_data.inc'
-      [66/322] Generating numpy/random/_bounded_integer_pxd with a custom command
-      [67/322] Generating numpy/random/_bounded_integer_pyx with a custom command
-      [68/322] Copying file numpy/random/__init__.py
-      [69/322] Copying file numpy/random/bit_generator.pxd
-      [70/322] Copying file numpy/random/_common.pxd
-      [71/322] Copying file numpy/random/__init__.pxd
-      [72/322] Generating 'numpy/_core/lib_simd.dispatch.h_baseline.a.p/_simd.dispatch.c'
-      [73/322] Copying file numpy/random/c_distributions.pxd
-      [74/322] Copying file numpy/random/_generator.pyx
-      [75/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/templ_common.h'
-      [76/322] Copying file numpy/random/mtrand.pyx
-      [77/322] Generating 'numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/_multiarray_tests.c'
-      [78/322] Generating numpy/_core/_umath_doc_generated with a custom command
-      [79/322] Generating 'numpy/_core/_umath_tests.cpython-313-darwin.so.p/_umath_tests.c'
-      [80/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_ASIMDHP.a.p/src_umath__umath_tests.dispatch.c.o
-      [81/322] Compiling C object numpy/_core/lib_umath_tests.dispatch.h_baseline.a.p/src_umath__umath_tests.dispatch.c.o
-      [82/322] Compiling C object numpy/_core/libnpymath.a.p/meson-generated_ieee754.c.o
-      [83/322] Compiling C object numpy/_core/libnpymath.a.p/meson-generated_npy_math_complex.c.o
-      [84/322] Compiling C object numpy/_core/libnpymath.a.p/src_npymath_npy_math.c.o
-      [85/322] Compiling C++ object numpy/_core/libhighway.a.p/src_highway_hwy_abort.cc.o
-      [86/322] Compiling C object numpy/_core/libloops_exponent_log.dispatch.h_baseline.a.p/meson-generated_loops_exponent_log.dispatch.c.o
-      [87/322] Compiling C object numpy/_core/libloops_arithmetic.dispatch.h_baseline.a.p/meson-generated_loops_arithmetic.dispatch.c.o
-      [88/322] Compiling C object numpy/_core/libargfunc.dispatch.h_baseline.a.p/meson-generated_argfunc.dispatch.c.o
-      [89/322] Compiling C object numpy/_core/libloops_hyperbolic.dispatch.h_baseline.a.p/meson-generated_loops_hyperbolic.dispatch.c.o
-      [90/322] Compiling C object numpy/_core/libloops_logical.dispatch.h_baseline.a.p/meson-generated_loops_logical.dispatch.c.o
-      [91/322] Compiling C++ object numpy/_core/libnpymath.a.p/src_npymath_halffloat.cpp.o
-      [92/322] Compiling C object numpy/_core/libloops_arithm_fp.dispatch.h_baseline.a.p/meson-generated_loops_arithm_fp.dispatch.c.o
-      [93/322] Compiling C object numpy/_core/libloops_trigonometric.dispatch.h_baseline.a.p/meson-generated_loops_trigonometric.dispatch.c.o
-      [94/322] Compiling C object numpy/_core/libloops_modulo.dispatch.h_baseline.a.p/meson-generated_loops_modulo.dispatch.c.o
-      [95/322] Compiling C object numpy/_core/libloops_umath_fp.dispatch.h_baseline.a.p/meson-generated_loops_umath_fp.dispatch.c.o
-      [96/322] Compiling C object numpy/_core/libloops_unary_complex.dispatch.h_baseline.a.p/meson-generated_loops_unary_complex.dispatch.c.o
-      [97/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/arraytypes.h'
-      [98/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/npy_sort.h'
-      [99/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/arraytypes.c'
-      [100/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/einsum.c'
-      [101/322] Compiling C object numpy/_core/libloops_unary.dispatch.h_baseline.a.p/meson-generated_loops_unary.dispatch.c.o
-      [102/322] Compiling C object numpy/_core/libloops_unary_fp_le.dispatch.h_baseline.a.p/meson-generated_loops_unary_fp_le.dispatch.c.o
-      [103/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/nditer_templ.c'
-      [104/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/scalartypes.c'
-      [105/322] Compiling C object numpy/_core/libloops_comparison.dispatch.h_baseline.a.p/meson-generated_loops_comparison.dispatch.c.o
-      [106/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/templ_common.h'
-      [107/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops.h'
-      [108/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops_utils.h'
-      [109/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/funcs.inc'
-      [110/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/loops.c'
-      [111/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.c'
-      [112/322] Compiling C object numpy/_core/libloops_unary_fp.dispatch.h_baseline.a.p/meson-generated_loops_unary_fp.dispatch.c.o
-      [113/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/einsum_sumprod.c'
-      [114/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/matmul.h'
-      [115/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_logfactorial.c.o
-      [116/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/scalarmath.c'
-      [117/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_mvhg_count.c.o
-      [118/322] Generating 'numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/lowlevel_strided_loops.c'
-      [119/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_mvhg_marginals.c.o
-      [120/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_random_hypergeometric.c.o
-      [121/322] Compiling C object numpy/_core/libloops_minmax.dispatch.h_baseline.a.p/meson-generated_loops_minmax.dispatch.c.o
-      [122/322] Compiling C object numpy/random/libnpyrandom.a.p/src_distributions_distributions.c.o
-      [123/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/_mt19937.pyx
-      [124/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/_philox.pyx
-      [125/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/_pcg64.pyx
-      [126/322] Compiling Cython source numpy/random/_bounded_integers.pyx
-      [127/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/_common.pyx
-      [128/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/_sfc64.pyx
-      [129/322] Compiling Cython source /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/numpy/random/bit_generator.pyx
-      [130/322] Compiling C++ object numpy/_core/libhighway_qsort_16bit.dispatch.h_ASIMDHP.a.p/src_npysort_highway_qsort_16bit.dispatch.cpp.o
-      [131/322] Compiling C object numpy/_core/lib_simd.dispatch.h_baseline.a.p/meson-generated__simd.dispatch.c.o
-      [132/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/meson-generated__multiarray_tests.c.o
-      [133/322] Linking static target numpy/_core/libnpymath.a
-      [134/322] Linking static target numpy/_core/libhighway.a
-      [135/322] Linking static target numpy/_core/lib_umath_tests_mtargets.a
-      [136/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
-      [137/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_npy_hashtable.c.o
-      [138/322] Compiling C object numpy/_core/_umath_tests.cpython-313-darwin.so.p/src_common_npy_cpu_features.c.o
-      [139/322] Compiling C object numpy/_core/_multiarray_tests.cpython-313-darwin.so.p/src_common_mem_overlap.c.o
-      [140/322] Compiling C object numpy/_core/_struct_ufunc_tests.cpython-313-darwin.so.p/src_umath__struct_ufunc_tests.c.o
-      [141/322] Compiling C object numpy/_core/_umath_tests.cpython-313-darwin.so.p/meson-generated__umath_tests.c.o
-      [142/322] Compiling C object numpy/_core/_operand_flag_tests.cpython-313-darwin.so.p/src_umath__operand_flag_tests.c.o
-      [143/322] Compiling Cython source numpy/random/mtrand.pyx
-      [144/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum.c.o
-      [145/322] Compiling C object numpy/_core/_rational_tests.cpython-313-darwin.so.p/src_umath__rational_tests.c.o
-      [146/322] Compiling C++ object numpy/_core/libhighway_qsort.dispatch.h_SVE.a.p/src_npysort_highway_qsort.dispatch.cpp.o
-      [147/322] Compiling C++ object numpy/_core/libhighway_qsort.dispatch.h_ASIMD.a.p/src_npysort_highway_qsort.dispatch.cpp.o
-      [148/322] Compiling Cython source numpy/random/_generator.pyx
-      [149/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_abstractdtypes.c.o
-      [150/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_nditer_templ.c.o
-      [151/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_alloc.c.o
-      [152/322] Compiling C object numpy/_core/libloops_autovec.dispatch.h_baseline.a.p/meson-generated_loops_autovec.dispatch.c.o
-      [153/322] Linking static target numpy/_core/lib_multiarray_umath_mtargets.a
-      [154/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arrayobject.c.o
-      [155/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_coercion.c.o
-      [156/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalartypes.c.o
-      [157/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_converter.c.o
-      [158/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_matmul.c.o
-      [159/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_scalar.c.o
-      [160/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_method.c.o
-      [161/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_array_assign_array.c.o
-      [162/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arraywrap.c.o
-      [163/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_arrayfunction_override.c.o
-      [164/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common.c.o
-      [165/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_calculation.c.o
-      [166/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_buffer.c.o
-      [167/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_common_dtype.c.o
-      [168/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_loops.c.o
-      [169/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_convert.c.o
-      [170/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_conversion_utils.c.o
-      [171/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_compiled_base.c.o
-      [172/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_arraytypes.c.o
-      [173/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_strings.c.o
-      [174/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busdaycal.c.o
-      [175/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_convert_datatype.c.o
-      [176/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime_busday.c.o
-      [177/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_datetime.c.o
-      [178/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dlpack.c.o
-      [179/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_ctors.c.o
-      [180/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_scalarmath.c.o
-      [181/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtype_traversal.c.o
-      [182/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtypemeta.c.o
-      [183/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_public_dtype_api.c.o
-      [184/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_flagsobject.c.o
-      [185/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_hashdescr.c.o
-      [186/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_einsum_sumprod.c.o
-      [187/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_getset.c.o
-      [188/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_descriptor.c.o
-      [189/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_legacy_dtype_implementation.c.o
-      [190/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dragon4.c.o
-      [191/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_dtype_transfer.c.o
-      [192/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_iterators.c.o
-      [193/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_pywrap.c.o
-      [194/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_number.c.o
-      [195/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_methods.c.o
-      [196/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_refcount.c.o
-      [197/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_api.c.o
-      [198/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_sequence.c.o
-      [199/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_mapping.c.o
-      [200/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_item_selection.c.o
-      [201/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_strfuncs.c.o
-      [202/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_scalarapi.c.o
-      [203/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_nditer_constr.c.o
-      [204/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_shape.c.o
-      [205/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_utf8_utils.c.o
-      [206/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_dtype.c.o
-      [207/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_multiarraymodule.c.o
-      [208/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_static_string.c.o
-      [209/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_temp_elide.c.o
-      [210/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_vdot.c.o
-      [211/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_usertypes.c.o
-      [212/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_stringdtype_casts.c.o
-      [213/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_conversions.c.o
-      [214/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_field_types.c.o
-      [215/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_growth.c.o
-      [216/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_readtext.c.o
-      [217/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/meson-generated_lowlevel_strided_loops.c.o
-      [218/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_rows.c.o
-      [219/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_stream_pyobject.c.o
-      [220/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_radixsort.cpp.o
-      [221/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npymath_arm64_exports.c.o
-      [222/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_str_to_int.c.o
-      [223/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_gil_utils.c.o
-      [224/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_array_assign.c.o
-      [225/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_heapsort.cpp.o
-      [226/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_multiarray_textreading_tokenize.cpp.o
-      [227/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_mergesort.cpp.o
-      [228/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_hashtable.c.o
-      [229/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_longdouble.c.o
-      [230/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_argparse.c.o
-      [231/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_mem_overlap.c.o
-      [232/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_ucsnarrow.c.o
-      [233/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_ufunc_override.c.o
-      [234/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_cpu_dispatch.c.o
-      [235/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_npy_cpu_features.c.o
-      [236/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_numpyos.c.o
-      [237/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_python_xerbla.c.o
-      [238/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_binsearch.cpp.o
-      [239/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_common_cblasfuncs.c.o
-      [240/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_extobj.c.o
-      [241/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_legacy_array_method.c.o
-      [242/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_override.c.o
-      [243/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_dispatching.c.o
-      [244/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_reduction.c.o
-      [245/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_ufunc_type_resolution.c.o
-      [246/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_wrapping_array_method.c.o
-      [247/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o
-      FAILED: [code=1] numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o
-      c++ -Inumpy/_core/_multiarray_umath.cpython-313-darwin.so.p -Inumpy/_core -I../numpy/_core -Inumpy/_core/include -I../numpy/_core/include -I../numpy/_core/src/common -I../numpy/_core/src/multiarray -I../numpy/_core/src/npymath -I../numpy/_core/src/umath -I/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/include/python3.13 -I/private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-install-hls65x16/numpy_3e15637aafbe408b892463f73b48dc87/.mesonpy-tlm4ojq2/meson_cpu -fvisibility=hidden -fvisibility-inlines-hidden -fdiagnostics-color=always -DNDEBUG -Wall -Winvalid-pch -std=c++17 -O3 -ftrapping-math -DNPY_HAVE_CLANG_FPSTRICT -DNPY_HAVE_NEON_VFPV4 -DNPY_HAVE_NEON_FP16 -DNPY_HAVE_NEON -DNPY_HAVE_ASIMD -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework -idirafter/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Headers -DACCELERATE_NEW_LAPACK -DHAVE_CBLAS '-DBLAS_SYMBOL_SUFFIX=$NEWLAPACK' -DNPY_INTERNAL_BUILD -DHAVE_NPY_CONFIG_H -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -D__STDC_VERSION__=0 -fno-exceptions -fno-rtti -MD -MQ numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -MF numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o.d -o numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_string_ufuncs.cpp.o -c ../numpy/_core/src/umath/string_ufuncs.cpp
-      In file included from ../numpy/_core/src/umath/string_ufuncs.cpp:20:
-      ../numpy/_core/src/umath/string_fastsearch.h:132:5: error: no type named 'ptrdiff_t' in namespace 'std'; did you mean simply 'ptrdiff_t'?
-        132 |     std::ptrdiff_t
-            |     ^~~~~~~~~~~~~~
-            |     ptrdiff_t
-      /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include/__stddef_ptrdiff_t.h:18:26: note: 'ptrdiff_t' declared here
-         18 | typedef __PTRDIFF_TYPE__ ptrdiff_t;
-            |                          ^
-      In file included from ../numpy/_core/src/umath/string_ufuncs.cpp:20:
-      ../numpy/_core/src/umath/string_fastsearch.h:219:23: error: invalid operands to binary expression ('CheckedIndexer<char>' and 'CheckedIndexer<char>')
-        219 |             return (p - s);
-            |                     ~ ^ ~
-      ../numpy/_core/src/umath/string_fastsearch.h:826:20: note: in instantiation of function template specialization 'rfindchar<char>' requested here
-        826 |             return rfindchar(s_, n, p_[0]);
-            |                    ^
-      ../numpy/_core/src/umath/string_buffer.h:898:19: note: in instantiation of function template specialization 'fastsearch<char>' requested here
-        898 |             pos = fastsearch(start_loc, end_loc - start_loc, buf2.buf, buf2.after - buf2.buf, -1, FAST_SEARCH);
-            |                   ^
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1114:9: note: in instantiation of function template specialization 'string_find<ENCODING::ASCII>' requested here
-       1114 |         string_find<ENCODING::ASCII>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:720:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        720 | operator-(Buffer<enc> lhs, Buffer<enc> rhs)
-            | ^
-      ../numpy/_core/src/umath/string_buffer.h:736:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        736 | operator-(Buffer<enc> lhs, npy_int64 rhs)
-            | ^
-      ../numpy/_core/src/umath/string_fastsearch.h:139:5: note: candidate function not viable: no known conversion from 'CheckedIndexer<char>' to 'size_t' (aka 'unsigned long') for 1st argument
-        139 |     operator-(size_t rhs)
-            |     ^         ~~~~~~~~~~
-      ../numpy/_core/src/umath/string_fastsearch.h:495:27: error: invalid operands to binary expression ('CheckedIndexer<char>' and 'CheckedIndexer<char>')
-        495 |             return window - haystack;
-            |                    ~~~~~~ ^ ~~~~~~~~
-      ../numpy/_core/src/umath/string_fastsearch.h:576:18: note: in instantiation of function template specialization '_two_way<char>' requested here
-        576 |         result = _two_way(haystack + index,
-            |                  ^
-      ../numpy/_core/src/umath/string_fastsearch.h:846:24: note: in instantiation of function template specialization '_two_way_count<char>' requested here
-        846 |                 return _two_way_count(s_, n, p_, m, maxcount);
-            |                        ^
-      ../numpy/_core/src/umath/string_buffer.h:898:19: note: in instantiation of function template specialization 'fastsearch<char>' requested here
-        898 |             pos = fastsearch(start_loc, end_loc - start_loc, buf2.buf, buf2.after - buf2.buf, -1, FAST_SEARCH);
-            |                   ^
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1114:9: note: in instantiation of function template specialization 'string_find<ENCODING::ASCII>' requested here
-       1114 |         string_find<ENCODING::ASCII>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:720:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        720 | operator-(Buffer<enc> lhs, Buffer<enc> rhs)
-            | ^
-      ../numpy/_core/src/umath/string_buffer.h:736:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        736 | operator-(Buffer<enc> lhs, npy_int64 rhs)
-            | ^
-      ../numpy/_core/src/umath/string_fastsearch.h:139:5: note: candidate function not viable: no known conversion from 'CheckedIndexer<char>' to 'size_t' (aka 'unsigned long') for 1st argument
-        139 |     operator-(size_t rhs)
-            |     ^         ~~~~~~~~~~
-      ../numpy/_core/src/umath/string_fastsearch.h:219:23: error: invalid operands to binary expression ('CheckedIndexer<unsigned int>' and 'CheckedIndexer<unsigned int>')
-        219 |             return (p - s);
-            |                     ~ ^ ~
-      ../numpy/_core/src/umath/string_fastsearch.h:826:20: note: in instantiation of function template specialization 'rfindchar<unsigned int>' requested here
-        826 |             return rfindchar(s_, n, p_[0]);
-            |                    ^
-      ../numpy/_core/src/umath/string_buffer.h:908:19: note: in instantiation of function template specialization 'fastsearch<unsigned int>' requested here
-        908 |             pos = fastsearch((npy_ucs4 *)start_loc, end - start,
-            |                   ^
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1114:9: note: in instantiation of function template specialization 'string_find<ENCODING::ASCII>' requested here
-       1114 |         string_find<ENCODING::ASCII>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:720:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        720 | operator-(Buffer<enc> lhs, Buffer<enc> rhs)
-            | ^
-      ../numpy/_core/src/umath/string_buffer.h:736:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        736 | operator-(Buffer<enc> lhs, npy_int64 rhs)
-            | ^
-      ../numpy/_core/src/umath/string_fastsearch.h:139:5: note: candidate function not viable: no known conversion from 'CheckedIndexer<unsigned int>' to 'size_t' (aka 'unsigned long') for 1st argument
-        139 |     operator-(size_t rhs)
-            |     ^         ~~~~~~~~~~
-      ../numpy/_core/src/umath/string_fastsearch.h:495:27: error: invalid operands to binary expression ('CheckedIndexer<unsigned int>' and 'CheckedIndexer<unsigned int>')
-        495 |             return window - haystack;
-            |                    ~~~~~~ ^ ~~~~~~~~
-      ../numpy/_core/src/umath/string_fastsearch.h:576:18: note: in instantiation of function template specialization '_two_way<unsigned int>' requested here
-        576 |         result = _two_way(haystack + index,
-            |                  ^
-      ../numpy/_core/src/umath/string_fastsearch.h:846:24: note: in instantiation of function template specialization '_two_way_count<unsigned int>' requested here
-        846 |                 return _two_way_count(s_, n, p_, m, maxcount);
-            |                        ^
-      ../numpy/_core/src/umath/string_buffer.h:908:19: note: in instantiation of function template specialization 'fastsearch<unsigned int>' requested here
-        908 |             pos = fastsearch((npy_ucs4 *)start_loc, end - start,
-            |                   ^
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1114:9: note: in instantiation of function template specialization 'string_find<ENCODING::ASCII>' requested here
-       1114 |         string_find<ENCODING::ASCII>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:720:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        720 | operator-(Buffer<enc> lhs, Buffer<enc> rhs)
-            | ^
-      ../numpy/_core/src/umath/string_buffer.h:736:1: note: candidate template ignored: could not match 'Buffer' against 'CheckedIndexer'
-        736 | operator-(Buffer<enc> lhs, npy_int64 rhs)
-            | ^
-      ../numpy/_core/src/umath/string_fastsearch.h:139:5: note: candidate function not viable: no known conversion from 'CheckedIndexer<unsigned int>' to 'size_t' (aka 'unsigned long') for 1st argument
-        139 |     operator-(size_t rhs)
-            |     ^         ~~~~~~~~~~
-      In file included from ../numpy/_core/src/umath/string_ufuncs.cpp:21:
-      ../numpy/_core/src/umath/string_buffer.h:924:20: error: no matching function for call to 'string_find'
-        924 |     npy_intp pos = string_find(buf1, buf2, start, end);
-            |                    ^~~~~~~~~~~
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1116:9: note: in instantiation of function template specialization 'string_index<ENCODING::ASCII>' requested here
-       1116 |         string_index<ENCODING::ASCII>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:831:1: note: candidate template ignored: substitution failure [with enc = ENCODING::ASCII]
-        831 | string_find(Buffer<enc> buf1, Buffer<enc> buf2, npy_int64 start, npy_int64 end)
-            | ^
-      ../numpy/_core/src/umath/string_buffer.h:924:20: error: no matching function for call to 'string_find'
-        924 |     npy_intp pos = string_find(buf1, buf2, start, end);
-            |                    ^~~~~~~~~~~
-      ../numpy/_core/src/umath/string_ufuncs.cpp:1124:9: note: in instantiation of function template specialization 'string_index<ENCODING::UTF32>' requested here
-       1124 |         string_index<ENCODING::UTF32>,
-            |         ^
-      ../numpy/_core/src/umath/string_buffer.h:831:1: note: candidate template ignored: substitution failure [with enc = ENCODING::UTF32]
-        831 | string_find(Buffer<enc> buf1, Buffer<enc> buf2, npy_int64 start, npy_int64 end)
-            | ^
-      7 errors generated.
-      [248/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_clip.cpp.o
-      [249/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_special_integer_comparisons.cpp.o
-      [250/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath__scaled_float_dtype.c.o
-      [251/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_umathmodule.c.o
-      [252/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_stringdtype_ufuncs.cpp.o
-      [253/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_quicksort.cpp.o
-      [254/322] Compiling C object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_umath_ufunc_object.c.o
-      [255/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_selection.cpp.o
-      [256/322] Compiling C++ object numpy/_core/_multiarray_umath.cpython-313-darwin.so.p/src_npysort_timsort.cpp.o
-      ninja: build stopped: subcommand failed.
-      [end of output]
-  
-  note: This error originates from a subprocess, and is likely not a problem with pip.
+>>> pip3 install 'axolotl'
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
-error: metadata-generation-failed
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
 
-× Encountered error while generating package metadata.
-╰─> See above for output.
-
-note: This is an issue with the package mentioned above, not pip.
-hint: See above for details.
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
 >>> Exit code: 1
 === Installing package in development mode ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/pip install -e .
-Obtaining file:///Users/duoyun/zsh-llm-cli-autocomplete-tool
-  Installing build dependencies: started
-  Installing build dependencies: finished with status 'done'
-  Checking if build backend supports build_editable: started
-  Checking if build backend supports build_editable: finished with status 'done'
-  Getting requirements to build editable: started
-  Getting requirements to build editable: finished with status 'done'
-  Preparing editable metadata (pyproject.toml): started
-  Preparing editable metadata (pyproject.toml): finished with status 'done'
-Requirement already satisfied: requests>=2.28.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (2.32.5)
-Requirement already satisfied: pyyaml>=6.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (6.0.3)
-Requirement already satisfied: argcomplete>=2.0.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (3.6.3)
-Requirement already satisfied: python-dotenv>=0.19.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (1.2.1)
-Requirement already satisfied: prompt-toolkit>=3.0.0 in ./venv/lib/python3.13/site-packages (from model-cli-autocomplete==0.1.0) (3.0.52)
-Requirement already satisfied: wcwidth in ./venv/lib/python3.13/site-packages (from prompt-toolkit>=3.0.0->model-cli-autocomplete==0.1.0) (0.2.14)
-Requirement already satisfied: charset_normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (3.4.4)
-Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (3.11)
-Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (2.5.0)
-Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests>=2.28.0->model-cli-autocomplete==0.1.0) (2025.10.5)
-Building wheels for collected packages: model-cli-autocomplete
-  Building editable for model-cli-autocomplete (pyproject.toml): started
-  Building editable for model-cli-autocomplete (pyproject.toml): finished with status 'done'
-  Created wheel for model-cli-autocomplete: filename=model_cli_autocomplete-0.1.0-0.editable-py3-none-any.whl size=5648 sha256=a65aaeb9eadc4f5b10f0d571ba0536c2ce21b23cc0c53985c6efa58d03dfb9b5
-  Stored in directory: /private/var/folders/mt/qxmrf1j12_53pctyblrvrvv80000gn/T/pip-ephem-wheel-cache-vsmvp_2p/wheels/e3/92/a9/d5d9a089763650f1e68f13baafef556825ea3097eeceee3bb9
-Successfully built model-cli-autocomplete
-Installing collected packages: model-cli-autocomplete
-Successfully installed model-cli-autocomplete-0.1.0
+>>> pip3 install -e .
+error: externally-managed-environment
 
-[notice] A new release of pip is available: 25.1.1 -> 25.3
-[notice] To update, run: pip install --upgrade pip
->>> Exit code: 0
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
+=== Installing package regularly ===
+>>> pip3 install .
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+    
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+    
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+    
+    brew install pipx
+    
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+    
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+    
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+>>> Exit code: 1
 === Setting up Ollama and models ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.ollama_manager import create_ollama_manager
@@ -1117,7 +511,7 @@ Setting up default models...
 Default models setup completed
 >>> Exit code: 0
 === Generating training data ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.training import TrainingDataManager
@@ -1129,7 +523,7 @@ print(f'Training data generated: {data_file}')
 Training data generated: src/training/zsh_training_data.jsonl
 >>> Exit code: 0
 === Creating configuration ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.utils import load_config
@@ -1188,25 +582,19 @@ else:
 Configuration already exists
 >>> Exit code: 0
 === Testing Python package ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "import model_completer; print('Python package: ✅')"
-Python package: ✅
->>> Exit code: 0
+>>> python3 -c "import model_completer; print('Python package: ✅')"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import model_completer; print('Python package: ✅')
+    ^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'model_completer'
+>>> Exit code: 1
 === Testing CLI ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -m model_completer.cli --test
-<frozen runpy>:128: RuntimeWarning: 'model_completer.cli' found in sys.modules after import of package 'model_completer', but prior to execution of 'model_completer.cli'; this may result in unpredictable behaviour
-2025-11-04 12:40:59,904 - model_completer.enhanced_completer - INFO - Generating smart commit message for 3 changed files
-2025-11-04 12:41:15,398 - model_completer.enhanced_completer - INFO - ✅ Generated smart commit message: feat: update install.log functionality
-2025-11-04 12:41:15,404 - model_completer.enhanced_completer - INFO - Smart commit returned: feat: update install.log functionality
-2025-11-04 12:41:15,413 - model_completer.enhanced_completer - INFO - ✅ Using smart commit: feat: update install.log functionality
-Testing AI completions:
-  git comm -> git commit -m "feat: update install.log functionality"
-  docker run -> docker run -it --name container image:tag
-  npm run -> npm run dev
-  python -m -> python -m http.server 8000
-  kubectl get -> kubectl get pods
->>> Exit code: 0
+>>> python3 -m model_completer.cli --test
+/opt/homebrew/opt/python@3.13/bin/python3.13: Error while finding module specification for 'model_completer.cli' (ModuleNotFoundError: No module named 'model_completer')
+>>> Exit code: 1
 === Testing Ollama connection ===
->>> /Users/duoyun/zsh-llm-cli-autocomplete-tool/venv/bin/python -c "
+>>> python3 -c "
 import sys
 sys.path.insert(0, 'src')
 from model_completer.ollama_manager import create_ollama_manager

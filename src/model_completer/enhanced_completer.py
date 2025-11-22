@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""
-Enhanced ModelCompleter with advanced developer features:
-- Persistent user history tracking
-- Context-aware completions (project type, files, git status)
-- Personalized suggestions based on user patterns
-- Developer-specific intelligence
-"""
+"""Enhanced completer with personalization and history tracking."""
 
 import os
 import json
@@ -21,7 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class EnhancedCompleter(ModelCompleter):
-    """Enhanced completer with developer-focused features."""
+    """Completer with personalization and workflow learning."""
     
     def __init__(self, ollama_url: str = "http://localhost:11434", 
                  model: str = "zsh-assistant", config: Optional[Dict] = None):
@@ -985,17 +979,24 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
         return None
     
     def get_completion(self, command: str, use_cache: bool = True) -> str:
-        """Get enhanced completion with smart commit message support."""
-        # Update history
+        """Get enhanced completion using fine-tuned model."""
         if command and (not self.history or self.history[-1] != command):
             self.history.append(command)
             self.history = self.history[-10:]
         
-        # Refresh project context
         self.project_context = self._detect_project_context()
         
-        # For "git" command, enhance the prompt with git status context
-        # Let AI model make intelligent decision based on actual git state
+        # Prioritize fine-tuned zsh-assistant model
+        model_to_use = self.model
+        if self.model != "zsh-assistant":
+            try:
+                available_models = self.client.get_available_models()
+                if "zsh-assistant" in available_models:
+                    model_to_use = "zsh-assistant"
+                    logger.debug("Using fine-tuned zsh-assistant model")
+            except Exception:
+                pass
+        
         if command.strip() == "git":
             try:
                 # Check if we're in a git repo and get status
@@ -1084,18 +1085,14 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
             logger.warning("All commit message generation attempts failed, returning original command")
             return command
         
-        # ALWAYS try AI model first - let the fine-tuned model make intelligent decisions
-        # Only fallback to training data if AI completely fails
         try:
             prompt = self._build_enhanced_prompt(command)
-            
-            # Use reasonable timeout for AI completion (5 seconds for better quality)
             original_timeout = self.client.timeout
             self.client.timeout = 5
             
             try:
                 completion = self.client.generate_completion(
-                    prompt, self.model, use_cache=use_cache
+                    prompt, model_to_use, use_cache=use_cache
                 )
             except Exception as e:
                 logger.debug(f"AI completion error: {e}")
@@ -1110,32 +1107,20 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                     for line in lines:
                         line = line.strip().replace('```', '').strip()
                         
-                        # REJECT any line containing "commit message" as placeholder
                         if 'commit message' in line.lower():
-                            logger.debug(f"Rejecting line with placeholder 'commit message': {line}")
                             continue
                         
-                        # REJECT explanatory text or prompts, not actual commands
-                        reject_prefixes = ('Complete command:', 'The command', 'The logical', 'You should', 'Next step', 'Run:', 'To complete', 'This will', 'You can', 'Enter', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:')
-                        if line.startswith(reject_prefixes):
-                            logger.debug(f"Rejecting explanatory line: {line}")
+                        reject_prefixes = ('Complete command:', 'The command', 'You should', 'Run:', 'To complete', 'This will', 'You can', 'Enter', 'Note:', 'Suggestion:', 'Output:', 'Context:', 'Project:')
+                        if line.startswith(reject_prefixes) or any(phrase in line.lower() for phrase in ('the logical', 'next step', 'you should', 'complete command:')):
                             continue
                         
-                        # REJECT lines that look like explanations rather than commands
-                        if any(phrase in line.lower() for phrase in ('the logical', 'next step', 'to commit', 'you should', 'the command to', 'complete command:')):
-                            logger.debug(f"Rejecting explanatory phrase in line: {line}")
-                            continue
-                        
-                        # More strict filtering - accept only actual command completions
                         if (line and len(line) > len(command) and 
-                            not line.startswith(('To complete', 'This will', 'You can', 'Enter', 'Run:', 'Note:', 'Environment:', 'User:', 'Host:', 'Directory:', 'Recent:', 'Replace', 'This will launch', 'You can now', 'This will display', 'Suggestion:', 'Implement:', 'Provide', 'Git commit is', 'Remember,', 'By following', 'Start by', 'Next,', 'After that', 'The command', 'You are a', 'Complete the command', 'Command to complete', 'Sure,', 'Here', 'This flag', 'This option', 'This command', 'Context:', 'Project:', 'Git branch:', 'Recent files:', 'User frequently', 'Format:', 'Output:', 'Complete command:', 'The logical')) and
-                            not line.startswith(('1.', '2.', '3.', '4.', '5.', '- ', '* ', '• ')) and
+                            not line.startswith(('To complete', 'This will', 'You can', 'Run:', 'Note:', 'Suggestion:', 'Output:', 'Context:', 'Project:')) and
+                            not line.startswith(('1.', '2.', '3.', '- ', '* ')) and
                             not line.endswith(':') and not line.startswith('$') and
                             not line.startswith('`') and not line.endswith('`') and
                             '|' not in line[:20] and
-                            # Must contain the command or be a completion of it
                             (command.lower() in line.lower() or line.startswith(command.split()[0] if command.split() else command)) and
-                            # Must look like an actual command (starts with a letter and contains action)
                             (line[0].isalpha() or line[0] in './')):
                             result = line
                             git_info = self._get_git_info()
@@ -1157,8 +1142,6 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
         except Exception as e:
             logger.warning(f"AI completion failed: {e}")
         
-        # LAST RESORT: Only use training data if AI completely failed
-        # This should rarely happen with a working fine-tuned model
         fallback_completion = self._get_fallback_completion(command)
         if fallback_completion:
             logger.debug(f"AI failed, using training data fallback: {command} -> {fallback_completion}")

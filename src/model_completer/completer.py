@@ -75,24 +75,14 @@ Output:"""
             return ""
     
     def get_completion(self, command: str, use_cache: bool = True) -> str:
-        """Get completion for the given command using Ollama.
-        
-        Priority:
-        1. Ollama with fine-tuned model (zsh-assistant) if available
-        2. Ollama with configured model
-        3. Training data fallback
-        4. Original command (if no completion found)
-        """
+        """Get completion using fine-tuned zsh-assistant model."""
         # Update history
         if command and (not self.history or self.history[-1] != command):
             self.history.append(command)
             # Keep only last 10 commands
             self.history = self.history[-10:]
         
-        # Determine which model to use
         model_to_use = self.model
-        
-        # Check if fine-tuned model (zsh-assistant) is available in Ollama
         if self.model != "zsh-assistant":
             try:
                 available_models = self.client.get_available_models()
@@ -100,11 +90,9 @@ Output:"""
                     model_to_use = "zsh-assistant"
                     logger.debug("Using fine-tuned zsh-assistant model")
             except Exception:
-                pass  # Continue with configured model
+                pass
         
-        # Priority 1: Try Ollama AI completion
         try:
-            # Create a very direct prompt for command completion
             prompt = f"{command}"
             
             completion = self.client.generate_completion(
@@ -167,19 +155,17 @@ Output:"""
                     not line.startswith('$') and
                     not line.startswith('`') and
                     not line.endswith('`')):
-                    logger.debug(f"Using Ollama completion ({model_to_use}): {line}")
+                    logger.debug(f"Using fine-tuned model ({model_to_use}): {line}")
                     return line
                     
         except Exception as e:
-            logger.debug(f"Ollama completion failed: {e}")
+            logger.debug(f"Model completion failed: {e}")
         
-        # Priority 2: Fall back to training data
         fallback_completion = self._get_fallback_completion(command)
         if fallback_completion:
             logger.debug(f"Using training data fallback: {fallback_completion}")
             return fallback_completion
         
-        # Priority 3: Return original command if no completion found
         return command
     
     def get_suggestions(self, command: str, max_suggestions: int = 3) -> List[str]:

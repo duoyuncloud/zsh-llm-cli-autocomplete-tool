@@ -214,20 +214,25 @@ PARAMETER num_predict 50
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             from peft import PeftModel
-            from peft import LoraConfig, PeftModel
+            import torch
             
             base_model_name = self.get_base_model_name()
             if not base_model_name:
-                return None
+                logger.warning("Could not determine base model, using distilgpt2")
+                base_model_name = "distilgpt2"
             
             logger.info(f"Loading base model: {base_model_name}")
             
             # Load base model and tokenizer
             base_model = AutoModelForCausalLM.from_pretrained(
                 base_model_name,
-                torch_dtype="auto"
+                torch_dtype=torch.float32,
+                device_map="auto" if torch.cuda.is_available() else None,
+                low_cpu_mem_usage=True
             )
             tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+            if tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
             
             # Load LoRA adapter
             logger.info("Loading LoRA adapter...")
@@ -253,9 +258,12 @@ PARAMETER num_predict 50
             
         except ImportError:
             logger.error("transformers or peft not available")
+            logger.info("Install with: pip install transformers peft torch")
             return None
         except Exception as e:
             logger.error(f"Failed to merge model: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
             return None
 
 

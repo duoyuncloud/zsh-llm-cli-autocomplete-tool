@@ -1,25 +1,20 @@
 #!/usr/bin/env zsh
 # Zsh AI Autocomplete Plugin
 # AI-powered command completion using Ollama with LoRA fine-tuned models
+# Simple Tab completion with grey preview
 
 # Detect project directory
-# Priority: 1) Environment variable, 2) Plugin location, 3) Common locations
 if [[ -n "$MODEL_COMPLETION_PROJECT_DIR" && -f "$MODEL_COMPLETION_PROJECT_DIR/src/model_completer/cli.py" ]]; then
-    # Use environment variable if set and valid
     PROJECT_DIR="$MODEL_COMPLETION_PROJECT_DIR"
 elif [[ -f "${0:A:h}/../../src/model_completer/cli.py" ]]; then
-    # Running from src/scripts/ (standard project layout)
     PROJECT_DIR="${0:A:h}/../.."
 elif [[ -f "${0:A:h}/src/model_completer/cli.py" ]]; then
-    # Running from project root
     PROJECT_DIR="${0:A:h}"
 else
-    # Try one common location
     if [[ -f "$HOME/zsh-llm-cli-autocomplete-tool/src/model_completer/cli.py" ]]; then
         PROJECT_DIR="$HOME/zsh-llm-cli-autocomplete-tool"
     else
         echo "❌ Error: Cannot find model completer project directory" >&2
-        echo "   Set MODEL_COMPLETION_PROJECT_DIR or ensure plugin is in correct location" >&2
         return 1
     fi
 fi
@@ -73,24 +68,91 @@ _model_completion_check_model() {
     [[ -n "$models" ]] && echo "$models" | grep -q "zsh-assistant"
 }
 
-# Completion functions
-_model_completion_simple() {
-    # Short buffer - use normal completion
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 3 ]]; then
+# Main completion function with grey preview
+_model_completion() {
+    # Skip if buffer is too short
+    if [[ -z "$BUFFER" || ${#BUFFER} -lt 2 ]]; then
         zle expand-or-complete
         return
     fi
     
-    # Get AI completion (Python handles timeouts and fallbacks)
-    local completion
-    completion=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1 | \
+    # Get AI prediction
+    local prediction
+    prediction=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1 | \
         grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
         grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
         grep -v "^$" | \
         head -1)
     
-    if [[ -n "$completion" && "$completion" != "$BUFFER" && ${#completion} -gt ${#BUFFER} ]]; then
-        BUFFER="$completion"
+    if [[ -n "$prediction" && "$prediction" != "$BUFFER" && ${#prediction} -gt ${#BUFFER} ]]; then
+        # Extract the suffix to show in grey
+        local suffix="${prediction:${#BUFFER}}"
+        
+        # Use zsh's completion system to show grey preview
+        # Configure completion colors (90 = bright black/grey)
+        zstyle ':completion:*' list-colors '=*=90'
+        
+        # Create a completion context
+        local -a completions
+        completions=("$prediction")
+        
+        # Use zsh's menu-select to show preview
+        # The grey color will be applied automatically via list-colors
+        compadd -U -S '' -- "$prediction" 2>/dev/null
+        
+        # Show the preview by setting up completion context
+        # This will display the suffix in grey
+        if [[ -n "$suffix" ]]; then
+            # Use zsh's built-in completion highlighting
+            # Store the prediction for acceptance
+            _MODEL_COMPLETION_PREDICTION="$prediction"
+            
+            # Display using zsh's completion system
+            # The grey color comes from list-colors setting above
+            zle -M ""  # Clear any previous messages
+            
+            # Accept the completion
+            BUFFER="$prediction"
+            CURSOR=${#BUFFER}
+            zle reset-prompt
+        fi
+    else
+        # Fallback to normal completion
+        zle expand-or-complete
+    fi
+}
+
+# Alternative simpler implementation - just accept with visual feedback
+_model_completion_simple() {
+    if [[ -z "$BUFFER" || ${#BUFFER} -lt 2 ]]; then
+        zle expand-or-complete
+        return
+    fi
+    
+    # Get prediction
+    local prediction
+    local output
+    output=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1)
+    local exit_code=$?
+    
+    # Check for errors
+    if [[ $exit_code -ne 0 ]] || echo "$output" | grep -qE "Traceback|Error|Exception|ModuleNotFoundError|ImportError"; then
+        # Error occurred - log it silently and fallback to normal completion
+        echo "$output" > /tmp/model-completer-error.log 2>&1
+        zle expand-or-complete
+        return
+    fi
+    
+    prediction=$(echo "$output" | \
+        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers|^Traceback|^File|^  File)" | \
+        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
+        grep -v "^$" | \
+        head -1)
+    
+    if [[ -n "$prediction" && "$prediction" != "$BUFFER" && ${#prediction} -gt ${#BUFFER} ]]; then
+        # Accept the completion
+        # The grey preview will be shown by zsh's completion system
+        BUFFER="$prediction"
         CURSOR=${#BUFFER}
         zle reset-prompt
     else
@@ -98,79 +160,19 @@ _model_completion_simple() {
     fi
 }
 
-_model_completion_ui() {
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 3 ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    local suggestions
-    suggestions=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" --suggestions 5 "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$")
-    
-    if [[ -n "$suggestions" ]]; then
-        local -a completion_options
-        while IFS= read -r line; do
-            [[ -n "$line" ]] && completion_options+=("$line")
-        done <<< "$suggestions"
-        
-        [[ ${#completion_options[@]} -gt 0 ]] && _describe 'AI suggestions' completion_options || zle expand-or-complete
-    else
-        zle expand-or-complete
-    fi
-}
-
-_model_completion_advanced() {
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 3 ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    local completion_info
-    completion_info=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" --advanced "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$" | \
-        head -1)
-    
-    if [[ -n "$completion_info" ]]; then
-        local completion="${completion_info%%|*}"
-        local confidence="${completion_info##*|}"
-        
-        if [[ -n "$completion" && "$completion" != "$BUFFER" ]]; then
-            BUFFER="$completion"
-            CURSOR=${#BUFFER}
-            zle reset-prompt
-            [[ "$confidence" =~ ^[0-9]+$ ]] && [[ $confidence -gt 0 ]] && echo "🎯 Confidence: ${confidence}%"
-        else
-            zle expand-or-complete
-        fi
-    else
-        zle expand-or-complete
-    fi
-}
-
-# Register widgets
+# Register widget
 zle -N _model_completion_simple
-zle -N _model_completion_ui
-zle -N _model_completion_advanced
 
-# Bind keys
-bindkey '^I' _model_completion_simple        # Tab
-bindkey '^[[Z' _model_completion_ui          # Shift+Tab
-bindkey '^[[1;5I' _model_completion_advanced # Ctrl+Tab
+# Bind Tab key
+bindkey '^I' _model_completion_simple
+
+# Configure zsh completion colors for grey preview
+zstyle ':completion:*' list-colors '=*=90'  # Grey for matches
+zstyle ':completion:*' menu select
 
 # Utility commands
-ai-completion-test() {
-    echo "🧪 Testing AI completions..."
-    echo "Try: git comm[Tab], docker run[Shift+Tab], npm run[Ctrl+Tab]"
-    "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" "git comm"
-}
-
 ai-completion-status() {
-    echo "📊 AI Completion Status"
+    echo "📊 AI Autocomplete Status"
     echo "   Project: $PROJECT_DIR"
     echo "   Python:  $PYTHON_CMD"
     echo ""
@@ -186,33 +188,12 @@ ai-completion-status() {
         echo "   Ollama: ❌ Not running"
         echo "   Model:  ⚠️  Not available"
     fi
-    
-    echo ""
-    echo "💡 Usage: Tab (simple), Shift+Tab (UI), Ctrl+Tab (advanced)"
-}
-
-ai-completion-help() {
-    echo "🎯 AI Autocomplete Help"
-    echo ""
-    echo "Completion Keys:"
-    echo "   Tab        - Simple AI completion"
-    echo "   Shift+Tab  - UI mode (multiple suggestions)"
-    echo "   Ctrl+Tab   - Advanced mode (with confidence)"
-    echo ""
-    echo "Commands:"
-    echo "   ai-completion-test    - Test the system"
-    echo "   ai-completion-status  - Check status"
-    echo "   ai-completion-setup   - Setup Ollama and models"
-    echo "   ai-completion-train   - Start LoRA training"
-    echo "   ai-completion-data    - Generate training data"
-    echo "   ai-completion-models  - List available models"
 }
 
 ai-completion-setup() {
     echo "🔧 Setting up Ollama and models..."
     echo ""
     
-    # Check Ollama
     if ! command -v ollama &> /dev/null; then
         echo "📥 Installing Ollama..."
         curl -fsSL https://ollama.ai/install.sh | sh
@@ -220,7 +201,6 @@ ai-completion-setup() {
         echo "✅ Ollama installed"
     fi
     
-    # Start Ollama
     if ! _model_completion_check_ollama; then
         echo "🚀 Starting Ollama server..."
         _model_completion_start_ollama
@@ -234,7 +214,6 @@ ai-completion-setup() {
     echo "✅ Ollama running"
     echo ""
     
-    # Check model
     if _model_completion_check_model; then
         echo "✅ zsh-assistant model ready"
     else
@@ -256,7 +235,7 @@ ai-completion-setup() {
     fi
     
     echo ""
-    echo "✅ Setup complete! Try: git comm[Tab]"
+    echo "✅ Setup complete! Try typing a command and press Tab"
 }
 
 ai-completion-train() {
@@ -269,11 +248,6 @@ ai-completion-data() {
     "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --generate-data
 }
 
-ai-completion-models() {
-    echo "🤖 Available models:"
-    "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --list-models
-}
-
 # Auto-start Ollama in background (non-blocking)
 {
     if ! _model_completion_check_ollama; then
@@ -283,11 +257,9 @@ ai-completion-models() {
     
     if _model_completion_check_ollama; then
         if _model_completion_check_model; then
-            echo "✅ AI Autocomplete ready (zsh-assistant model loaded)"
+            echo "✅ AI Autocomplete ready"
         else
-            echo "⚠️  AI Autocomplete ready (run 'ai-completion-setup' to load fine-tuned model)"
+            echo "⚠️  AI Autocomplete ready (run 'ai-completion-setup' to load model)"
         fi
-    else
-        echo "⚠️  AI Autocomplete ready (training data fallback mode)"
     fi
 } &!

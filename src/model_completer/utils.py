@@ -9,7 +9,7 @@ def load_config(config_path: Optional[str] = None) -> Dict[str, Any]:
             'url': 'http://localhost:11434',
             'timeout': 30
         },
-        'model': 'tinyllama',
+        'model': 'zsh-assistant',
         'cache': {
             'enabled': True,
             'ttl': 3600

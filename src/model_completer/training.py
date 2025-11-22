@@ -113,13 +113,45 @@ class TrainingDataManager:
     def convert_to_axolotl_format(self, input_file: str, output_file: str) -> bool:
         """Convert training data to Axolotl format."""
         try:
-            result = subprocess.run([
-                "python3", "-m", "training.convert_to_axolotl_format"
-            ], capture_output=True, text=True, check=True)
+            import json
             
-            logger.info("Converted training data to Axolotl format")
+            # Read input file
+            input_path = Path(input_file)
+            if not input_path.exists():
+                logger.error(f"Input file not found: {input_file}")
+                return False
+            
+            data = []
+            with open(input_path, 'r') as f:
+                for line in f:
+                    if line.strip():
+                        try:
+                            data.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            continue
+            
+            # Convert to Axolotl format
+            axolotl_data = []
+            for item in data:
+                axolotl_item = {
+                    "instruction": "Complete this Zsh command. Provide only the full command without explanations.",
+                    "input": item.get("input", ""),
+                    "output": item.get("output", ""),
+                    "system": "You are a Zsh shell expert. Always respond with complete, executable Zsh commands. Never explain your reasoning."
+                }
+                axolotl_data.append(axolotl_item)
+            
+            # Write output file
+            output_path = Path(output_file)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_path, 'w') as f:
+                for item in axolotl_data:
+                    f.write(json.dumps(item) + '\n')
+            
+            logger.info(f"Converted {len(axolotl_data)} examples to Axolotl format: {output_file}")
             return True
-        except subprocess.CalledProcessError as e:
+        except Exception as e:
             logger.error(f"Failed to convert training data: {e}")
             return False
     
@@ -309,11 +341,14 @@ class LoRATrainer:
         
         logger.info(f"Training data validated: {count} examples")
         
-        # Convert to Axolotl format
+        # Convert to Axolotl format if needed
         axolotl_data_file = data_file.replace('.jsonl', '_axolotl.jsonl')
-        if not self.data_manager.convert_to_axolotl_format(data_file, axolotl_data_file):
-            logger.error("Failed to convert training data")
-            return False
+        if not Path(axolotl_data_file).exists():
+            if not self.data_manager.convert_to_axolotl_format(data_file, axolotl_data_file):
+                logger.error("Failed to convert training data")
+                return False
+        else:
+            logger.info(f"Using existing Axolotl format file: {axolotl_data_file}")
         
         # Create Axolotl config
         config_file = self.create_axolotl_config(axolotl_data_file, low_memory)
@@ -390,9 +425,8 @@ def create_trainer(config: Optional[TrainingConfig] = None):
                 config = TrainingConfig()
             return LoRATrainer(config)
         except ImportError:
-            # Fallback to simple trainer
-            from .simple_training import create_simple_trainer
-            return create_simple_trainer(config)
+            logger.error("No training backend available. Install transformers/peft or axolotl")
+            raise ImportError("Training dependencies not available")
 
 def train_cli_model(data_file: str, output_dir: str = "zsh-lora-output", 
                    low_memory: bool = False) -> bool:

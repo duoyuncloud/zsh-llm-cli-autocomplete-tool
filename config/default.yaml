@@ -1,23 +1,13 @@
-# Model Completer Configuration
-
 ollama:
   url: "http://localhost:11434"
-  timeout: 10  # Shorter timeout for faster fallback
+  timeout: 10
 
-model: "zsh-assistant"  # Use the fine-tuned model
+model: "zsh-assistant"
 
 cache:
   enabled: true
-  ttl: 3600  # Cache time-to-live in seconds
+  ttl: 3600
 
 logging:
   level: "INFO"
   file: "~/.cache/model-completer/logs.txt"
-
-# Command blacklist (commands that won't be completed)
-blacklist:
-  - "rm -rf"
-  - "dd if="
-  - ":(){:|:&};:"
-  - "mkfs"
-  - "fdisk"
