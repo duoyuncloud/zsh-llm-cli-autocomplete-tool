@@ -5,6 +5,7 @@ AI-powered Zsh plugin with LoRA fine-tuning and personalized command predictions
 ## Features
 
 - AI Command Completion: Smart command predictions using LoRA fine-tuned models
+- Smart Commit Messages: Automatically generates specific commit messages from git diff analysis
 - Personalized Predictions: Remembers your CLI history and learns your workflow patterns
 - Grey Preview: See predicted command completion in grey before accepting
 - Real-time Processing: Local LLM inference with Ollama
@@ -22,14 +23,17 @@ cd zsh-llm-cli-autocomplete-tool
 # Reload shell (plugin is automatically added to ~/.zshrc)
 source ~/.zshrc
 
+# Setup and train the LoRA model (one-time, takes a few minutes)
+ai-completion-setup
+
 # Start using AI completions
 # Type a command and press Tab to see grey preview, then Tab again to accept
-git comm[Tab]     # Shows grey preview, press Tab again to complete
+git comm[Tab]     # Smart commit: generates commit message from git diff
 docker run[Tab]   # Personalized completion based on your history
 npm run[Tab]      # Smart predictions based on workflow
 ```
 
-The plugin automatically starts Ollama server (if not running) and loads the fine-tuned model (zsh-assistant).
+The plugin automatically starts Ollama server (if not running). You need to train the LoRA model first using `ai-completion-setup` (one-time setup).
 
 ## Installation
 
@@ -70,14 +74,37 @@ The system learns from your command history and provides personalized prediction
 - Command sequence patterns
 - Workflow patterns
 
+### Smart Commit Messages
+
+When you type `git comm` and press Tab, the system automatically:
+- Analyzes your git diff (staged or unstaged changes)
+- Extracts functionality from code changes (functions, classes, operations)
+- Generates a specific, descriptive commit message
+- Rejects generic placeholders like "commit message"
+
+**Example:**
+```bash
+# After making code changes
+git comm[Tab]
+# Generates: git commit -m "feat: improve error handling in completion pipeline"
+```
+
+The smart commit feature:
+- Analyzes actual code changes, not just file names
+- Focuses on functionality rather than generic descriptions
+- Uses conventional commit format (feat/fix/refactor/etc.)
+- Works with both staged and unstaged changes
+
 ### Utility Commands
 
 ```bash
 ai-completion-status    # Check system status
-ai-completion-setup     # Setup Ollama and models
-ai-completion-train     # Start LoRA training
+ai-completion-setup     # One-time setup: trains LoRA model if not already trained
+ai-completion-train     # Re-train LoRA model (if you want to retrain)
 ai-completion-data      # Generate training data
 ```
+
+**Important**: Run `ai-completion-setup` after installation to train the LoRA model. This is a one-time setup that takes a few minutes. The model will be saved and reused in future terminal sessions.
 
 ## LoRA Fine-tuning
 
@@ -140,6 +167,38 @@ logging:
 
 ## Personalization
 
+### How Personalization Works
+
+The system uses **two levels of personalization**:
+
+1. **LoRA Model Training** (one-time): The model is trained on general CLI command patterns (not user-specific). This provides base intelligence for command completion.
+
+2. **Runtime Personalization** (real-time): Your command history is saved locally and included in prompts to provide context-aware completions.
+
+### Command History Storage
+
+- **Location**: `~/.cache/model-completer/command_history.jsonl`
+- **Format**: JSONL (one JSON object per line)
+- **Content**: Each entry contains:
+  - Timestamp
+  - Original command
+  - Completion that was used
+  - Context (project type, git info, etc.)
+  - Working directory
+- **Retention**: Last 100 commands are kept
+
+### How History is Used
+
+Your command history is **NOT used to train the model**. Instead, it's:
+- **Included in prompts** sent to the model for context
+- Used to identify patterns (frequent commands, command sequences)
+- Used to provide personalized suggestions based on your workflow
+
+This means:
+- ✅ Your history stays private (never leaves your machine)
+- ✅ Personalization happens in real-time (no retraining needed)
+- ✅ The model learns general patterns, your history provides context
+
 The system automatically:
 - Tracks your command history in `~/.cache/model-completer/command_history.jsonl`
 - Learns your patterns from frequently used commands
@@ -154,6 +213,16 @@ The system automatically:
 - Current directory context
 - Command history patterns
 - Project type detection
+
+### Smart Commit Message Generation
+
+The smart commit feature analyzes your code changes and generates meaningful commit messages:
+
+- **Diff Analysis**: Extracts functionality from git diff (functions, classes, method calls)
+- **Context-Aware**: Considers project type, git status, and code structure
+- **Specific Messages**: Generates descriptive messages like "feat: add context-aware command completion" instead of generic placeholders
+- **Validation**: Rejects generic messages and ensures specificity
+- **Conventional Commits**: Uses standard format (feat/fix/refactor/docs/test/chore)
 
 ### Training Pipeline
 
