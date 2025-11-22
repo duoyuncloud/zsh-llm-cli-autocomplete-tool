@@ -462,35 +462,42 @@ class EnhancedCompleter(ModelCompleter):
                             key_changes['imports'].append(import_part)
                     
                     # Extract significant logic (method calls, assignments that indicate functionality)
-                    elif len(stripped) > 15 and not stripped.startswith(' ') and '=' in stripped:
-                        # Look for meaningful assignments (not just variable = value)
-                        if any(keyword in stripped.lower() for keyword in ['generate', 'create', 'import', 'export', 'process', 'handle', 'analyze', 'extract', 'parse', 'build', 'setup', 'init', 'train', 'complete']):
-                            # Extract the key part
+                    elif len(stripped) > 15 and not stripped.startswith(' '):
+                        # Look for meaningful code that indicates functionality
+                        if any(keyword in stripped.lower() for keyword in ['generate', 'create', 'import', 'export', 'process', 'handle', 'analyze', 'extract', 'parse', 'build', 'setup', 'init', 'train', 'complete', 'fix', 'add', 'implement', 'improve', 'enhance', 'refactor']):
+                            # Extract meaningful parts (avoid file paths)
                             if '=' in stripped:
                                 left = stripped.split('=')[0].strip()
-                                if len(left) < 50:  # Reasonable length
-                                    key_changes['features'].append(left)
+                                # Skip if it looks like a file path
+                                if '/' not in left and '.' not in left.split()[0] if left.split() else True:
+                                    if len(left) < 50:
+                                        key_changes['features'].append(left)
+                            elif stripped.startswith(('def ', 'class ', 'return ', 'if ', 'for ', 'while ')):
+                                # Extract meaningful code statements
+                                code_part = stripped[:80] if len(stripped) > 80 else stripped
+                                if '/' not in code_part and not any(ext in code_part for ext in ['.py', '.js', '.log', '.txt']):
+                                    key_changes['features'].append(code_part)
             
-            # Build descriptive context
+            # Build descriptive context (functionality only, no file names)
             context_parts = []
             
-            if key_changes['files']:
-                context_parts.append(f"Files modified: {', '.join(key_changes['files'][:5])}")
-            
             if key_changes['classes']:
-                context_parts.append(f"Classes: {', '.join(key_changes['classes'][:5])}")
+                context_parts.append(f"New classes: {', '.join(key_changes['classes'][:5])}")
             
             if key_changes['functions']:
-                context_parts.append(f"Functions: {', '.join(key_changes['functions'][:8])}")
+                context_parts.append(f"New functions: {', '.join(key_changes['functions'][:8])}")
             
             if key_changes['features']:
-                context_parts.append(f"Key features: {', '.join(key_changes['features'][:8])}")
+                # Filter out file-related features
+                features = [f for f in key_changes['features'] if not any(ext in f.lower() for ext in ['.py', '.js', '.ts', '.log', '.txt', '.md', '.yaml', '.yml', '.json'])]
+                if features:
+                    context_parts.append(f"Functionality: {', '.join(features[:8])}")
             
             if key_changes['imports']:
                 unique_imports = list(set(key_changes['imports']))[:5]
-                context_parts.append(f"New imports: {', '.join(unique_imports)}")
+                context_parts.append(f"New dependencies: {', '.join(unique_imports)}")
             
-            return '\n'.join(context_parts) if context_parts else diff_content[:400]
+            return '\n'.join(context_parts) if context_parts else ""
             
         except Exception as e:
             logger.debug(f"Failed to get git diff: {e}")
@@ -654,22 +661,16 @@ class EnhancedCompleter(ModelCompleter):
         if not changes['files_changed']:
             return 'WIP'
         
-        # Build context for AI
+        # Build context for AI (functionality only, no file names)
         context_parts = []
         
-        if changes['files_added']:
-            context_parts.append(f"Added: {', '.join(changes['files_added'][:5])}")
-        if changes['files_modified']:
-            context_parts.append(f"Modified: {', '.join(changes['files_modified'][:5])}")
-        if changes['files_deleted']:
-            context_parts.append(f"Deleted: {', '.join(changes['files_deleted'][:5])}")
-        
+        # Don't include file names - focus on functionality
         if changes['lines_added'] > 0:
-            context_parts.append(f"+{changes['lines_added']} lines")
+            context_parts.append(f"+{changes['lines_added']} lines added")
         if changes['lines_removed'] > 0:
-            context_parts.append(f"-{changes['lines_removed']} lines")
+            context_parts.append(f"-{changes['lines_removed']} lines removed")
         
-        context = " | ".join(context_parts)
+        context = " | ".join(context_parts) if context_parts else ""
         
         # Detect what kind of changes (feature, fix, refactor, etc.)
         file_types = {}
@@ -699,44 +700,47 @@ class EnhancedCompleter(ModelCompleter):
         # Build descriptive prompt - focus on functionality, not files
         prompt_parts = []
         
-        # Code diff context (if available) - prioritize this over file names
+        # Code diff context (if available) - prioritize functionality over file names
         if diff_context and len(diff_context) > 20:
-            # Extract key functionality indicators
-            diff_summary = diff_context[:400]  # Limit diff context
-            prompt_parts.append(f"Code changes analysis:\n{diff_summary}")
+            diff_summary = diff_context[:500]
+            prompt_parts.append(f"Code changes:\n{diff_summary}")
         elif context:
-            # If no diff context, use file summary but emphasize functionality
-            prompt_parts.append(f"Changes overview: {context}")
+            # Remove file names from context
+            context_clean = context
+            # Remove lines that mention files
+            context_clean = '\n'.join([line for line in context_clean.split('\n') if 'Files' not in line and 'files' not in line.lower()])
+            if context_clean.strip():
+                prompt_parts.append(f"Changes: {context_clean}")
         
         prompt_body = '\n'.join(prompt_parts)
         
-        prompt = f"""You are a git commit message expert. Analyze the code changes and write a descriptive commit message.
+        prompt = f"""Generate a commit message for these code changes:
 
 {prompt_body}
 
-CRITICAL RULES:
-1. Use format: "type: subject" where type is: feat, fix, docs, style, refactor, test, chore
-2. The subject MUST describe WHAT functionality was added/changed, NOT file names
-3. Be SPECIFIC and descriptive - minimum 5 words describing actual functionality
-4. NEVER use placeholder text like "commit message", "message", "update", "changes", "fix", "feat" alone
-5. NEVER mention file names, paths, or counts
-6. Focus on the actual behavior, features, or functionality implemented
+CRITICAL: The commit message must describe FUNCTIONALITY, not file names.
 
-Examples of GOOD commit messages:
-- feat: add context-aware command sequence completion for git workflows  
-- fix: resolve ZLE widget errors by disabling widget bindings in plugin
-- refactor: improve commit message generation with better diff analysis
-- feat: implement automatic Ollama model loading on terminal startup
+Format: "type: subject"
+- type: feat/fix/docs/refactor/test/chore
+- subject: 5+ words describing what functionality was added/changed
 
-Examples of BAD commit messages (DO NOT USE - these will be rejected):
-- feat: update files
-- fix: commit message
-- chore: changes  
-- feat: update code
-- feat: Modified: enhanced_completer.py
-- chore: add 5 files
+Rules:
+1. NEVER mention file names, paths, or directories
+2. NEVER use placeholders like "commit message" or "message"
+3. Describe the feature or fix, not the files changed
+4. Focus on what the code does, not where it is
 
-Output ONLY the commit message in format "type: subject" - no explanations, no file names:"""
+Good examples:
+- "feat: add context-aware command completion with workflow learning"
+- "fix: resolve model loading errors when Ollama server is unavailable"
+- "refactor: improve error handling in completion pipeline"
+
+Bad examples (DO NOT USE):
+- "feat: update install.log" (mentions file)
+- "feat: commit message" (placeholder)
+- "feat: update files" (too generic)
+
+Output only the commit message:"""
         
         try:
             # Use longer timeout for commit message generation (needs more time for quality)
@@ -744,8 +748,16 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
             self.client.timeout = 15  # Give more time for commit message generation
             
             try:
+                # Ensure we use the fine-tuned model
+                available_models = self.client.get_available_models()
+                zsh_model = None
+                for model in available_models:
+                    if model.startswith("zsh-assistant"):
+                        zsh_model = model
+                        break
+                model_to_use = zsh_model if zsh_model else self.model
                 completion = self.client.generate_completion(
-                    prompt, self.model, use_cache=False
+                    prompt, model_to_use, use_cache=False
                 )
             finally:
                 self.client.timeout = original_timeout
@@ -811,10 +823,12 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
                             subject = subject.strip('"').strip("'").strip()
                             
                             # Validate subject has meaningful content
-                            if len(subject) >= 5:  # Need at least 5 chars for meaningful subject
-                                # Reject if subject is just placeholder words
-                                if subject.lower() not in ['update', 'changes', 'fix', 'message', 'commit message']:
-                                    # Limit subject length to 72 chars (git convention)
+                            if len(subject) >= 5:
+                                # Only reject actual placeholders, not words that might be in valid messages
+                                rejected_exact = ['message', 'commit message', 'commit']
+                                if (subject.lower().strip() not in rejected_exact and
+                                    'commit message' not in subject.lower() and
+                                    len(subject.strip()) >= 5):
                                     if len(subject) > 72:
                                         subject = subject[:69] + '...'
                                     return f"{commit_type}: {subject}"
@@ -988,14 +1002,20 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
         
         # Prioritize fine-tuned zsh-assistant model
         model_to_use = self.model
-        if self.model != "zsh-assistant":
-            try:
-                available_models = self.client.get_available_models()
-                if "zsh-assistant" in available_models:
-                    model_to_use = "zsh-assistant"
-                    logger.debug("Using fine-tuned zsh-assistant model")
-            except Exception:
-                pass
+        try:
+            available_models = self.client.get_available_models()
+            # Check for zsh-assistant with or without :latest tag
+            zsh_assistant_model = None
+            for model in available_models:
+                if model.startswith("zsh-assistant"):
+                    zsh_assistant_model = model
+                    break
+            
+            if zsh_assistant_model:
+                model_to_use = zsh_assistant_model
+                logger.debug(f"Using fine-tuned model: {model_to_use}")
+        except Exception:
+            pass
         
         if command.strip() == "git":
             try:
@@ -1034,15 +1054,20 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
             
             # Use smart message if we got something useful
             if smart_message and smart_message.strip():
-                # Only reject if it's clearly a placeholder
-                rejected_patterns = ['commit message', 'message', 'wip']
-                if not any(pattern in smart_message.lower() for pattern in rejected_patterns):
+                # Reject only actual placeholder messages
+                smart_lower = smart_message.lower().strip()
+                # Only reject if it's exactly a placeholder or contains "commit message" as placeholder
+                rejected_exact = ['commit message', 'message', 'wip']
+                if (smart_lower not in rejected_exact and
+                    'commit message' not in smart_lower and
+                    len(smart_lower) > 8 and
+                    ':' in smart_message):
                     result = f'git commit -m "{smart_message}"'
                     self._save_command(command, result, {
                         'project_type': self.project_context['project_type'],
                         'source': 'smart_commit'
                     })
-                    logger.info(f"✅ Using smart commit: {smart_message}")
+                    logger.info(f"Using smart commit: {smart_message}")
                     return result
                 else:
                     logger.warning(f"Rejected placeholder commit message: {smart_message}")
@@ -1052,9 +1077,17 @@ Output ONLY the commit message in format "type: subject" - no explanations, no f
             try:
                 prompt = self._build_enhanced_prompt(command)
                 original_timeout = self.client.timeout
-                self.client.timeout = 10  # Give more time for commit message
+                self.client.timeout = 10
                 try:
-                    ai_completion = self.client.generate_completion(prompt, self.model, use_cache=False)
+                    # Use fine-tuned model
+                    available_models = self.client.get_available_models()
+                    zsh_model = None
+                    for model in available_models:
+                        if model.startswith("zsh-assistant"):
+                            zsh_model = model
+                            break
+                    model_to_use = zsh_model if zsh_model else self.model
+                    ai_completion = self.client.generate_completion(prompt, model_to_use, use_cache=False)
                     if ai_completion:
                         # Extract commit message from AI response
                         import re

@@ -3,9 +3,9 @@
 # Zsh AI Autocomplete - Complete One-Click Installation
 # Uses existing modules instead of inline code
 
-echo "🤖 Zsh AI Autocomplete - Complete One-Click Setup"
+echo "Zsh AI Autocomplete - Complete One-Click Setup"
 echo "=================================================="
-echo "🎯 Features: Ollama integration, LoRA fine-tuning, navigatable UI, Zsh completion"
+echo "Features: Ollama integration, LoRA fine-tuning, Zsh completion"
 echo ""
 
 # Colors for output

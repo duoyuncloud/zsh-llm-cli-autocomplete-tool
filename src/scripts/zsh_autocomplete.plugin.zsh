@@ -122,7 +122,7 @@ _model_completion() {
     fi
 }
 
-# Alternative simpler implementation - just accept with visual feedback
+# Completion with grey preview
 _model_completion_simple() {
     if [[ -z "$BUFFER" || ${#BUFFER} -lt 2 ]]; then
         zle expand-or-complete
@@ -137,23 +137,32 @@ _model_completion_simple() {
     
     # Check for errors
     if [[ $exit_code -ne 0 ]] || echo "$output" | grep -qE "Traceback|Error|Exception|ModuleNotFoundError|ImportError"; then
-        # Error occurred - log it silently and fallback to normal completion
         echo "$output" > /tmp/model-completer-error.log 2>&1
         zle expand-or-complete
         return
     fi
     
+    # Extract prediction
     prediction=$(echo "$output" | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers|^Traceback|^File|^  File)" | \
+        grep -vE "(Traceback|Error|Exception|ModuleNotFound|ImportError|^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers|^File|^  File|^    |^  at|^During handling)" | \
         grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
         grep -v "^$" | \
-        head -1)
+        grep -E "^[a-zA-Z].*" | \
+        head -1 | \
+        sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     
     if [[ -n "$prediction" && "$prediction" != "$BUFFER" && ${#prediction} -gt ${#BUFFER} ]]; then
-        # Accept the completion
-        # The grey preview will be shown by zsh's completion system
+        local original_len=${#BUFFER}
+        local suffix="${prediction:${#BUFFER}}"
+        
+        # Set buffer to show full prediction
         BUFFER="$prediction"
         CURSOR=${#BUFFER}
+        
+        # Highlight suffix in grey using region_highlight
+        # Format: "start end style" where fg=240 is grey
+        region_highlight=("${original_len} ${#BUFFER} fg=240")
+        
         zle reset-prompt
     else
         zle expand-or-complete
@@ -169,6 +178,9 @@ bindkey '^I' _model_completion_simple
 # Configure zsh completion colors for grey preview
 zstyle ':completion:*' list-colors '=*=90'  # Grey for matches
 zstyle ':completion:*' menu select
+
+# Enable region highlighting for grey preview
+zle_highlight=(region:bg=240,fg=15)
 
 # Utility commands
 ai-completion-status() {
