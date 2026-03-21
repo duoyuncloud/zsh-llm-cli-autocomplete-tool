@@ -112,9 +112,16 @@ def _build_system(input_text: str, context: dict) -> str:
     """Build a context-enriched system prompt."""
     parts: list[str] = []
 
-    # History examples
+    # History examples — search by full input, but fall back to first
+    # two tokens so we get useful examples even for long partial inputs
+    # (e.g. "git commit -m \"" → also search "git commit").
     _history.refresh()
     examples = _history.similar(input_text, k=5)
+    if not examples:
+        tokens = input_text.split()
+        short = " ".join(tokens[:2]) if len(tokens) >= 2 else input_text
+        if short != input_text:
+            examples = _history.similar(short, k=5)
     if examples:
         parts.append("Recent matching commands from your history:")
         parts.extend(f"  {ex}" for ex in examples)

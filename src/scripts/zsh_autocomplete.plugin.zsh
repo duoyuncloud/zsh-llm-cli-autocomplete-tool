@@ -83,74 +83,100 @@ _zac_stop_daemon() {
 # Context gathering — enriches completions with live project state
 # ---------------------------------------------------------------------------
 
-# Build a JSON context object for the current working directory + input.
-# Runs fast subshell commands; heavy ones (git diff) only fire when needed.
-_zac_context() {
-    local input="$1"
-    local cwd="$PWD"
-    local ctx="{\"cwd\":$(printf '%s' "$cwd" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-
-    # git context
-    if git rev-parse --is-inside-work-tree &>/dev/null 2>&1; then
-        local branch
-        branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-        ctx="${ctx%\}},\"git_branch\":$(printf '%s' "$branch" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-
-        # For commit messages: include staged diff summary + recent log
-        if [[ "$input" =~ 'git commit' ]]; then
-            local diff_stat log_lines
-            diff_stat=$(git diff --staged --stat 2>/dev/null | tail -5)
-            log_lines=$(git log --oneline -5 2>/dev/null | sed 's/^[a-f0-9]* //')
-            ctx="${ctx%\}},\"git_diff\":$(printf '%s' "$diff_stat" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-            ctx="${ctx%\}},\"git_log\":$(printf '%s' "$log_lines" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-        fi
-    fi
-
-    # npm/yarn/pnpm scripts
-    if [[ "$input" =~ '(npm|yarn|pnpm) run' && -f "$cwd/package.json" ]]; then
-        local scripts
-        scripts=$(python3 -c "import json; d=json.load(open('$cwd/package.json')); print(', '.join(d.get('scripts',{}).keys()))" 2>/dev/null)
-        [[ -n "$scripts" ]] && ctx="${ctx%\}},\"npm_scripts\":$(printf '%s' "$scripts" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-    fi
-
-    # Makefile targets
-    if [[ "$input" =~ '^make ' && -f "$cwd/Makefile" ]]; then
-        local targets
-        targets=$(grep -E '^[a-zA-Z0-9_-]+:' "$cwd/Makefile" 2>/dev/null | cut -d: -f1 | head -20 | tr '\n' ' ')
-        [[ -n "$targets" ]] && ctx="${ctx%\}},\"make_targets\":$(printf '%s' "$targets" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
-    fi
-
-    echo "${ctx%\}}}"
-}
-
 # ---------------------------------------------------------------------------
 # Query daemon (runs in subshell → async pipe)
 # ---------------------------------------------------------------------------
 
+# All context gathering and socket I/O happen in a single Python process.
+# Data is passed via environment variables to avoid shell injection.
 _zac_query() {
     local input="$1"
     [[ -S "$(_zac_sock)" ]] || return
-    local ctx
-    ctx=$(_zac_context "$input")
-    "$_ZAC_PY" - "$(_zac_sock)" "$input" "$ctx" 2>/dev/null <<'EOF'
-import socket, json, sys
-sock, text, ctx_str = sys.argv[1], sys.argv[2], sys.argv[3]
+    ZAC_SOCK="$(_zac_sock)" ZAC_INPUT="$input" ZAC_CWD="$PWD" \
+    "$_ZAC_PY" - 2>/dev/null <<'EOF'
+import json, os, re, socket, subprocess
+from pathlib import Path
+
+sock_path = os.environ["ZAC_SOCK"]
+text      = os.environ["ZAC_INPUT"]
+cwd       = os.environ["ZAC_CWD"]
+ctx: dict = {"cwd": cwd}
+
+# --- git context ---
 try:
-    ctx = json.loads(ctx_str)
+    in_git = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"],
+        cwd=cwd, capture_output=True, timeout=1
+    ).returncode == 0
+    if in_git:
+        branch = subprocess.run(
+            ["git", "symbolic-ref", "--short", "HEAD"],
+            cwd=cwd, capture_output=True, timeout=1, text=True
+        ).stdout.strip()
+        if branch:
+            ctx["git_branch"] = branch
+        # For commit messages: staged diff + recent log style
+        if re.search(r'git commit', text):
+            diff = subprocess.run(
+                ["git", "diff", "--staged", "--stat"],
+                cwd=cwd, capture_output=True, timeout=2, text=True
+            ).stdout.strip()
+            log_raw = subprocess.run(
+                ["git", "log", "--oneline", "-5"],
+                cwd=cwd, capture_output=True, timeout=2, text=True
+            ).stdout.strip()
+            # Strip hashes, keep messages only
+            log = "\n".join(
+                line.split(" ", 1)[1] if " " in line else line
+                for line in log_raw.splitlines()
+            )
+            if diff: ctx["git_diff"] = diff
+            if log:  ctx["git_log"] = log
 except Exception:
-    ctx = {}
+    pass
+
+# --- npm / yarn / pnpm run: inject available scripts ---
+if re.match(r"(npm|yarn|pnpm) run", text):
+    pkg = Path(cwd) / "package.json"
+    if pkg.exists():
+        try:
+            scripts = list(json.loads(pkg.read_text()).get("scripts", {}).keys())
+            if scripts:
+                ctx["npm_scripts"] = ", ".join(scripts)
+        except Exception:
+            pass
+
+# --- make: inject Makefile targets ---
+if text.startswith("make "):
+    mf = Path(cwd) / "Makefile"
+    if mf.exists():
+        try:
+            targets = [
+                line.split(":")[0]
+                for line in mf.read_text().splitlines()
+                if re.match(r"^[a-zA-Z0-9_-]+:", line)
+            ][:20]
+            if targets:
+                ctx["make_targets"] = " ".join(targets)
+        except Exception:
+            pass
+
+# --- send request to daemon ---
 try:
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     s.settimeout(5)
-    s.connect(sock)
+    s.connect(sock_path)
     s.sendall(json.dumps({"id": "1", "input": text, "context": ctx}).encode())
     buf = b""
     while chunk := s.recv(4096):
         buf += chunk
-        if len(chunk) < 4096: break
+        if len(chunk) < 4096:
+            break
     c = json.loads(buf).get("completion", "")
-    if c: print(c, end="")
-except Exception: pass
+    if c:
+        print(c, end="")
+except Exception:
+    pass
 EOF
 }
 
