@@ -1,10 +1,13 @@
-# Core dependencies (daemon + plugin)
-requests>=2.28.0
-pyyaml>=6.0
-argcomplete>=2.0.0
-python-dotenv>=0.19.0
-prompt-toolkit>=3.0.0
+# Core runtime dependencies (daemon + plugin)
+torch>=2.1.0
+transformers>=4.40.0
+peft>=0.10.0
+sentencepiece>=0.1.99
 huggingface_hub>=0.16.0
-gguf>=0.1.0
+
+# Optional: Claude API for high-quality complex completions
+# Install: pip install anthropic
+# Then: export ANTHROPIC_API_KEY=sk-ant-...
+# anthropic>=0.40.0
 
 # Training dependencies: pip install -r requirements-training.txt

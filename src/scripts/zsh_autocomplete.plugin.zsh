@@ -1,288 +1,440 @@
 #!/usr/bin/env zsh
-# Zsh AI Autocomplete Plugin
-# AI-powered command completion using Ollama with LoRA fine-tuned models
-# Simple Tab completion with grey preview
+# zsh-autocomplete — AI ghost-text completions
+#
+# As you type, a grey suggestion appears after the cursor.
+# Press Tab to accept it.  That's all there is to it.
+#
+# First time: run  ai-setup  to download and fine-tune the model.
 
-# Detect project directory
-if [[ -n "$MODEL_COMPLETION_PROJECT_DIR" && -f "$MODEL_COMPLETION_PROJECT_DIR/src/model_completer/cli.py" ]]; then
-    PROJECT_DIR="$MODEL_COMPLETION_PROJECT_DIR"
-elif [[ -f "${0:A:h}/../../src/model_completer/cli.py" ]]; then
-    PROJECT_DIR="${0:A:h}/../.."
-elif [[ -f "${0:A:h}/src/model_completer/cli.py" ]]; then
-    PROJECT_DIR="${0:A:h}"
+# ---------------------------------------------------------------------------
+# Locate project + Python
+# ---------------------------------------------------------------------------
+
+if [[ -n "$ZSH_AUTOCOMPLETE_DIR" && -d "$ZSH_AUTOCOMPLETE_DIR" ]]; then
+    _ZAC_ROOT="$ZSH_AUTOCOMPLETE_DIR"
+elif [[ -d "${0:A:h}/../.." && -f "${0:A:h}/../../src/daemon/autocomplete_daemon.py" ]]; then
+    _ZAC_ROOT="${0:A:h}/../.."
+elif [[ -d "$HOME/zsh-llm-cli-autocomplete-tool" ]]; then
+    _ZAC_ROOT="$HOME/zsh-llm-cli-autocomplete-tool"
 else
-    if [[ -f "$HOME/zsh-llm-cli-autocomplete-tool/src/model_completer/cli.py" ]]; then
-        PROJECT_DIR="$HOME/zsh-llm-cli-autocomplete-tool"
-    else
-        echo "❌ Error: Cannot find model completer project directory" >&2
-        return 1
-    fi
-fi
-
-# Set paths
-export MODEL_COMPLETION_PROJECT_DIR="$PROJECT_DIR"
-export MODEL_COMPLETION_SCRIPT="$PROJECT_DIR/src/model_completer/cli.py"
-export MODEL_COMPLETION_CONFIG="${MODEL_COMPLETION_CONFIG:-$HOME/.config/model-completer/config.yaml}"
-# Daemon port for low-latency completion (like Cursor: one server, Tab is fast)
-export MODEL_COMPLETION_DAEMON_PORT="${MODEL_COMPLETION_DAEMON_PORT:-11435}"
-
-# Verify script exists
-if [[ ! -f "$MODEL_COMPLETION_SCRIPT" ]]; then
-    echo "❌ Error: CLI script not found at $MODEL_COMPLETION_SCRIPT" >&2
+    echo "zsh-autocomplete: cannot find project dir (set ZSH_AUTOCOMPLETE_DIR)" >&2
     return 1
 fi
 
-# Find Python executable
-if [[ -f "$PROJECT_DIR/venv/bin/python3" ]]; then
-    PYTHON_CMD="$PROJECT_DIR/venv/bin/python3"
-elif [[ -f "$PROJECT_DIR/venv/bin/python" ]]; then
-    PYTHON_CMD="$PROJECT_DIR/venv/bin/python"
-elif command -v python3 &> /dev/null; then
-    PYTHON_CMD="$(command -v python3)"
+_ZAC_ROOT="${_ZAC_ROOT:A}"
+_ZAC_DAEMON="$_ZAC_ROOT/src/daemon/autocomplete_daemon.py"
+_ZAC_TRAIN="$_ZAC_ROOT/src/training/finetune_small_model.py"
+_ZAC_DATA="$_ZAC_ROOT/src/training/generate_shell_data.py"
+
+if [[ -x "$_ZAC_ROOT/venv/bin/python3" ]]; then
+    _ZAC_PY="$_ZAC_ROOT/venv/bin/python3"
+elif command -v python3 &>/dev/null; then
+    _ZAC_PY="$(command -v python3)"
 else
-    echo "❌ Error: Python 3 not found" >&2
+    echo "zsh-autocomplete: python3 not found" >&2
     return 1
 fi
 
-export MODEL_COMPLETION_PYTHON="$PYTHON_CMD"
+# ---------------------------------------------------------------------------
+# Ghost-text state
+# ---------------------------------------------------------------------------
 
-# Verify Python works
-if ! "$PYTHON_CMD" --version &> /dev/null; then
-    echo "❌ Error: Python at $PYTHON_CMD is not working" >&2
-    return 1
-fi
+typeset -g _zac_suggestion=""
+typeset -g _zac_last_input=""
+typeset -g _zac_async_fd=0
+typeset -g _zac_pending=""
 
-# Helper functions
-_model_completion_check_ollama() {
-    curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags > /dev/null 2>&1
+# ---------------------------------------------------------------------------
+# Daemon helpers
+# ---------------------------------------------------------------------------
+
+_zac_sock()    { echo "$HOME/.cache/zsh-autocomplete.sock" }
+_zac_pidfile() { echo "$HOME/.cache/zsh-autocomplete.pid"  }
+_zac_log()     { echo "$HOME/.cache/zsh-autocomplete.log"  }
+
+_zac_alive() {
+    local sock="$(_zac_sock)"
+    [[ -S "$sock" ]] || return 1
+    local pid_file="$(_zac_pidfile)"
+    [[ -f "$pid_file" ]] && kill -0 "$(cat "$pid_file" 2>/dev/null)" 2>/dev/null
 }
 
-_model_completion_start_ollama() {
-    if command -v ollama &> /dev/null; then
-        nohup ollama serve > /tmp/ollama.log 2>&1 &
-        sleep 2
+_zac_start_daemon() {
+    _zac_alive && return 0
+    local _pid_file="$(_zac_pidfile)"
+    if [[ -f "$_pid_file" ]]; then
+        local _pid=$(cat "$_pid_file" 2>/dev/null)
+        kill -0 "$_pid" 2>/dev/null && return 0
+    fi
+    [[ -f "$_ZAC_DAEMON" ]] || return 1
+    nohup "$_ZAC_PY" "$_ZAC_DAEMON" >> "$(_zac_log)" 2>&1 &!
+}
+
+_zac_stop_daemon() {
+    local pid_file="$(_zac_pidfile)"
+    if [[ -f "$pid_file" ]]; then
+        kill "$(cat "$pid_file" 2>/dev/null)" 2>/dev/null
+        rm -f "$pid_file"
+    fi
+    rm -f "$(_zac_sock)"
+}
+
+# ---------------------------------------------------------------------------
+# Context gathering — enriches completions with live project state
+# ---------------------------------------------------------------------------
+
+# Build a JSON context object for the current working directory + input.
+# Runs fast subshell commands; heavy ones (git diff) only fire when needed.
+_zac_context() {
+    local input="$1"
+    local cwd="$PWD"
+    local ctx="{\"cwd\":$(printf '%s' "$cwd" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+
+    # git context
+    if git rev-parse --is-inside-work-tree &>/dev/null 2>&1; then
+        local branch
+        branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+        ctx="${ctx%\}},\"git_branch\":$(printf '%s' "$branch" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+
+        # For commit messages: include staged diff summary + recent log
+        if [[ "$input" =~ 'git commit' ]]; then
+            local diff_stat log_lines
+            diff_stat=$(git diff --staged --stat 2>/dev/null | tail -5)
+            log_lines=$(git log --oneline -5 2>/dev/null | sed 's/^[a-f0-9]* //')
+            ctx="${ctx%\}},\"git_diff\":$(printf '%s' "$diff_stat" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+            ctx="${ctx%\}},\"git_log\":$(printf '%s' "$log_lines" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+        fi
+    fi
+
+    # npm/yarn/pnpm scripts
+    if [[ "$input" =~ '(npm|yarn|pnpm) run' && -f "$cwd/package.json" ]]; then
+        local scripts
+        scripts=$(python3 -c "import json; d=json.load(open('$cwd/package.json')); print(', '.join(d.get('scripts',{}).keys()))" 2>/dev/null)
+        [[ -n "$scripts" ]] && ctx="${ctx%\}},\"npm_scripts\":$(printf '%s' "$scripts" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+    fi
+
+    # Makefile targets
+    if [[ "$input" =~ '^make ' && -f "$cwd/Makefile" ]]; then
+        local targets
+        targets=$(grep -E '^[a-zA-Z0-9_-]+:' "$cwd/Makefile" 2>/dev/null | cut -d: -f1 | head -20 | tr '\n' ' ')
+        [[ -n "$targets" ]] && ctx="${ctx%\}},\"make_targets\":$(printf '%s' "$targets" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+    fi
+
+    echo "${ctx%\}}}"
+}
+
+# ---------------------------------------------------------------------------
+# Query daemon (runs in subshell → async pipe)
+# ---------------------------------------------------------------------------
+
+_zac_query() {
+    local input="$1"
+    [[ -S "$(_zac_sock)" ]] || return
+    local ctx
+    ctx=$(_zac_context "$input")
+    "$_ZAC_PY" - "$(_zac_sock)" "$input" "$ctx" 2>/dev/null <<'EOF'
+import socket, json, sys
+sock, text, ctx_str = sys.argv[1], sys.argv[2], sys.argv[3]
+try:
+    ctx = json.loads(ctx_str)
+except Exception:
+    ctx = {}
+try:
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.settimeout(5)
+    s.connect(sock)
+    s.sendall(json.dumps({"id": "1", "input": text, "context": ctx}).encode())
+    buf = b""
+    while chunk := s.recv(4096):
+        buf += chunk
+        if len(chunk) < 4096: break
+    c = json.loads(buf).get("completion", "")
+    if c: print(c, end="")
+except Exception: pass
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# Async fd callback
+# ---------------------------------------------------------------------------
+
+# Apply ghost text — called as a ZLE widget so BUFFER is properly accessible.
+# Reads _zac_pending (set by _zac_on_result) and updates POSTDISPLAY.
+_zac_apply_ghost() {
+    local completion="$_zac_pending"
+    _zac_pending=""
+    [[ -z "$completion" ]] && return
+    [[ -z "$BUFFER" ]] && return
+    # Completion must extend what's currently in the buffer
+    [[ "$completion" == "$BUFFER"* && "$completion" != "$BUFFER" ]] || return
+    _zac_suggestion="$completion"
+    POSTDISPLAY="${completion#${BUFFER}}"
+    local b=${#BUFFER} p=${#POSTDISPLAY}
+    region_highlight=("$b $(( b + p )) fg=244")
+}
+
+_zac_on_result() {
+    local fd="$1"
+    local completion
+    { IFS='' read -r -u $fd completion } 2>/dev/null
+    zle -F "$fd" 2>/dev/null
+    exec {fd}<&- 2>/dev/null
+    _zac_async_fd=0
+
+    # Store completion globally then invoke as a widget — widget calls have
+    # proper BUFFER access, unlike zle -F callbacks where $BUFFER reads empty.
+    if [[ -n "$completion" && -n "$_zac_last_input" && "$completion" != "$_zac_last_input" ]]; then
+        _zac_pending="$completion"
+        zle _zac_apply_ghost
+        zle -R
     fi
 }
 
-_model_completion_check_model() {
-    local models
-    models=$(curl -s --connect-timeout 0.3 --max-time 0.5 http://localhost:11434/api/tags 2>/dev/null)
-    [[ -n "$models" ]] && echo "$models" | grep -q "zsh-assistant"
-}
+# ---------------------------------------------------------------------------
+# Fetch (fire on every keypress)
+# ---------------------------------------------------------------------------
 
-# Main completion function with grey preview
-_model_completion() {
-    # Skip if buffer is too short
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 2 ]]; then
-        zle expand-or-complete
+_zac_fetch() {
+    local input="$BUFFER"
+    if (( ${#input} < 2 )); then
+        _zac_clear_ghost
         return
     fi
-    
-    # Get AI prediction
-    local prediction
-    prediction=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1 | \
-        grep -vE "(^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers)" | \
-        grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | \
-        grep -v "^$" | \
-        head -1)
-    
-    if [[ -n "$prediction" && "$prediction" != "$BUFFER" && ${#prediction} -gt ${#BUFFER} ]]; then
-        # Extract the suffix to show in grey
-        local suffix="${prediction:${#BUFFER}}"
-        
-        # Use zsh's completion system to show grey preview
-        # Configure completion colors (90 = bright black/grey)
-        zstyle ':completion:*' list-colors '=*=90'
-        
-        # Create a completion context
-        local -a completions
-        completions=("$prediction")
-        
-        # Use zsh's menu-select to show preview
-        # The grey color will be applied automatically via list-colors
-        compadd -U -S '' -- "$prediction" 2>/dev/null
-        
-        # Show the preview by setting up completion context
-        # This will display the suffix in grey
-        if [[ -n "$suffix" ]]; then
-            # Use zsh's built-in completion highlighting
-            # Store the prediction for acceptance
-            _MODEL_COMPLETION_PREDICTION="$prediction"
-            
-            # Display using zsh's completion system
-            # The grey color comes from list-colors setting above
-            zle -M ""  # Clear any previous messages
-            
-            # Accept the completion
-            BUFFER="$prediction"
-            CURSOR=${#BUFFER}
-            zle reset-prompt
-        fi
-    else
-        # Fallback to normal completion
-        zle expand-or-complete
+    [[ "$input" == "$_zac_last_input" ]] && return
+
+    _zac_last_input="$input"
+    POSTDISPLAY=""
+    region_highlight=()
+    _zac_suggestion=""
+
+    if (( _zac_async_fd )); then
+        zle -F "$_zac_async_fd" 2>/dev/null
+        exec {_zac_async_fd}<&- 2>/dev/null
+        _zac_async_fd=0
+    fi
+
+    exec {_zac_async_fd}< <(_zac_query "$input")
+    zle -F "$_zac_async_fd" _zac_on_result
+}
+
+_zac_clear_ghost() {
+    POSTDISPLAY=""
+    region_highlight=()
+    _zac_suggestion=""
+    _zac_last_input=""
+    if (( _zac_async_fd )); then
+        zle -F "$_zac_async_fd" 2>/dev/null
+        exec {_zac_async_fd}<&- 2>/dev/null
+        _zac_async_fd=0
     fi
 }
 
-# Completion with grey preview (Cursor-style: ghost text, Tab accepts)
-# Prefer daemon for low latency; fallback to Python CLI
-_model_completion_simple() {
-    if [[ -z "$BUFFER" || ${#BUFFER} -lt 2 ]]; then
-        zle expand-or-complete
-        return
-    fi
-    
-    local prediction
-    # Try daemon first (fast: no process startup)
-    prediction=$(printf '%s' "$BUFFER" | curl -s -X POST --data-binary @- --max-time 3 "http://127.0.0.1:${MODEL_COMPLETION_DAEMON_PORT}/complete" 2>/dev/null)
-    if [[ -z "$prediction" || "$prediction" == "$BUFFER" || ${#prediction} -le ${#BUFFER} ]]; then
-        # Fallback: Python CLI
-        local output
-        output=$("$PYTHON_CMD" -W ignore::UserWarning -W ignore::DeprecationWarning -u "$MODEL_COMPLETION_SCRIPT" "$BUFFER" 2>&1)
-        local exit_code=$?
-        if [[ $exit_code -ne 0 ]] || echo "$output" | grep -qE "Traceback|Error|Exception|ModuleNotFoundError|ImportError"; then
-            echo "$output" > /tmp/model-completer-error.log 2>&1
-            zle expand-or-complete
-            return
-        fi
-        prediction=$(echo "$output" | \
-            grep -vE "(Traceback|Error|Exception|ModuleNotFound|^<frozen|^RuntimeWarning|^Warning:|^DEBUG|^INFO|^ERROR|^WARNING|^Loading|^Using|^Model|^tokenizer|^device|^torch|^transformers|^File|^  File|^    |^  at|^During handling)" | \
-            grep -vE "^[0-9]{4}-[0-9]{2}-[0-9]{2}" | grep -v "^$" | grep -E "^[a-zA-Z].*" | head -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    fi
-    
-    if [[ -n "$prediction" && "$prediction" != "$BUFFER" && ${#prediction} -gt ${#BUFFER} ]]; then
-        local original_len=${#BUFFER}
-        local suffix="${prediction:${#BUFFER}}"
-        
-        # Set buffer to show full prediction
-        BUFFER="$prediction"
+# ---------------------------------------------------------------------------
+# Widgets
+# ---------------------------------------------------------------------------
+
+# Tab: accept ghost text or fall through to normal completion
+_zac_tab() {
+    if [[ -n "$_zac_suggestion" && "$_zac_suggestion" != "$BUFFER" ]]; then
+        BUFFER="$_zac_suggestion"
         CURSOR=${#BUFFER}
-        
-        # Highlight suffix in grey using region_highlight
-        # Declare as array and set highlight for the suffix portion
-        typeset -a region_highlight
-        # Format: "start end style" where fg=240 is grey (dark grey)
-        # Highlight from original_len to end of buffer in grey
-        region_highlight=("${original_len} ${#BUFFER} fg=240")
-        
-        zle reset-prompt
+        POSTDISPLAY=""
+        region_highlight=()
+        _zac_suggestion=""
+        _zac_last_input="$BUFFER"
     else
         zle expand-or-complete
     fi
 }
 
-# Register widget
-zle -N _model_completion_simple
+# Wraps self-insert — fires on every character typed
+_zac_self_insert() {
+    zle .self-insert "$@"
+    _zac_fetch
+}
 
-# Bind Tab key
-bindkey '^I' _model_completion_simple
+# Also fires on delete/backspace so ghost text clears immediately
+_zac_backward_delete() {
+    zle .backward-delete-char "$@"
+    _zac_fetch
+}
 
-# Configure zsh completion colors for grey preview
-zstyle ':completion:*' list-colors '=*=90'  # Grey for matches
-zstyle ':completion:*' menu select
+# Clear ghost text and state when user submits the line
+_zac_accept_line() {
+    _zac_clear_ghost
+    zle .accept-line
+}
 
-# Enable region highlighting for grey preview
-zle_highlight=(region:bg=240,fg=15)
+_zac_test_ghost() {
+    # Synchronous test: type something, press Ctrl-G — should show grey " [ghost]" suffix.
+    # If it appears: POSTDISPLAY works. If not: terminal/ZLE issue unrelated to async.
+    POSTDISPLAY=" [ghost]"
+    local b=${#BUFFER} p=${#POSTDISPLAY}
+    region_highlight=("$b $(( b + p )) fg=244")
+    zle -R
+}
 
-# Utility commands
-ai-completion-status() {
-    echo "📊 AI Autocomplete Status"
-    echo "   Project: $PROJECT_DIR"
-    echo "   Python:  $PYTHON_CMD"
+_zac_do_init() {
+    zle -N _zac_on_result
+    zle -N _zac_apply_ghost
+    zle -N _zac_tab
+    zle -N _zac_test_ghost
+    zle -N self-insert          _zac_self_insert
+    zle -N backward-delete-char _zac_backward_delete
+    zle -N accept-line          _zac_accept_line
+
+    bindkey '^I' _zac_tab       # Tab
+    bindkey '^G' _zac_test_ghost # Ctrl-G: test ghost text rendering
+    bindkey '^M' accept-line    # Enter (CR)
+    bindkey '^J' accept-line    # Enter (LF)
+}
+
+# Try immediately (works if sourced in a running interactive session)
+_zac_do_init
+
+# Also register via precmd_functions in case ZLE wasn't ready yet
+# (e.g. sourced from .zshrc before ZLE starts)
+_zac_init_once() {
+    # Remove self so this only runs once
+    precmd_functions=("${(@)precmd_functions:#_zac_init_once}")
+    _zac_do_init
+}
+precmd_functions+=(_zac_init_once)
+
+# ---------------------------------------------------------------------------
+# User-facing commands
+# ---------------------------------------------------------------------------
+
+ai-setup() {
+    echo "Setting up zsh-autocomplete..."
+    echo "Model: Qwen2.5-0.5B + pre-trained LoRA adapter"
     echo ""
-    
-    if _model_completion_check_ollama; then
-        echo "   Ollama: ✅ Running"
-        if _model_completion_check_model; then
-            echo "   Model:  ✅ zsh-assistant ready"
-        else
-            echo "   Model:  ⚠️  zsh-assistant not found (run: ai-completion-setup)"
-        fi
+
+    local adapter_dir="$HOME/.local/share/zsh-autocomplete/lora-adapter"
+    local hf_repo="duoyuncloud/zsh-autocomplete-lora"
+
+    # 1. Install Python deps
+    echo "[1/3] Installing Python dependencies..."
+    "$_ZAC_PY" -m pip install -q --upgrade \
+        torch transformers peft sentencepiece huggingface_hub \
+        2>&1 | tail -3
+    echo "      Done."
+
+    # 2. Download pre-trained adapter
+    echo "[2/3] Downloading pre-trained LoRA adapter from HuggingFace..."
+    echo "      (repo: $hf_repo)"
+    "$_ZAC_PY" - <<PYEOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id="$hf_repo",
+    local_dir="$adapter_dir",
+)
+print("      Adapter ready.")
+PYEOF
+
+    # 3. Start daemon
+    echo "[3/3] Starting autocomplete daemon..."
+    _zac_stop_daemon
+    sleep 0.3
+    _zac_start_daemon
+    sleep 2
+
+    if _zac_alive; then
+        echo ""
+        echo "Ready. Start typing — grey completions appear after your cursor."
+        echo "Press Tab to accept."
     else
-        echo "   Ollama: ❌ Not running"
-        echo "   Model:  ⚠️  Not available"
+        echo ""
+        echo "Daemon failed to start. Check: $(_zac_log)"
     fi
 }
 
-ai-completion-setup() {
-    echo "🔧 Setting up Ollama and models..."
-    echo ""
-    
-    if ! command -v ollama &> /dev/null; then
-        echo "📥 Installing Ollama..."
-        curl -fsSL https://ollama.ai/install.sh | sh
+ai-status() {
+    echo "zsh-autocomplete"
+    if _zac_alive; then
+        echo "  daemon : running"
     else
-        echo "✅ Ollama installed"
+        echo "  daemon : stopped  (run: ai-setup)"
     fi
-    
-    if ! _model_completion_check_ollama; then
-        echo "🚀 Starting Ollama server..."
-        _model_completion_start_ollama
-        sleep 3
+    local adapter="$HOME/.local/share/zsh-autocomplete/lora-adapter/adapter_config.json"
+    if [[ -f "$adapter" ]]; then
+        echo "  model  : Qwen2.5-0.5B + LoRA adapter (fine-tuned)"
+    else
+        echo "  model  : Qwen2.5-0.5B base (run ai-setup to fine-tune)"
     fi
-    
-    if ! _model_completion_check_ollama; then
-        echo "❌ Failed to start Ollama. Please start manually: ollama serve"
+    if [[ -n "$ANTHROPIC_API_KEY" ]]; then
+        echo "  claude : enabled (complex completions routed to Claude Haiku)"
+    else
+        echo "  claude : disabled (set ANTHROPIC_API_KEY to enable)"
+    fi
+    echo "  log    : $(_zac_log)"
+}
+
+ai-restart() {
+    _zac_stop_daemon
+    sleep 0.3
+    _zac_start_daemon
+    echo "Daemon restarted"
+}
+
+ai-debug() {
+    echo "=== zsh-autocomplete diagnostics ==="
+    echo ""
+
+    echo "[1] Daemon"
+    if _zac_alive; then
+        echo "    status : running"
+    else
+        echo "    status : STOPPED — run: ai-setup"
         return 1
     fi
-    echo "✅ Ollama running"
-    echo ""
-    
-    if _model_completion_check_model; then
-        echo "✅ zsh-assistant model ready"
+
+    echo "[2] Completion query (input: 'git comm')"
+    local result
+    result=$("$_ZAC_PY" - "$(_zac_sock)" "git comm" "{}" 2>&1 <<'PYEOF'
+import socket, json, sys
+sock, text = sys.argv[1], sys.argv[2]
+s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+s.settimeout(5); s.connect(sock)
+s.sendall(json.dumps({"id":"1","input":text,"context":{}}).encode())
+buf=b""
+while c:=s.recv(4096): buf+=c
+print(json.loads(buf).get("completion","(empty)"))
+PYEOF
+)
+    echo "    result : $result"
+
+    echo "[3] ZLE widget overrides"
+    local si
+    si=$(zle -l -L self-insert 2>/dev/null)
+    if [[ "$si" == *_zac_self_insert* ]]; then
+        echo "    self-insert → _zac_self_insert : OK"
     else
-        # Check if HF repo is configured
-        HF_REPO="$("$PYTHON_CMD" -c "import sys; sys.path.insert(0, 'src'); from model_completer.utils import load_config; config = load_config(); print(config.get('hf_lora_repo', ''))" 2>/dev/null || echo "")"
-        
-        if [ -n "$HF_REPO" ]; then
-            echo "📥 Downloading pre-trained model from Hugging Face: $HF_REPO"
-            echo "📦 Importing to Ollama (this will download adapter and base model)..."
-            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --import-to-ollama
-        else
-            echo "📊 Generating training data..."
-            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --generate-data
-            
-            echo "🚀 Training LoRA model (this may take a few minutes)..."
-            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --train
-            
-            echo "📦 Importing to Ollama..."
-            "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --import-to-ollama
-        fi
-        
-        sleep 2
-        if _model_completion_check_model; then
-            echo "✅ Model ready!"
-        else
-            echo "⚠️  Model may need manual import"
-        fi
+        echo "    self-insert → _zac_self_insert : NOT set ← main issue"
+        echo "    current: $si"
     fi
-    
+
+    echo "[4] Keybinding"
+    local tab_binding
+    tab_binding=$(bindkey "^I" 2>/dev/null | awk '{print $2}')
+    echo "    Tab (^I) bound to : $tab_binding"
+
+    echo "[5] Claude API"
+    if [[ -n "$ANTHROPIC_API_KEY" ]]; then
+        echo "    ANTHROPIC_API_KEY : set (complex completions use Claude Haiku)"
+    else
+        echo "    ANTHROPIC_API_KEY : not set (local model only)"
+    fi
+
+    echo "[6] POSTDISPLAY test"
+    print -P "    %F{8}[ghost text appears in grey like this]%f"
+
     echo ""
-    echo "✅ Setup complete! Try typing a command and press Tab"
+    echo "=== done ==="
 }
 
-ai-completion-train() {
-    echo "🚀 Starting LoRA training..."
-    "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --train
-}
+# ---------------------------------------------------------------------------
+# Auto-start daemon at shell init (silent, non-blocking)
+# ---------------------------------------------------------------------------
 
-ai-completion-data() {
-    echo "📊 Generating training data..."
-    "$PYTHON_CMD" "$MODEL_COMPLETION_SCRIPT" --generate-data
-}
-
-# Auto-start Ollama in background (non-blocking)
-{
-    if ! _model_completion_check_ollama; then
-        _model_completion_start_ollama > /dev/null 2>&1
-        sleep 2
-    fi
-    
-    if _model_completion_check_ollama; then
-        if _model_completion_check_model; then
-            echo "✅ AI Autocomplete ready"
-        else
-            echo "⚠️  AI Autocomplete ready (run 'ai-completion-setup' to load model)"
-        fi
-    fi
-} &!
+{ _zac_start_daemon } &!
