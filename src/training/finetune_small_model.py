@@ -127,36 +127,19 @@ def _train_peft() -> None:
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import LoraConfig, get_peft_model, TaskType
 
-    device, dtype = _device_dtype()
-    logger.info(f"Loading {MODEL_ID} on {device}")
+    _, dtype = _device_dtype()
+    # Always load on CPU for training — accelerate/SFTTrainer handles
+    # moving to MPS/CUDA. Loading directly to MPS causes device-index
+    # errors in accelerate's prepare() step.
+    logger.info(f"Loading {MODEL_ID} on cpu (trainer moves to accelerator device)")
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Try 4-bit (saves ~50% RAM), fall back to full precision
-    model = None
-    try:
-        from transformers import BitsAndBytesConfig
-        bnb = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=dtype,
-            bnb_4bit_use_double_quant=True,
-        )
-        model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID, quantization_config=bnb,
-            device_map=device, trust_remote_code=True,
-        )
-        logger.info("Loaded in 4-bit")
-    except Exception:
-        pass
-
-    if model is None:
-        model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID, torch_dtype=dtype,
-            device_map=device, trust_remote_code=True,
-        )
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID, torch_dtype=dtype, trust_remote_code=True,
+    )
 
     lora_cfg = LoraConfig(
         task_type=TaskType.CAUSAL_LM,
@@ -177,21 +160,25 @@ def _train_peft() -> None:
 
 
 def _run_trainer(model, tokenizer, use_bf16: bool) -> None:
+    import torch
     from trl import SFTTrainer, SFTConfig
 
     tmp_dir = str(ADAPTER_DIR) + "-tmp"
     dataset = _build_dataset(tokenizer)
 
+    # MPS doesn't support fp16/bf16 training flags via accelerate —
+    # use full float32 precision on MPS, fp16 on CUDA only.
+    use_mps = torch.backends.mps.is_available() and not torch.cuda.is_available()
     cfg = SFTConfig(
         output_dir=tmp_dir,
         num_train_epochs=3,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=4,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=8,
         learning_rate=2e-4,
         warmup_ratio=0.05,
         lr_scheduler_type="cosine",
-        fp16=(not use_bf16),
-        bf16=use_bf16,
+        fp16=(not use_bf16 and not use_mps and torch.cuda.is_available()),
+        bf16=(use_bf16 and torch.cuda.is_available()),
         logging_steps=20,
         save_strategy="no",
         optim="adamw_torch",
