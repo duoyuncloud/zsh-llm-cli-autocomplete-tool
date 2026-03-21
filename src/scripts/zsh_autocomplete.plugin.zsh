@@ -333,7 +333,7 @@ precmd_functions+=(_zac_init_once)
 
 ai-setup() {
     echo "Setting up zsh-autocomplete..."
-    echo "Model: Qwen2.5-0.5B + pre-trained LoRA adapter"
+    echo "Model: Qwen2.5-1.5B-Instruct + LoRA adapter (from HuggingFace)"
     echo ""
 
     local adapter_dir="$HOME/.local/share/zsh-autocomplete/lora-adapter"
@@ -347,18 +347,15 @@ ai-setup() {
     echo "      Done."
 
     # 2. Download pre-trained adapter
-    echo "[2/3] Downloading pre-trained LoRA adapter from HuggingFace..."
-    echo "      (repo: $hf_repo)"
+    echo "[2/3] Downloading LoRA adapter from HuggingFace..."
+    echo "      (repo: $hf_repo  base: Qwen2.5-1.5B-Instruct)"
     "$_ZAC_PY" - <<PYEOF
 from huggingface_hub import snapshot_download
-snapshot_download(
-    repo_id="$hf_repo",
-    local_dir="$adapter_dir",
-)
+snapshot_download(repo_id="$hf_repo", local_dir="$adapter_dir")
 print("      Adapter ready.")
 PYEOF
 
-    # 3. Start daemon
+    # 3. Start daemon (merges adapter + base model on first boot)
     echo "[3/3] Starting autocomplete daemon..."
     _zac_stop_daemon
     sleep 0.3
@@ -383,10 +380,13 @@ ai-status() {
         echo "  daemon : stopped  (run: ai-setup)"
     fi
     local adapter="$HOME/.local/share/zsh-autocomplete/lora-adapter/adapter_config.json"
-    if [[ -f "$adapter" ]]; then
-        echo "  model  : Qwen2.5-0.5B + LoRA adapter (fine-tuned)"
+    local merged="$HOME/.local/share/zsh-autocomplete/merged-model/config.json"
+    if [[ -f "$merged" ]]; then
+        echo "  model  : Qwen2.5-1.5B-Instruct + LoRA (merged, ready)"
+    elif [[ -f "$adapter" ]]; then
+        echo "  model  : Qwen2.5-1.5B-Instruct + LoRA adapter (merging on next start)"
     else
-        echo "  model  : Qwen2.5-0.5B base (run ai-setup to fine-tune)"
+        echo "  model  : not trained yet (run: ai-setup)"
     fi
     if [[ -n "$ANTHROPIC_API_KEY" ]]; then
         echo "  claude : enabled (complex completions routed to Claude Haiku)"

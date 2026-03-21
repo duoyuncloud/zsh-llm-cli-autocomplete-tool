@@ -31,7 +31,7 @@ import signal
 import sys
 from pathlib import Path
 
-MODEL_ID     = "Qwen/Qwen2.5-0.5B-Instruct"
+MODEL_ID     = "Qwen/Qwen2.5-1.5B-Instruct"
 ADAPTER_DIR  = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
 MERGED_DIR   = Path.home() / ".local/share/zsh-autocomplete/merged-model"
 SOCKET_PATH  = Path.home() / ".cache/zsh-autocomplete.sock"

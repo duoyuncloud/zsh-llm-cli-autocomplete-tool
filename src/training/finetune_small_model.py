@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fine-tune Qwen2.5-0.5B-Instruct with LoRA for shell command completion.
+"""Fine-tune Qwen2.5-1.5B-Instruct with LoRA for shell command completion.
 
 Everything is hardcoded — no choices needed.
 Run via: python finetune_small_model.py
@@ -13,7 +13,7 @@ import logging
 import sys
 from pathlib import Path
 
-MODEL_ID    = "Qwen/Qwen2.5-0.5B-Instruct"
+MODEL_ID    = "Qwen/Qwen2.5-1.5B-Instruct"
 ADAPTER_DIR = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
 DATA_PATH   = Path(__file__).parent / "zsh_training_data.jsonl"
 
