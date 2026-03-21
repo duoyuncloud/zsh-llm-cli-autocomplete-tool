@@ -1,16 +1,17 @@
-# Training dependencies for LoRA fine-tuning
-# Install with: pip install -r requirements-training.txt
+# Fine-tuning dependencies
+# Install: pip install -r requirements-training.txt
+#
+# For 2x speed + 50% less VRAM, also install unsloth:
+#   pip install unsloth        (CUDA)
+#   pip install unsloth[colab] (Colab / no Flash Attention)
 
-# Core ML libraries
-torch>=2.0.0
-transformers>=4.30.0
-accelerate>=0.20.0
-datasets>=2.12.0
-peft>=0.4.0
-
-# Axolotl for LoRA training
-axolotl>=0.3.0
-
-# Additional training utilities
+torch>=2.1.0
+transformers>=4.40.0
+accelerate>=0.28.0
+datasets>=2.18.0
+peft>=0.10.0
+trl>=0.8.0
+bitsandbytes>=0.43.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
 psutil>=5.9.0
-wandb>=0.15.0  # Optional: for experiment tracking

@@ -1,278 +1,1806 @@
-{"input": "git comm", "output": "git commit -m \"commit message\""}
-{"input": "docker run", "output": "docker run -it --name container image:tag"}
-{"input": "npm run", "output": "npm run dev"}
-{"input": "python -m", "output": "python -m http.server 8000"}
-{"input": "kubectl get", "output": "kubectl get pods"}
-{"input": "ls -", "output": "ls -la"}
-{"input": "cd ", "output": "cd ~/projects"}
-{"input": "mkdir ", "output": "mkdir new-project"}
-{"input": "rm -", "output": "rm -rf directory/"}
-{"input": "cp ", "output": "cp file.txt destination/"}
-{"input": "mv ", "output": "mv oldname newname"}
-{"input": "curl ", "output": "curl -X GET https://api.example.com"}
-{"input": "ssh ", "output": "ssh user@hostname"}
-{"input": "ps aux", "output": "ps aux | grep process"}
-{"input": "systemctl ", "output": "systemctl status service"}
-{"input": "ls -l", "output": "ls -la"}
-{"input": "ls -a", "output": "ls -la"}
-{"input": "git add", "output": "git add ."}
+{"input": "mv *.log /t", "output": "mv *.log /tmp/"}
+{"input": "grep -r 'TODO' ", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "cp -r src/ dist", "output": "cp -r src/ dist/"}
+{"input": "docker run -d --name", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "npm publish --access publ", "output": "npm publish --access public"}
+{"input": "git stash ", "output": "git stash list"}
+{"input": "git ", "output": "git log --oneline --graph --all"}
+{"input": "git bisect sta", "output": "git bisect start"}
+{"input": "kubectl get pods -n defa", "output": "kubectl get pods -n default"}
+{"input": "curl -s https://api.github.com/users/torvalds | ", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "zip -r dist.zip", "output": "zip -r dist.zip dist/"}
+{"input": "pip ", "output": "pip install -e ."}
+{"input": "git submodule update ", "output": "git submodule update --init --recursive"}
+{"input": "git clone ", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "git commit -m \"fix: resolve merge", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "npm init ", "output": "npm init -y"}
+{"input": "kubectl rollout undo ", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "terraform p", "output": "terraform plan"}
+{"input": "tail -f ", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "rm -rf node_modul", "output": "rm -rf node_modules/"}
+{"input": "docker", "output": "docker build -t myapp:latest ."}
+{"input": "docker rmi myimage", "output": "docker rmi myimage:latest"}
+{"input": "find . -path '*/node_modules' -prune -o -name '*.ts' -pr", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "awk '{print $1}' access.log | sort", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "rsync -av --exclude='node_modules' ", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "docker pull ", "output": "docker pull nginx:latest"}
+{"input": "find . -type f ", "output": "find . -type f -newer package.json"}
+{"input": "docker rm -f mycontai", "output": "docker rm -f mycontainer"}
+{"input": "find . -path ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "kubectl config get-context", "output": "kubectl config get-contexts"}
+{"input": "git merge --no-ff", "output": "git merge --no-ff feature-branch"}
+{"input": "df ", "output": "df -h"}
+{"input": "yarn add react react-do", "output": "yarn add react react-dom"}
+{"input": "kubectl top", "output": "kubectl top pods"}
+{"input": "kubectl get", "output": "kubectl get pods -o wide"}
+{"input": "git statu", "output": "git status"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn |", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "docker compose logs ", "output": "docker compose logs -f"}
+{"input": "docker ", "output": "docker stats --no-stream"}
+{"input": "npx create-react-app ", "output": "npx create-react-app myapp"}
+{"input": "rsync -av --exclude='node_modules' src/ user@host", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "pip list --outdate", "output": "pip list --outdated"}
+{"input": "wget https://example.com/installer.", "output": "wget https://example.com/installer.sh"}
+{"input": "find . -name", "output": "find . -name '*.py' -type f"}
+{"input": "git log", "output": "git log --oneline -20"}
+{"input": "curl -X POST -H 'Content-Type: application/json' ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "flask run", "output": "flask run --debug"}
+{"input": "git remote -", "output": "git remote -v"}
+{"input": "yarn add --dev @types/nod", "output": "yarn add --dev @types/node"}
+{"input": "git pull origin main --rebas", "output": "git pull origin main --rebase"}
+{"input": "docker image", "output": "docker images"}
+{"input": "kubectl ", "output": "kubectl get nodes"}
+{"input": "kubectl get pods ", "output": "kubectl get pods --all-namespaces"}
+{"input": "find . -type", "output": "find . -type f -newer package.json"}
+{"input": "git checkout -b feature/new-feat", "output": "git checkout -b feature/new-feature"}
+{"input": "terraform destroy -target=module.v", "output": "terraform destroy -target=module.vpc"}
+{"input": "docker network inspect bridg", "output": "docker network inspect bridge"}
+{"input": "make ins", "output": "make install"}
+{"input": "tmux ", "output": "tmux attach-session -t main"}
+{"input": "npx create-next-app@latest my", "output": "npx create-next-app@latest myapp"}
+{"input": "pip install -e", "output": "pip install -e ."}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh |", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "git commit -m \"feat:", "output": "git commit -m \"feat: initial commit\""}
+{"input": "python manage.py ", "output": "python manage.py makemigrations"}
+{"input": "find", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "docker build -f Dockerfile.prod -t", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "pnpm add vite --save-de", "output": "pnpm add vite --save-dev"}
+{"input": "npm ", "output": "npm run lint"}
+{"input": "kill -9 ", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "ssh", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "git", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "kubectl scale deployment myapp --replica", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "git pull", "output": "git pull origin main --rebase"}
+{"input": "rg 'TODO'", "output": "rg 'TODO' --type=py"}
+{"input": "poetry publi", "output": "poetry publish"}
+{"input": "grep -r 'TODO' src/ --include='*.", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "docker exec -it mycontainer /bin/ba", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "rsync -av --exclude='node_modules'", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "poetry", "output": "poetry publish"}
+{"input": "uv pip", "output": "uv pip sync requirements.txt"}
+{"input": "python -m", "output": "python -m venv .venv"}
+{"input": "npm test", "output": "npm test -- --watch"}
+{"input": "find . -name '*.py' -typ", "output": "find . -name '*.py' -type f"}
+{"input": "git commit -m ", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "git commit -m \"feat: ", "output": "git commit -m \"feat: initial commit\""}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bas", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "chmod 600 ~/.ssh/id_r", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "kubectl apply -f ", "output": "kubectl apply -f k8s/"}
+{"input": "wget https://example.com/installer.s", "output": "wget https://example.com/installer.sh"}
+{"input": "find .", "output": "find . -name '*.py' -type f"}
+{"input": "poetry ", "output": "poetry add requests"}
+{"input": "pip freeze > requirements.tx", "output": "pip freeze > requirements.txt"}
+{"input": "tail -n ", "output": "tail -n 200 /var/log/syslog"}
+{"input": "docker build -f", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "yarn ", "output": "yarn add react react-dom"}
+{"input": "mkdir -p src/compon", "output": "mkdir -p src/components"}
+{"input": "code --diff a.py b.p", "output": "code --diff a.py b.py"}
+{"input": "python manage.py createsuperu", "output": "python manage.py createsuperuser"}
+{"input": "git log --author=\"$(git ", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "pip list --outdat", "output": "pip list --outdated"}
+{"input": "bun run de", "output": "bun run dev"}
+{"input": "terraform output", "output": "terraform output -json"}
+{"input": "git log --oneline", "output": "git log --oneline -20"}
+{"input": "git push ", "output": "git push --force-with-lease"}
+{"input": "curl", "output": "curl --head https://example.com"}
+{"input": "kubectl top ", "output": "kubectl top pods"}
+{"input": "git checkout -b feature/new-featur", "output": "git checkout -b feature/new-feature"}
+{"input": "npm install -g ", "output": "npm install -g typescript"}
+{"input": "git log --oneline --graph ", "output": "git log --oneline --graph --all"}
+{"input": "kubectl top node", "output": "kubectl top nodes"}
+{"input": "python ", "output": "python manage.py collectstatic --no-input"}
+{"input": "cargo ", "output": "cargo clippy"}
+{"input": "docker logs ", "output": "docker logs --tail 100 mycontainer"}
+{"input": "docker ps --format 'table {{.Names}}\\t{{.Sta", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "python -m http.server 800", "output": "python -m http.server 8000"}
+{"input": "find . -type f -newer package.jso", "output": "find . -type f -newer package.json"}
+{"input": "export PATH=$PATH:/usr/local/b", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "kill -9 $(lsof -t ", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "pip freeze > requirements", "output": "pip freeze > requirements.txt"}
+{"input": "git tag -a v1.0.0 -m ", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "tar -czf archive.tar.gz sr", "output": "tar -czf archive.tar.gz src/"}
+{"input": "python manage.py", "output": "python manage.py collectstatic --no-input"}
+{"input": "code ", "output": "code ."}
+{"input": "docker exec ", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "cargo build --relea", "output": "cargo build --release"}
+{"input": "cargo fm", "output": "cargo fmt"}
+{"input": "which pyth", "output": "which python3"}
+{"input": "pnpm run de", "output": "pnpm run dev"}
+{"input": "lsof -i :808", "output": "lsof -i :8080"}
+{"input": "npx ts-node src/in", "output": "npx ts-node src/index.ts"}
+{"input": "wget -q -O - ", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "python -m ", "output": "python -m pytest --cov=src"}
+{"input": "tail -f /var/log/nginx/access.lo", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "curl -s https://api.github.com/users/torvalds | jq", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "npm install --save-dev esl", "output": "npm install --save-dev eslint"}
+{"input": "git submodule update", "output": "git submodule update --init --recursive"}
+{"input": "docker inspect mycontainer | jq ", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "python manage.py makemig", "output": "python manage.py makemigrations"}
+{"input": "docker compose down ", "output": "docker compose down -v"}
+{"input": "git rebase -i HEA", "output": "git rebase -i HEAD~3"}
+{"input": "docker build ", "output": "docker build -t myapp:latest ."}
+{"input": "docker run --rm -v $(pwd):/app -w", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "kubectl", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "rm ", "output": "rm -rf node_modules/"}
 {"input": "git push", "output": "git push origin main"}
-{"input": "git pull", "output": "git pull origin main"}
-{"input": "git status", "output": "git status"}
-{"input": "git log", "output": "git log --oneline"}
-{"input": "docker ps", "output": "docker ps -a"}
-{"input": "docker images", "output": "docker images"}
-{"input": "docker build", "output": "docker build -t image-name ."}
-{"input": "npm install", "output": "npm install"}
-{"input": "npm start", "output": "npm start"}
-{"input": "python -c", "output": "python -c \"print('hello')\""}
-{"input": "pip install", "output": "pip install package-name"}
-{"input": "pip list", "output": "pip list"}
-{"input": "kubectl apply", "output": "kubectl apply -f file.yaml"}
-{"input": "kubectl delete", "output": "kubectl delete pod pod-name"}
-{"input": "curl -X", "output": "curl -X POST https://api.example.com"}
-{"input": "systemctl start", "output": "systemctl start service-name"}
-{"input": "systemctl stop", "output": "systemctl stop service-name"}
-{"input": "systemctl restart", "output": "systemctl restart service-name"}
-{"input": "systemctl enable", "output": "systemctl enable service-name"}
-{"input": "systemctl disable", "output": "systemctl disable service-name"}
-{"input": "ps aux", "output": "ps aux | grep process"}
-{"input": "top", "output": "top"}
-{"input": "htop", "output": "htop"}
-{"input": "df -", "output": "df -h"}
-{"input": "du -", "output": "du -h"}
-{"input": "find ", "output": "find . -name \"*.txt\""}
-{"input": "grep ", "output": "grep -r \"pattern\" ."}
-{"input": "sed ", "output": "sed 's/old/new/g' file.txt"}
-{"input": "awk ", "output": "awk '{print $1}' file.txt"}
-{"input": "sort ", "output": "sort file.txt"}
-{"input": "uniq ", "output": "uniq file.txt"}
-{"input": "wc -", "output": "wc -l file.txt"}
-{"input": "head ", "output": "head -n 10 file.txt"}
-{"input": "tail ", "output": "tail -n 10 file.txt"}
-{"input": "cat ", "output": "cat file.txt"}
-{"input": "less ", "output": "less file.txt"}
-{"input": "more ", "output": "more file.txt"}
-{"input": "vim ", "output": "vim file.txt"}
-{"input": "nano ", "output": "nano file.txt"}
-{"input": "chmod ", "output": "chmod 755 file.txt"}
-{"input": "chown ", "output": "chown user:group file.txt"}
-{"input": "tar -", "output": "tar -czf archive.tar.gz directory/"}
-{"input": "zip ", "output": "zip -r archive.zip directory/"}
-{"input": "unzip ", "output": "unzip archive.zip"}
-{"input": "wget ", "output": "wget https://example.com/file.txt"}
-{"input": "scp ", "output": "scp file.txt user@host:/path/"}
-{"input": "rsync ", "output": "rsync -av source/ dest/"}
-{"input": "ssh ", "output": "ssh user@hostname"}
-{"input": "ping ", "output": "ping google.com"}
-{"input": "traceroute ", "output": "traceroute google.com"}
-{"input": "netstat ", "output": "netstat -tulpn"}
-{"input": "ss ", "output": "ss -tulpn"}
+{"input": "git clone --depth", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "npx ts-node", "output": "npx ts-node src/index.ts"}
+{"input": "kubectl rollout status deployment/mya", "output": "kubectl rollout status deployment/myapp"}
+{"input": "cd ~/.confi", "output": "cd ~/.config"}
+{"input": "scp -r dist/ user@host:/var/www/html", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "kubectl apply -f", "output": "kubectl apply -f k8s/"}
+{"input": "history | grep docker | tail ", "output": "history | grep docker | tail -20"}
+{"input": "kubectl logs -f ", "output": "kubectl logs -f mypod"}
+{"input": "git stash push -m \"wip: in-progress wo", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "awk '{print $1}' access.log | sort | uniq -c ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "yarn add react ", "output": "yarn add react react-dom"}
+{"input": "npm publish ", "output": "npm publish --access public"}
+{"input": "ls -lt", "output": "ls -lt | head -20"}
+{"input": "chmod 600 ~/.ssh", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "grep -rn 'def ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "kubectl rollout status deployment/my", "output": "kubectl rollout status deployment/myapp"}
+{"input": "fzf --preview", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "kubectl get pods -n", "output": "kubectl get pods -n default"}
+{"input": "cargo build", "output": "cargo build --release"}
+{"input": "docker exec -it", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "fd -e ts -e tsx ", "output": "fd -e ts -e tsx src/"}
+{"input": "git diff main..feature-bran", "output": "git diff main..feature-branch"}
+{"input": "rg 'TODO' --type=p", "output": "rg 'TODO' --type=py"}
+{"input": "ln -sf /usr/local/bin/python3 /usr/local/bin/pyth", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "yarn workspace myapp", "output": "yarn workspace myapp dev"}
+{"input": "mv *.log ", "output": "mv *.log /tmp/"}
+{"input": "docker build -f ", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "git pull origin main ", "output": "git pull origin main --rebase"}
+{"input": "cat", "output": "cat /etc/hosts"}
+{"input": "ls -lt ", "output": "ls -lt | head -20"}
+{"input": "uv pip sync requirements.tx", "output": "uv pip sync requirements.txt"}
+{"input": "jq '.users[] | select(.active)' data.js", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "git branch --merged | grep -v main | ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "uv pip install -r requirements.", "output": "uv pip install -r requirements.txt"}
+{"input": "touch .env.lo", "output": "touch .env.local"}
+{"input": "npx ts-node ", "output": "npx ts-node src/index.ts"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "git remote ", "output": "git remote -v"}
+{"input": "git commit ", "output": "git commit -m \"feat: initial commit\""}
+{"input": "code --diff a.py b", "output": "code --diff a.py b.py"}
+{"input": "git fetch", "output": "git fetch --all --prune"}
+{"input": "ps aux | grep", "output": "ps aux | grep python"}
+{"input": "docker exec -it mycontainer", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "vim", "output": "vim src/main.py"}
+{"input": "git fetch --all --pr", "output": "git fetch --all --prune"}
+{"input": "kubectl rollout ", "output": "kubectl rollout status deployment/myapp"}
+{"input": "terraform destroy -target=module.", "output": "terraform destroy -target=module.vpc"}
+{"input": "mv", "output": "mv old-name.txt new-name.txt"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm instal", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "git merge ", "output": "git merge --no-ff feature-branch"}
+{"input": "git merge", "output": "git merge --no-ff feature-branch"}
+{"input": "terraform destroy -target=m", "output": "terraform destroy -target=module.vpc"}
+{"input": "find . -path '*/node_modules' ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "poetry add --group dev", "output": "poetry add --group dev pytest"}
+{"input": "unzip -o file.zip ", "output": "unzip -o file.zip -d output/"}
+{"input": "history |", "output": "history | grep docker | tail -20"}
+{"input": "chown -R $(whoami):$(whoami) ", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "npm init", "output": "npm init -y"}
+{"input": "tail -n 200 /var/log/sysl", "output": "tail -n 200 /var/log/syslog"}
+{"input": "docker run", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "cat /etc/", "output": "cat /etc/hosts"}
+{"input": "find . -name '*.py' -type", "output": "find . -name '*.py' -type f"}
+{"input": "find . -name '*.log' -delet", "output": "find . -name '*.log' -delete"}
+{"input": "which", "output": "which python3"}
+{"input": "printenv", "output": "printenv | grep AWS"}
+{"input": "pip freeze > ", "output": "pip freeze > requirements.txt"}
+{"input": "kubectl get ", "output": "kubectl get deployments"}
+{"input": "curl --head https://e", "output": "curl --head https://example.com"}
+{"input": "go build", "output": "go build ./..."}
+{"input": "docker build -t myapp:latest ", "output": "docker build -t myapp:latest ."}
+{"input": "docker rmi myimage:la", "output": "docker rmi myimage:latest"}
+{"input": "npm audit", "output": "npm audit fix"}
+{"input": "docker images", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "git pull --rebas", "output": "git pull --rebase"}
+{"input": "docker compose ", "output": "docker compose logs -f"}
+{"input": "pip install -r requirem", "output": "pip install -r requirements.txt"}
+{"input": "type ", "output": "type -a python"}
+{"input": "python -m pyt", "output": "python -m pytest"}
+{"input": "history | grep docker | tail", "output": "history | grep docker | tail -20"}
+{"input": "pnpm ", "output": "pnpm run dev"}
+{"input": "ps aux | sort", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "uvicorn app.main:app --reloa", "output": "uvicorn app.main:app --reload"}
+{"input": "go run main.", "output": "go run main.go"}
+{"input": "kubectl rollout restart deployment/myap", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "python -m pytes", "output": "python -m pytest"}
+{"input": "terraform workspace select product", "output": "terraform workspace select production"}
+{"input": "yarn add react react-", "output": "yarn add react react-dom"}
+{"input": "python -c \"import sys; print(sys", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "go vet", "output": "go vet ./..."}
+{"input": "tmux attach-session -t mai", "output": "tmux attach-session -t main"}
+{"input": "ln ", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "pip", "output": "pip install --upgrade pip"}
+{"input": "git branch ", "output": "git branch -d feature/old-branch"}
+{"input": "git tag", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "npm test ", "output": "npm test -- --watch"}
+{"input": "yarn add --dev @type", "output": "yarn add --dev @types/node"}
+{"input": "wc -l src/*", "output": "wc -l src/**/*.py"}
+{"input": "grep -E '^(export|import)' src/index", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "docker logs -f mycontain", "output": "docker logs -f mycontainer"}
+{"input": "git branch --merged | grep -v main | xargs git branch ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "grep -rn 'def", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "poetry buil", "output": "poetry build"}
+{"input": "grep -r 'TODO'", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "go ", "output": "go vet ./..."}
+{"input": "ln -sf ", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "uv pip ", "output": "uv pip install -r requirements.txt"}
+{"input": "rsync -av --exclude='node_modules' src/ user@host:/var", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "ls -lt |", "output": "ls -lt | head -20"}
+{"input": "git commit --amend", "output": "git commit --amend --no-edit"}
+{"input": "git ad", "output": "git add ."}
+{"input": "kubectl get deplo", "output": "kubectl get deployments"}
+{"input": "python", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "uv pip install -r requirements", "output": "uv pip install -r requirements.txt"}
+{"input": "poetry add request", "output": "poetry add requests"}
+{"input": "terraform workspace select productio", "output": "terraform workspace select production"}
+{"input": "kubectl logs -f", "output": "kubectl logs -f mypod"}
+{"input": "poetry publis", "output": "poetry publish"}
+{"input": "ssh -L 5432:localhost:5432 ", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "alias ll='ls -l", "output": "alias ll='ls -la'"}
+{"input": "docker logs --tail 100", "output": "docker logs --tail 100 mycontainer"}
+{"input": "xargs -P4 -I{} sh -c", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "pnpm add vite", "output": "pnpm add vite --save-dev"}
+{"input": "git diff ", "output": "git diff HEAD~1"}
+{"input": "httpie GET http://localhost:8000/api/us", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "bun ins", "output": "bun install"}
+{"input": "git diff HEA", "output": "git diff HEAD~1"}
+{"input": "docker network", "output": "docker network ls"}
+{"input": "chmod +x scripts/deploy.s", "output": "chmod +x scripts/deploy.sh"}
+{"input": "bat src/main.p", "output": "bat src/main.py"}
+{"input": "grep -rn 'def ' src/ ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "watch -n 2 kubectl get", "output": "watch -n 2 kubectl get pods"}
+{"input": "npm test -- --wat", "output": "npm test -- --watch"}
+{"input": "docker system prune ", "output": "docker system prune -af"}
+{"input": "kubectl exec -it mypod -- /bin/b", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "pip list --out", "output": "pip list --outdated"}
+{"input": "git checkout -b feature/new-featu", "output": "git checkout -b feature/new-feature"}
+{"input": "git rebase m", "output": "git rebase main"}
+{"input": "kubectl get pods", "output": "kubectl get pods -n default"}
+{"input": "pip list", "output": "pip list --outdated"}
+{"input": "uv pip sync requirements", "output": "uv pip sync requirements.txt"}
+{"input": "git submodule update --init ", "output": "git submodule update --init --recursive"}
+{"input": "pip freeze", "output": "pip freeze > requirements.txt"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/a", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "kubectl get deployment", "output": "kubectl get deployments"}
+{"input": "git branch --merged | grep -v main | xargs git branch", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "tail -n 200", "output": "tail -n 200 /var/log/syslog"}
+{"input": "docker build -t myapp:latest --no-cache", "output": "docker build -t myapp:latest --no-cache ."}
+{"input": "docker exec -it mycontainer sh -c \"en", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "ps aux | grep pyth", "output": "ps aux | grep python"}
+{"input": "tmux new-session -s mai", "output": "tmux new-session -s main"}
+{"input": "kubectl rollout undo deployment/m", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "git tag -a v1.0.0 -m \"Release ", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "uv", "output": "uv venv"}
+{"input": "python manage.py t", "output": "python manage.py test"}
+{"input": "ps aux | ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "yarn run bu", "output": "yarn run build"}
+{"input": "docker ps ", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "go build ", "output": "go build ./..."}
+{"input": "kubectl apply -f deployment.", "output": "kubectl apply -f deployment.yaml"}
+{"input": "docker stats --no-stre", "output": "docker stats --no-stream"}
+{"input": "awk '{print ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git cherry-pick abc", "output": "git cherry-pick abc1234"}
+{"input": "pip install", "output": "pip install -e ."}
+{"input": "git checkout -- ", "output": "git checkout -- ."}
+{"input": "docker logs --tail 100 mycontain", "output": "docker logs --tail 100 mycontainer"}
+{"input": "kill", "output": "kill %2"}
+{"input": "docker ps --format 'table {{.Names}}\\t{{.Status}}", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "python -c \"import ", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "git diff main..feature-branc", "output": "git diff main..feature-branch"}
+{"input": "curl -o", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "npm audit fi", "output": "npm audit fix"}
+{"input": "tmux", "output": "tmux new-session -s main"}
+{"input": "python -c", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "kubectl config use-context stagi", "output": "kubectl config use-context staging"}
+{"input": "wc -l src/**/*.p", "output": "wc -l src/**/*.py"}
+{"input": "kubectl describe pod mypod -n", "output": "kubectl describe pod mypod -n default"}
+{"input": "docker exec -it mycontainer ", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "env ", "output": "env | sort"}
+{"input": "git branch", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "grep -E ", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "python manage.py createsuperuse", "output": "python manage.py createsuperuser"}
+{"input": "git show", "output": "git show HEAD"}
+{"input": "xargs ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "docker images --format 'table {{.Repository}}\\t{", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "git branch --merged | grep -v main |", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "docker ps --format ", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "terraform workspace select produ", "output": "terraform workspace select production"}
+{"input": "kubectl get node", "output": "kubectl get nodes"}
+{"input": "kubectl logs ", "output": "kubectl logs -f deployment/myapp"}
+{"input": "terraform output -js", "output": "terraform output -json"}
+{"input": "ps aux | grep pytho", "output": "ps aux | grep python"}
+{"input": "git add -", "output": "git add -p"}
+{"input": "ssh user@hostname ", "output": "ssh user@hostname -p 22"}
+{"input": "git status --sho", "output": "git status --short"}
+{"input": "ls -lt | ", "output": "ls -lt | head -20"}
+{"input": "type -a pyth", "output": "type -a python"}
+{"input": "fastapi dev app/main", "output": "fastapi dev app/main.py"}
+{"input": "terraform pla", "output": "terraform plan"}
+{"input": "curl -s https://api.github.com/users/torvalds |", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "git commit -m", "output": "git commit -m \"feat: initial commit\""}
+{"input": "pip uninstall", "output": "pip uninstall mypackage -y"}
+{"input": "npm run ", "output": "npm run build"}
+{"input": "poetry add ", "output": "poetry add requests"}
+{"input": "python -m http.server", "output": "python -m http.server 8000"}
+{"input": "python -m http.server 8", "output": "python -m http.server 8000"}
+{"input": "git log ", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "history | grep docker | tail -", "output": "history | grep docker | tail -20"}
+{"input": "which ", "output": "which python3"}
+{"input": "go mod", "output": "go mod tidy"}
+{"input": "git remote add origin", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "tar -xzf archive.tar", "output": "tar -xzf archive.tar.gz"}
+{"input": "terraform output -jso", "output": "terraform output -json"}
+{"input": "tmux attach-session -t ", "output": "tmux attach-session -t main"}
+{"input": "poetry run pytes", "output": "poetry run pytest"}
+{"input": "ls -", "output": "ls -la"}
+{"input": "python manage.py shel", "output": "python manage.py shell"}
+{"input": "kubectl scale deployment", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "git rebase ma", "output": "git rebase main"}
+{"input": "watch -n", "output": "watch -n 2 kubectl get pods"}
+{"input": "terraform workspace", "output": "terraform workspace list"}
+{"input": "git rebase -i HEAD~", "output": "git rebase -i HEAD~3"}
+{"input": "curl --head ", "output": "curl --head https://example.com"}
+{"input": "unzip -o file.zip -d output", "output": "unzip -o file.zip -d output/"}
+{"input": "ps aux | grep ", "output": "ps aux | grep python"}
+{"input": "go build ./..", "output": "go build ./..."}
+{"input": "grep", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "git remote add origin https://github.com/user/repo.gi", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "find . -type f", "output": "find . -type f -newer package.json"}
+{"input": "git clone https://github.com/user/repo.gi", "output": "git clone https://github.com/user/repo.git"}
+{"input": "ps aux", "output": "ps aux | grep python"}
+{"input": "kubectl get deploymen", "output": "kubectl get deployments"}
+{"input": "git fetch --all", "output": "git fetch --all --prune"}
+{"input": "git checkout", "output": "git checkout -- ."}
+{"input": "ls -lah", "output": "ls -lah --color=auto"}
+{"input": "npm test -- --w", "output": "npm test -- --watch"}
+{"input": "kubectl get pods --all-namesp", "output": "kubectl get pods --all-namespaces"}
+{"input": "tail", "output": "tail -n 200 /var/log/syslog"}
+{"input": "python -m pytest --cov=", "output": "python -m pytest --cov=src"}
+{"input": "ps aux | sort -k4 -rn", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | b", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "npm outd", "output": "npm outdated"}
+{"input": "docker inspect ", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "kubectl exec -it mypod", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "ln -sf /usr/local/bin/python3 /usr/local/bin/pytho", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "git status --s", "output": "git status --short"}
+{"input": "yarn workspace ", "output": "yarn workspace myapp dev"}
+{"input": "npm", "output": "npm install -g typescript"}
+{"input": "alias ", "output": "alias ll='ls -la'"}
+{"input": "kubectl exec -it mypod ", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "pip freeze > requirements.", "output": "pip freeze > requirements.txt"}
+{"input": "git bisect ", "output": "git bisect start"}
+{"input": "git rev-parse", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "python manage.py createsuper", "output": "python manage.py createsuperuser"}
+{"input": "tar -xzf archive.tar.", "output": "tar -xzf archive.tar.gz"}
+{"input": "docker network inspect", "output": "docker network inspect bridge"}
+{"input": "terraform workspace ", "output": "terraform workspace list"}
+{"input": "kubectl delete -f ", "output": "kubectl delete -f deployment.yaml"}
+{"input": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "rm -f", "output": "rm -f *.pyc"}
+{"input": "git push origin", "output": "git push origin main"}
+{"input": "top", "output": "top -o cpu"}
+{"input": "awk '{print $1}' access.log | ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "history", "output": "history | grep docker | tail -20"}
+{"input": "ssh -L 5432:localhost:5432 user@ho", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "cargo", "output": "cargo clippy"}
+{"input": "npm run d", "output": "npm run dev"}
+{"input": "git branch -d feature/o", "output": "git branch -d feature/old-branch"}
+{"input": "npx ts-node src/index.", "output": "npx ts-node src/index.ts"}
+{"input": "unzip -o file.zip", "output": "unzip -o file.zip -d output/"}
+{"input": "source ~/.zs", "output": "source ~/.zshrc"}
+{"input": "git log --oneline -", "output": "git log --oneline -20"}
+{"input": "git fetch ", "output": "git fetch --all --prune"}
+{"input": "cat /etc/hos", "output": "cat /etc/hosts"}
+{"input": "git merge --no-ff feature-bran", "output": "git merge --no-ff feature-branch"}
+{"input": "terraform destroy", "output": "terraform destroy -target=module.vpc"}
+{"input": "git add --", "output": "git add --all"}
+{"input": "nvim ", "output": "nvim ."}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm insta", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
 {"input": "lsof ", "output": "lsof -i :8080"}
-{"input": "kill ", "output": "kill -9 pid"}
-{"input": "killall ", "output": "killall process-name"}
-{"input": "nohup ", "output": "nohup command &"}
-{"input": "screen ", "output": "screen -S session-name"}
-{"input": "tmux ", "output": "tmux new-session -s session-name"}
-{"input": "crontab ", "output": "crontab -e"}
-{"input": "at ", "output": "at now + 1 hour"}
-{"input": "date ", "output": "date"}
-{"input": "uptime", "output": "uptime"}
-{"input": "whoami", "output": "whoami"}
-{"input": "id ", "output": "id"}
-{"input": "groups ", "output": "groups"}
-{"input": "passwd ", "output": "passwd username"}
-{"input": "su ", "output": "su - username"}
-{"input": "sudo ", "output": "sudo command"}
-{"input": "which ", "output": "which command"}
-{"input": "whereis ", "output": "whereis command"}
-{"input": "type ", "output": "type command"}
-{"input": "alias ", "output": "alias name='command'"}
-{"input": "export ", "output": "export VAR=value"}
-{"input": "env ", "output": "env"}
-{"input": "history", "output": "history"}
-{"input": "jobs", "output": "jobs"}
+{"input": "fd -e ts -e tsx sr", "output": "fd -e ts -e tsx src/"}
+{"input": "cp -r ", "output": "cp -r src/ dist/"}
+{"input": "make -", "output": "make -j4"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "wget https://example.com/inst", "output": "wget https://example.com/installer.sh"}
+{"input": "kubectl apply ", "output": "kubectl apply -f k8s/"}
+{"input": "git log --author=\"$(git config user.name)\" --oneli", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "kubectl rollout undo deployment/mya", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "httpie GET http://localhost:8000/api/use", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "rm -f *.", "output": "rm -f *.pyc"}
+{"input": "docker run --rm -v", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "git diff HEAD~", "output": "git diff HEAD~1"}
+{"input": "mv ", "output": "mv old-name.txt new-name.txt"}
+{"input": "make -j", "output": "make -j4"}
+{"input": "unzip -o file.zip -d ", "output": "unzip -o file.zip -d output/"}
+{"input": "ssh ", "output": "ssh user@hostname -p 22"}
+{"input": "kubectl get pods -o wid", "output": "kubectl get pods -o wide"}
+{"input": "vim src/m", "output": "vim src/main.py"}
+{"input": "git rebase mai", "output": "git rebase main"}
+{"input": "docker stop", "output": "docker stop mycontainer"}
+{"input": "git bisect star", "output": "git bisect start"}
+{"input": "kubectl scale deployment ", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "yarn inst", "output": "yarn install"}
+{"input": "npm install --save-dev eslin", "output": "npm install --save-dev eslint"}
+{"input": "tmux new-session -s ", "output": "tmux new-session -s main"}
+{"input": "chmod", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "mv old-name.txt new-name.t", "output": "mv old-name.txt new-name.txt"}
+{"input": "curl -o file.zip https://exampl", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "chmod 600 ~/.ssh/id_", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "find ", "output": "find . -type f -newer package.json"}
+{"input": "python -m pytest -", "output": "python -m pytest -xvs"}
+{"input": "du -sh ", "output": "du -sh *"}
+{"input": "docker run ", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "cd ~/.c", "output": "cd ~/.config"}
+{"input": "go test ./", "output": "go test ./..."}
+{"input": "nvim", "output": "nvim ."}
+{"input": "jq", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "kubectl exec ", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "unzip -o", "output": "unzip -o file.zip -d output/"}
+{"input": "ls -lt | head -", "output": "ls -lt | head -20"}
+{"input": "yarn run bui", "output": "yarn run build"}
+{"input": "curl ", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "terraform", "output": "terraform destroy -target=module.vpc"}
+{"input": "cp file.txt file", "output": "cp file.txt file.bak"}
+{"input": "kubectl get service", "output": "kubectl get services"}
+{"input": "kubectl top no", "output": "kubectl top nodes"}
+{"input": "curl -s http://localhost:8080/health | ", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "fastapi", "output": "fastapi dev app/main.py"}
+{"input": "kubectl delete -f deploym", "output": "kubectl delete -f deployment.yaml"}
+{"input": "find . -path '*/node_modules' -prune -o -name '*.ts' -prin", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "docker stop mycontain", "output": "docker stop mycontainer"}
+{"input": "cp -r src/ di", "output": "cp -r src/ dist/"}
+{"input": "cd ~/.con", "output": "cd ~/.config"}
+{"input": "find . -name '*.py'", "output": "find . -name '*.py' -type f"}
+{"input": "docker push myrepo/myimage:lates", "output": "docker push myrepo/myimage:latest"}
+{"input": "git pull origin main", "output": "git pull origin main --rebase"}
+{"input": "top -o", "output": "top -o cpu"}
+{"input": "ssh -L 5432:localhost:5432", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "kubectl exec -it mypod -- /bin", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "python manage.py collectstatic --no-", "output": "python manage.py collectstatic --no-input"}
+{"input": "chmod +x scripts/deploy", "output": "chmod +x scripts/deploy.sh"}
+{"input": "git log --oneline ", "output": "git log --oneline -20"}
+{"input": "kubectl describe pod mypod -n defaul", "output": "kubectl describe pod mypod -n default"}
+{"input": "terraform destroy ", "output": "terraform destroy -target=module.vpc"}
+{"input": "git log --author=\"$(git config user.name)\" ", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "rg 'TODO' --type=", "output": "rg 'TODO' --type=py"}
+{"input": "chmod 600 ", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "awk '{print $1}' access.log |", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "watch -n 2 kubectl get po", "output": "watch -n 2 kubectl get pods"}
+{"input": "python manage.py tes", "output": "python manage.py test"}
+{"input": "kubectl scale deployment myapp ", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "find . -name '*.log' -de", "output": "find . -name '*.log' -delete"}
+{"input": "xargs -P4 -I{}", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "python manage.py she", "output": "python manage.py shell"}
+{"input": "docker rm -f", "output": "docker rm -f mycontainer"}
+{"input": "type -a ", "output": "type -a python"}
+{"input": "terraform workspace select producti", "output": "terraform workspace select production"}
+{"input": "top ", "output": "top -o cpu"}
+{"input": "git checkout m", "output": "git checkout main"}
+{"input": "ps aux | grep pyt", "output": "ps aux | grep python"}
+{"input": "type -a pyt", "output": "type -a python"}
+{"input": "httpie GET http://localhost:8000/api/user", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "curl -X POST -H 'Content-Type: ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "cat /etc/ho", "output": "cat /etc/hosts"}
+{"input": "git push --force-with-le", "output": "git push --force-with-lease"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 app:applicati", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "ps", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "git clone --depth 1 https://github.com/user/repo.", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "python -c ", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "git tag ", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
 {"input": "fg ", "output": "fg %1"}
-{"input": "bg ", "output": "bg %1"}
-{"input": "disown ", "output": "disown %1"}
-{"input": "wait ", "output": "wait %1"}
-{"input": "trap ", "output": "trap 'command' SIGNAL"}
-{"input": "exec ", "output": "exec command"}
-{"input": "eval ", "output": "eval 'command'"}
-{"input": "source ", "output": "source file.sh"}
-{"input": "bash ", "output": "bash script.sh"}
-{"input": "sh ", "output": "sh script.sh"}
-{"input": "zsh ", "output": "zsh script.sh"}
-{"input": "python ", "output": "python script.py"}
-{"input": "node ", "output": "node script.js"}
-{"input": "ruby ", "output": "ruby script.rb"}
-{"input": "perl ", "output": "perl script.pl"}
-{"input": "php ", "output": "php script.php"}
-{"input": "go ", "output": "go run main.go"}
-{"input": "rustc ", "output": "rustc main.rs"}
-{"input": "cargo ", "output": "cargo run"}
-{"input": "make ", "output": "make"}
-{"input": "cmake ", "output": "cmake ."}
-{"input": "gcc ", "output": "gcc -o output source.c"}
-{"input": "g++ ", "output": "g++ -o output source.cpp"}
-{"input": "clang ", "output": "clang -o output source.c"}
-{"input": "ld ", "output": "ld -o output object.o"}
-{"input": "ar ", "output": "ar rcs lib.a object.o"}
-{"input": "nm ", "output": "nm binary"}
-{"input": "objdump ", "output": "objdump -d binary"}
-{"input": "strings ", "output": "strings binary"}
-{"input": "file ", "output": "file filename"}
-{"input": "hexdump ", "output": "hexdump -C file"}
-{"input": "xxd ", "output": "xxd file"}
-{"input": "base64 ", "output": "base64 file"}
-{"input": "md5sum ", "output": "md5sum file"}
-{"input": "sha1sum ", "output": "sha1sum file"}
-{"input": "sha256sum ", "output": "sha256sum file"}
-{"input": "diff ", "output": "diff file1 file2"}
-{"input": "cmp ", "output": "cmp file1 file2"}
-{"input": "comm ", "output": "comm file1 file2"}
-{"input": "join ", "output": "join file1 file2"}
-{"input": "paste ", "output": "paste file1 file2"}
-{"input": "cut ", "output": "cut -d',' -f1 file"}
-{"input": "tr ", "output": "tr 'a-z' 'A-Z'"}
-{"input": "fold ", "output": "fold -w 80 file"}
-{"input": "fmt ", "output": "fmt file"}
-{"input": "pr ", "output": "pr file"}
-{"input": "column ", "output": "column -t file"}
-{"input": "expand ", "output": "expand file"}
-{"input": "unexpand ", "output": "unexpand file"}
-{"input": "nl ", "output": "nl file"}
-{"input": "od ", "output": "od -c file"}
-{"input": "split ", "output": "split -l 1000 file"}
-{"input": "csplit ", "output": "csplit file /pattern/"}
-{"input": "dd ", "output": "dd if=input of=output"}
-{"input": "cpio ", "output": "cpio -o < filelist"}
-{"input": "pax ", "output": "pax -w -f archive.tar file1 file2"}
-{"input": "mt ", "output": "mt -f /dev/tape status"}
-{"input": "mtx ", "output": "mtx -f /dev/changer status"}
-{"input": "cdrecord ", "output": "cdrecord -v dev=/dev/cdrom image.iso"}
-{"input": "wodim ", "output": "wodim -v dev=/dev/cdrom image.iso"}
-{"input": "mkisofs ", "output": "mkisofs -o image.iso directory/"}
-{"input": "genisoimage ", "output": "genisoimage -o image.iso directory/"}
-{"input": "isoinfo ", "output": "isoinfo -l -i image.iso"}
-{"input": "isodump ", "output": "isodump -i image.iso"}
-{"input": "isovfy ", "output": "isovfy -i image.iso"}
-{"input": "isosize ", "output": "isosize /dev/cdrom"}
-{"input": "cdrdao ", "output": "cdrdao write --device /dev/cdrom image.toc"}
-{"input": "cdparanoia ", "output": "cdparanoia -B"}
-{"input": "flac ", "output": "flac -d file.flac"}
-{"input": "lame ", "output": "lame input.wav output.mp3"}
-{"input": "oggenc ", "output": "oggenc input.wav -o output.ogg"}
-{"input": "ffmpeg ", "output": "ffmpeg -i input.mp4 output.avi"}
-{"input": "mplayer ", "output": "mplayer video.mp4"}
-{"input": "vlc ", "output": "vlc video.mp4"}
-{"input": "xine ", "output": "xine video.mp4"}
-{"input": "totem ", "output": "totem video.mp4"}
-{"input": "gstreamer ", "output": "gst-launch-1.0 filesrc location=video.mp4 ! decodebin ! autovideosink"}
-{"input": "imagemagick ", "output": "convert input.jpg output.png"}
-{"input": "gimp ", "output": "gimp image.jpg"}
-{"input": "inkscape ", "output": "inkscape image.svg"}
-{"input": "blender ", "output": "blender model.blend"}
-{"input": "meshlab ", "output": "meshlab model.obj"}
-{"input": "openscad ", "output": "openscad model.scad -o model.stl"}
-{"input": "freecad ", "output": "freecad model.fcstd"}
-{"input": "libreoffice ", "output": "libreoffice document.odt"}
-{"input": "abiword ", "output": "abiword document.doc"}
-{"input": "gnumeric ", "output": "gnumeric spreadsheet.xls"}
-{"input": "evince ", "output": "evince document.pdf"}
-{"input": "okular ", "output": "okular document.pdf"}
-{"input": "xpdf ", "output": "xpdf document.pdf"}
-{"input": "ghostscript ", "output": "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf input.ps"}
-{"input": "pdftk ", "output": "pdftk input1.pdf input2.pdf cat output output.pdf"}
-{"input": "qpdf ", "output": "qpdf input.pdf output.pdf"}
-{"input": "poppler ", "output": "pdftotext input.pdf output.txt"}
-{"input": "tesseract ", "output": "tesseract image.png output"}
-{"input": "gocr ", "output": "gocr image.png"}
-{"input": "ocrad ", "output": "ocrad image.pbm"}
-{"input": "cuneiform ", "output": "cuneiform image.png -o output.txt"}
-{"input": "gscan2pdf ", "output": "gscan2pdf"}
-{"input": "xsane ", "output": "xsane"}
-{"input": "simple-scan ", "output": "simple-scan"}
-{"input": "sane ", "output": "scanimage -d scanner --resolution 300 --mode Color --format tiff > output.tiff"}
-{"input": "gphoto2 ", "output": "gphoto2 --auto-detect"}
-{"input": "digikam ", "output": "digikam"}
-{"input": "shotwell ", "output": "shotwell"}
-{"input": "f-spot ", "output": "f-spot"}
-{"input": "darktable ", "output": "darktable"}
-{"input": "rawtherapee ", "output": "rawtherapee"}
-{"input": "ufraw ", "output": "ufraw image.raw"}
-{"input": "dcraw ", "output": "dcraw -c image.raw"}
-{"input": "exiv2 ", "output": "exiv2 image.jpg"}
-{"input": "exiftool ", "output": "exiftool image.jpg"}
-{"input": "jhead ", "output": "jhead image.jpg"}
-{"input": "jpegtran ", "output": "jpegtran -optimize -progressive -copy none input.jpg output.jpg"}
-{"input": "pngcrush ", "output": "pngcrush input.png output.png"}
-{"input": "optipng ", "output": "optipng input.png"}
-{"input": "advpng ", "output": "advpng -z -4 input.png"}
-{"input": "pngquant ", "output": "pngquant input.png"}
-{"input": "gifsicle ", "output": "gifsicle -O3 input.gif -o output.gif"}
-{"input": "webp ", "output": "cwebp input.png -o output.webp"}
-{"input": "avif ", "output": "avifenc input.png output.avif"}
-{"input": "heif ", "output": "heif-enc input.png output.heic"}
-{"input": "jpeg-xl ", "output": "cjxl input.png output.jxl"}
-{"input": "bpg ", "output": "bpgenc input.png -o output.bpg"}
-{"input": "flif ", "output": "flif -e input.png output.flif"}
-{"input": "qoi ", "output": "qoienc input.png output.qoi"}
-{"input": "jbig2 ", "output": "jbig2 -b output input.pbm"}
-{"input": "jbig2enc ", "output": "jbig2enc input.pbm output.jb2"}
-{"input": "jbig2dec ", "output": "jbig2dec input.jb2 output.pbm"}
-{"input": "jbig2arith ", "output": "jbig2arith input.pbm output.jb2"}
-{"input": "jbig2sym ", "output": "jbig2sym input.pbm output.jb2"}
-{"input": "jbig2text ", "output": "jbig2text input.jb2 output.txt"}
-{"input": "jbig2topbm ", "output": "jbig2topbm input.jb2 output.pbm"}
-{"input": "jbig2topng ", "output": "jbig2topng input.jb2 output.png"}
-{"input": "jbig2togif ", "output": "jbig2togif input.jb2 output.gif"}
-{"input": "jbig2tojpg ", "output": "jbig2tojpg input.jb2 output.jpg"}
-{"input": "jbig2totiff ", "output": "jbig2totiff input.jb2 output.tiff"}
-{"input": "jbig2topdf ", "output": "jbig2topdf input.jb2 output.pdf"}
-{"input": "jbig2tops ", "output": "jbig2tops input.jb2 output.ps"}
-{"input": "jbig2toeps ", "output": "jbig2toeps input.jb2 output.eps"}
-{"input": "jbig2tosvg ", "output": "jbig2tosvg input.jb2 output.svg"}
-{"input": "jbig2toxpm ", "output": "jbig2toxpm input.jb2 output.xpm"}
-{"input": "jbig2toxbm ", "output": "jbig2toxbm input.jb2 output.xbm"}
-{"input": "jbig2toxwd ", "output": "jbig2toxwd input.jb2 output.xwd"}
-{"input": "jbig2tox11 ", "output": "jbig2tox11 input.jb2 output.x11"}
-{"input": "jbig2tox12 ", "output": "jbig2tox12 input.jb2 output.x12"}
-{"input": "jbig2tox13 ", "output": "jbig2tox13 input.jb2 output.x13"}
-{"input": "jbig2tox14 ", "output": "jbig2tox14 input.jb2 output.x14"}
-{"input": "jbig2tox15 ", "output": "jbig2tox15 input.jb2 output.x15"}
-{"input": "jbig2tox16 ", "output": "jbig2tox16 input.jb2 output.x16"}
-{"input": "jbig2tox17 ", "output": "jbig2tox17 input.jb2 output.x17"}
-{"input": "jbig2tox18 ", "output": "jbig2tox18 input.jb2 output.x18"}
-{"input": "jbig2tox19 ", "output": "jbig2tox19 input.jb2 output.x19"}
-{"input": "jbig2tox20 ", "output": "jbig2tox20 input.jb2 output.x20"}
-{"input": "jbig2tox21 ", "output": "jbig2tox21 input.jb2 output.x21"}
-{"input": "jbig2tox22 ", "output": "jbig2tox22 input.jb2 output.x22"}
-{"input": "jbig2tox23 ", "output": "jbig2tox23 input.jb2 output.x23"}
-{"input": "jbig2tox24 ", "output": "jbig2tox24 input.jb2 output.x24"}
-{"input": "jbig2tox25 ", "output": "jbig2tox25 input.jb2 output.x25"}
-{"input": "jbig2tox26 ", "output": "jbig2tox26 input.jb2 output.x26"}
-{"input": "jbig2tox27 ", "output": "jbig2tox27 input.jb2 output.x27"}
-{"input": "jbig2tox28 ", "output": "jbig2tox28 input.jb2 output.x28"}
-{"input": "jbig2tox29 ", "output": "jbig2tox29 input.jb2 output.x29"}
-{"input": "jbig2tox30 ", "output": "jbig2tox30 input.jb2 output.x30"}
-{"input": "jbig2tox31 ", "output": "jbig2tox31 input.jb2 output.x31"}
-{"input": "jbig2tox32 ", "output": "jbig2tox32 input.jb2 output.x32"}
-{"input": "jbig2tox33 ", "output": "jbig2tox33 input.jb2 output.x33"}
-{"input": "jbig2tox34 ", "output": "jbig2tox34 input.jb2 output.x34"}
-{"input": "jbig2tox35 ", "output": "jbig2tox35 input.jb2 output.x35"}
-{"input": "jbig2tox36 ", "output": "jbig2tox36 input.jb2 output.x36"}
-{"input": "jbig2tox37 ", "output": "jbig2tox37 input.jb2 output.x37"}
-{"input": "jbig2tox38 ", "output": "jbig2tox38 input.jb2 output.x38"}
-{"input": "jbig2tox39 ", "output": "jbig2tox39 input.jb2 output.x39"}
-{"input": "jbig2tox40 ", "output": "jbig2tox40 input.jb2 output.x40"}
-{"input": "jbig2tox41 ", "output": "jbig2tox41 input.jb2 output.x41"}
-{"input": "jbig2tox42 ", "output": "jbig2tox42 input.jb2 output.x42"}
-{"input": "jbig2tox43 ", "output": "jbig2tox43 input.jb2 output.x43"}
-{"input": "jbig2tox44 ", "output": "jbig2tox44 input.jb2 output.x44"}
-{"input": "jbig2tox45 ", "output": "jbig2tox45 input.jb2 output.x45"}
-{"input": "jbig2tox46 ", "output": "jbig2tox46 input.jb2 output.x46"}
-{"input": "jbig2tox47 ", "output": "jbig2tox47 input.jb2 output.x47"}
-{"input": "jbig2tox48 ", "output": "jbig2tox48 input.jb2 output.x48"}
-{"input": "jbig2tox49 ", "output": "jbig2tox49 input.jb2 output.x49"}
-{"input": "jbig2tox50 ", "output": "jbig2tox50 input.jb2 output.x50"}
+{"input": "jobs ", "output": "jobs -l"}
+{"input": "git stash push -m \"wip: in-progress work", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "kubectl rollout restart deployment/my", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "rm -f ", "output": "rm -f *.pyc"}
+{"input": "terraform ", "output": "terraform init"}
+{"input": "docker exec -it mycontainer sh -c ", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "poetry run pyt", "output": "poetry run pytest"}
+{"input": "chmod +x", "output": "chmod +x scripts/deploy.sh"}
+{"input": "python -m venv .v", "output": "python -m venv .venv"}
+{"input": "uvicorn app.main:app --rel", "output": "uvicorn app.main:app --reload"}
+{"input": "chown -R ", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "git branch --merged | grep", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "kubectl apply -f deployment.y", "output": "kubectl apply -f deployment.yaml"}
+{"input": "git tag -a v1.0.0 -m", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "env | sor", "output": "env | sort"}
+{"input": "docker run --rm", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "grep -rn 'def ' src/ |", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "poetry add", "output": "poetry add --group dev pytest"}
+{"input": "du -s", "output": "du -sh *"}
+{"input": "npm c", "output": "npm ci"}
+{"input": "source ~/.z", "output": "source ~/.zshrc"}
+{"input": "du -sh *", "output": "du -sh * | sort -h"}
+{"input": "pip show", "output": "pip show numpy"}
+{"input": "poetry publ", "output": "poetry publish"}
+{"input": "jq -r '.dependencies | keys[]' ", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "du", "output": "du -sh *"}
+{"input": "git rev-parse --abbrev-ref HEA", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "docker stats --no-", "output": "docker stats --no-stream"}
+{"input": "npm outdat", "output": "npm outdated"}
+{"input": "curl --head https://exampl", "output": "curl --head https://example.com"}
+{"input": "npx create-react-app mya", "output": "npx create-react-app myapp"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 app:app", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "bat ", "output": "bat src/main.py"}
+{"input": "go", "output": "go mod tidy"}
+{"input": "rsync -av --exclude='node_modules' src/", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "cd ", "output": "cd ~/.config"}
+{"input": "kubectl get servic", "output": "kubectl get services"}
+{"input": "kubectl rollout restart deployment/mya", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "ln -sf /usr/local/bin/python3 /usr/local", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "git commit -m \"fix: resolve merge confli", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "bun add ", "output": "bun add hono"}
+{"input": "kubectl get nod", "output": "kubectl get nodes"}
+{"input": "uvicorn app.main:app --relo", "output": "uvicorn app.main:app --reload"}
+{"input": "cp -r src/ dis", "output": "cp -r src/ dist/"}
+{"input": "xargs -I{} mv ", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "git commit --amend --no-ed", "output": "git commit --amend --no-edit"}
+{"input": "docker run -d --name myapp -p ", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "yarn add --dev ", "output": "yarn add --dev @types/node"}
+{"input": "zip -r dist.zip dis", "output": "zip -r dist.zip dist/"}
+{"input": "printenv | grep", "output": "printenv | grep AWS"}
+{"input": "cargo build ", "output": "cargo build --release"}
+{"input": "curl -s http://localhost:8080/health", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "kubectl get confi", "output": "kubectl get configmaps"}
+{"input": "docker rm -f mycontaine", "output": "docker rm -f mycontainer"}
+{"input": "ps aux | sort -k4 -rn |", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "docker build -f Dockerfile.prod", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "git branch --merged | grep -v main ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "git push origin mai", "output": "git push origin main"}
+{"input": "kubectl get deployme", "output": "kubectl get deployments"}
+{"input": "tar -xzf archive", "output": "tar -xzf archive.tar.gz"}
+{"input": "go mod ", "output": "go mod tidy"}
+{"input": "fd -e ts -e ", "output": "fd -e ts -e tsx src/"}
+{"input": "tail -f /var/log/nginx/access.", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "pip uninstall mypackage -", "output": "pip uninstall mypackage -y"}
+{"input": "export PATH=$PATH:/usr/local/", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "uv pip install -r requirements.tx", "output": "uv pip install -r requirements.txt"}
+{"input": "uv pip install -r ", "output": "uv pip install -r requirements.txt"}
+{"input": "git tag -a v1.0.0 -m \"Release 1.0.0", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "kubectl delete ", "output": "kubectl delete -f deployment.yaml"}
+{"input": "kubectl describe pod ", "output": "kubectl describe pod mypod -n default"}
+{"input": "terraform output -j", "output": "terraform output -json"}
+{"input": "ssh -L 5432:localhost:5432 user", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "git branch --merged", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "npm run buil", "output": "npm run build"}
+{"input": "kill -9 $(lsof", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "chown -R $(whoami):$(whoami) /var/w", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "git remote add origin https://github.com/user/", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "pip install -r", "output": "pip install -r requirements.txt"}
+{"input": "free ", "output": "free -h"}
+{"input": "python -m pytest --cov=sr", "output": "python -m pytest --cov=src"}
+{"input": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddres", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "source .venv/bin", "output": "source .venv/bin/activate"}
+{"input": "watch -n 2 kubectl get pod", "output": "watch -n 2 kubectl get pods"}
+{"input": "jq '.users[] | ", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "scp -r dist/ user@host:/var/www", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "pnpm add vite ", "output": "pnpm add vite --save-dev"}
+{"input": "kubectl apply -f deploym", "output": "kubectl apply -f deployment.yaml"}
+{"input": "mv *.log /tm", "output": "mv *.log /tmp/"}
+{"input": "python -c \"import sys; print(sys.version", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "poetry sh", "output": "poetry shell"}
+{"input": "docker inspect mycontainer ", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "kubectl exec", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "source .venv/bin/activ", "output": "source .venv/bin/activate"}
+{"input": "docker ps", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "top -o c", "output": "top -o cpu"}
+{"input": "curl -X POST -H 'Content-Type:", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "cp -r", "output": "cp -r src/ dist/"}
+{"input": "curl -o file.zip ", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "docker run --rm -v $(pwd):/app -w /app ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "watch -n 2", "output": "watch -n 2 kubectl get pods"}
+{"input": "curl -o file.zip https://example.com/file.", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "git commit -m \"feat: initial comm", "output": "git commit -m \"feat: initial commit\""}
+{"input": "find . -path '*/node_modules'", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "python -m venv ", "output": "python -m venv .venv"}
+{"input": "npm run li", "output": "npm run lint"}
+{"input": "docker system prune", "output": "docker system prune -af"}
+{"input": "cargo f", "output": "cargo fmt"}
+{"input": "docker logs -f mycon", "output": "docker logs -f mycontainer"}
+{"input": "pnpm add", "output": "pnpm add vite --save-dev"}
+{"input": "git checkout -b ", "output": "git checkout -b feature/new-feature"}
+{"input": "git branch --merged | grep -v ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "kubectl describe ", "output": "kubectl describe pod mypod -n default"}
+{"input": "docker build -f Dockerfile.prod -t myapp:prod", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "kubectl get pods --all-namespa", "output": "kubectl get pods --all-namespaces"}
+{"input": "rg 'TODO' --ty", "output": "rg 'TODO' --type=py"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "grep -r ", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "kubectl rollout", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "flask ", "output": "flask run --debug"}
+{"input": "find . -name '*.log'", "output": "find . -name '*.log' -delete"}
+{"input": "git log --oneline --graph --al", "output": "git log --oneline --graph --all"}
+{"input": "cargo te", "output": "cargo test"}
+{"input": "curl -s ", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "wc -l src/**/*.", "output": "wc -l src/**/*.py"}
+{"input": "git submodule update --init --recurs", "output": "git submodule update --init --recursive"}
+{"input": "git commit", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "curl -o file.zip", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "cp file.txt", "output": "cp file.txt file.bak"}
+{"input": "rsync -av --exclude='node_modules' src/ ", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "docker stats --no-strea", "output": "docker stats --no-stream"}
+{"input": "rg 'TODO' ", "output": "rg 'TODO' --type=py"}
+{"input": "git pull --re", "output": "git pull --rebase"}
+{"input": "grep -rn 'def ' src/ | wc ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "git tag -a v1.0.0 -m \"Release", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "which pyt", "output": "which python3"}
+{"input": "unzip -o file.zip -d out", "output": "unzip -o file.zip -d output/"}
+{"input": "bun", "output": "bun install"}
+{"input": "kubectl logs", "output": "kubectl logs -f mypod"}
+{"input": "go build ./", "output": "go build ./..."}
+{"input": "docker run -d --name myapp -p 8080:80 ", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "docker push myrepo/myimage:late", "output": "docker push myrepo/myimage:latest"}
+{"input": "curl -X ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "export PATH=$PATH:/", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "docker stats", "output": "docker stats --no-stream"}
+{"input": "tail -n 200 /var/lo", "output": "tail -n 200 /var/log/syslog"}
+{"input": "find . ", "output": "find . -name '*.py' -type f"}
+{"input": "grep -r", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "kubectl top pod", "output": "kubectl top pods"}
+{"input": "fd -e ts ", "output": "fd -e ts -e tsx src/"}
+{"input": "wc -l src/**/*", "output": "wc -l src/**/*.py"}
+{"input": "tail ", "output": "tail -n 200 /var/log/syslog"}
+{"input": "cargo r", "output": "cargo run"}
+{"input": "npx create-next-app@latest", "output": "npx create-next-app@latest myapp"}
+{"input": "git tag -a v1.0.0", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "docker run -it", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "git shortlog -s", "output": "git shortlog -sn"}
+{"input": "kubectl port-forward svc/myservice 8080:", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "pnpm ins", "output": "pnpm install"}
+{"input": "sed ", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "curl -s https://api.github.com/users/torvalds | j", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "ps aux |", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "awk '{print $1}' access.log | sort | uniq", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "find . -path", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "scp -r dist/ user@host:/v", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "tar -czf archive.tar.gz ", "output": "tar -czf archive.tar.gz src/"}
+{"input": "poetry add --group dev ", "output": "poetry add --group dev pytest"}
+{"input": "ls -lah --color=aut", "output": "ls -lah --color=auto"}
+{"input": "fd -e", "output": "fd -e ts -e tsx src/"}
+{"input": "ps aux | sort -k4 -rn | head -1", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddre", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "npm insta", "output": "npm install"}
+{"input": "jq -r '.dependencies | keys[]' packag", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "kubectl get ingr", "output": "kubectl get ingress"}
+{"input": "sed -i 's/old/new/g' file", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "docker compose up ", "output": "docker compose up -d"}
+{"input": "httpie GET http://localhost:8000/a", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "tar -czf archive.tar.gz src", "output": "tar -czf archive.tar.gz src/"}
+{"input": "git stash push -m \"wip: in-progress", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "yarn add", "output": "yarn add react react-dom"}
+{"input": "scp -r dist/ ", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "git show ", "output": "git show HEAD"}
+{"input": "python manage.py te", "output": "python manage.py test"}
+{"input": "npx create-next-app@latest ", "output": "npx create-next-app@latest myapp"}
+{"input": "npm install", "output": "npm install -g typescript"}
+{"input": "make t", "output": "make test"}
+{"input": "npx", "output": "npx create-next-app@latest myapp"}
+{"input": "terraform destroy -target=module.vp", "output": "terraform destroy -target=module.vpc"}
+{"input": "rm -f *.p", "output": "rm -f *.pyc"}
+{"input": "uv pip sync requirements.t", "output": "uv pip sync requirements.txt"}
+{"input": "grep -E '^(export|import)'", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "history | grep docker", "output": "history | grep docker | tail -20"}
+{"input": "git remote add origin https://github.com/user/repo.g", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "git stash p", "output": "git stash pop"}
+{"input": "uv pip install", "output": "uv pip install -r requirements.txt"}
+{"input": "pip install --upgrade pi", "output": "pip install --upgrade pip"}
+{"input": "sed -i 's/old/new/g' file.", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "find . -path '*/node_modules' -prune ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "python manage.py runserv", "output": "python manage.py runserver"}
+{"input": "curl -s http://localhost:8080/health | jq ", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "docker ps --format 'table {{.Names}}\\t", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "wget -q -O ", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "wc", "output": "wc -l src/**/*.py"}
+{"input": "git clone --depth 1 ", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "npm run de", "output": "npm run dev"}
+{"input": "docker rm -f mycon", "output": "docker rm -f mycontainer"}
+{"input": "poetry bu", "output": "poetry build"}
+{"input": "flask run --de", "output": "flask run --debug"}
+{"input": "make clea", "output": "make clean"}
+{"input": "make inst", "output": "make install"}
+{"input": "git push --force-with-lea", "output": "git push --force-with-lease"}
+{"input": "git push origin H", "output": "git push origin HEAD"}
+{"input": "make", "output": "make clean"}
+{"input": "go mod ti", "output": "go mod tidy"}
+{"input": "ps ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "docker inspect mycontainer | ", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "git branch -", "output": "git branch -a"}
+{"input": "xargs -P4", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "jq -r '.dependencies | ", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "terraform workspace select", "output": "terraform workspace select production"}
+{"input": "poetry shel", "output": "poetry shell"}
+{"input": "xargs -I{} mv {}", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "pnpm", "output": "pnpm install"}
+{"input": "grep -rn 'def ' src/", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "fzf", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "xargs", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "fd -e ts -e tsx src", "output": "fd -e ts -e tsx src/"}
+{"input": "find . -type f -newer package.js", "output": "find . -type f -newer package.json"}
+{"input": "kubectl get secret", "output": "kubectl get secrets"}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | ", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "git log --author=\"$(git config user.name)\" --on", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "kubectl port-forward svc/myservice 8080:8", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "docker stop ", "output": "docker stop mycontainer"}
+{"input": "bun instal", "output": "bun install"}
+{"input": "alias ll='ls ", "output": "alias ll='ls -la'"}
+{"input": "jq '.users[] | select(.active)' ", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "export PATH=$PATH:/usr/local/bi", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "kubectl get pods -n ", "output": "kubectl get pods -n default"}
+{"input": "find . -path '*/node_modules' -prune", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "git pull origin", "output": "git pull origin main --rebase"}
+{"input": "ls ", "output": "ls -la"}
+{"input": "docker run --rm -v ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "fd -e ts -e tsx s", "output": "fd -e ts -e tsx src/"}
+{"input": "ssh -L 5432:localhost:5432 user@h", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "npm run te", "output": "npm run test"}
+{"input": "wget ", "output": "wget https://example.com/installer.sh"}
+{"input": "fd -e ts -e tsx", "output": "fd -e ts -e tsx src/"}
+{"input": "docker images --format 'table", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "find . -path '*/node_modules' -prune -o ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "docker compose up --bu", "output": "docker compose up --build"}
+{"input": "go run ", "output": "go run main.go"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "printenv |", "output": "printenv | grep AWS"}
+{"input": "uv pip sync ", "output": "uv pip sync requirements.txt"}
+{"input": "cargo build --releas", "output": "cargo build --release"}
+{"input": "mv old-name.txt new-na", "output": "mv old-name.txt new-name.txt"}
+{"input": "python -m pytest ", "output": "python -m pytest --cov=src"}
+{"input": "docker run -d --name myapp -p 8080:80 nginx:lat", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "kubectl get pods --all-na", "output": "kubectl get pods --all-namespaces"}
+{"input": "ps aux | sort -k4 -rn | head -", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "docker inspect mycontainer |", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "docker run -it --rm ubuntu:latest /bin/b", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "gunicorn ", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "code --diff a.py ", "output": "code --diff a.py b.py"}
+{"input": "make instal", "output": "make install"}
+{"input": "docker network l", "output": "docker network ls"}
+{"input": "code --diff a.py b.", "output": "code --diff a.py b.py"}
+{"input": "du ", "output": "du -sh *"}
+{"input": "docker exec -it mycontainer sh ", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "terraform workspace li", "output": "terraform workspace list"}
+{"input": "jq '.users[] |", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "kubectl get pods -o w", "output": "kubectl get pods -o wide"}
+{"input": "source ~/.zshr", "output": "source ~/.zshrc"}
+{"input": "curl -X POST -H 'Content-Type: application/json'", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "git diff", "output": "git diff HEAD~1"}
+{"input": "fzf --preview 'bat --color=always", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "python -m pytest -xv", "output": "python -m pytest -xvs"}
+{"input": "fzf --preview 'bat ", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "git cherry-pick abc12", "output": "git cherry-pick abc1234"}
+{"input": "cat /etc/host", "output": "cat /etc/hosts"}
+{"input": "grep -E", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "docker build -t myapp:lates", "output": "docker build -t myapp:latest ."}
+{"input": "git commit --amend ", "output": "git commit --amend --no-edit"}
+{"input": "git pull --reb", "output": "git pull --rebase"}
+{"input": "docker exec -it mycontainer sh -c \"env", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "docker run -it --rm", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "curl -s http://localhost:8080/health | jq", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "rm", "output": "rm -rf node_modules/"}
+{"input": "git commit -m \"fix: resolve ", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "env |", "output": "env | sort"}
+{"input": "rg ", "output": "rg 'TODO' --type=py"}
+{"input": "pnpm add vite --save-d", "output": "pnpm add vite --save-dev"}
+{"input": "xargs -I{} ", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "git diff main..feat", "output": "git diff main..feature-branch"}
+{"input": "npm install ", "output": "npm install -g typescript"}
+{"input": "yarn add react react-d", "output": "yarn add react react-dom"}
+{"input": "git add", "output": "git add ."}
+{"input": "git checkout -b feature/new-fe", "output": "git checkout -b feature/new-feature"}
+{"input": "watch -n ", "output": "watch -n 2 kubectl get pods"}
+{"input": "find . -name ", "output": "find . -name '*.log' -delete"}
+{"input": "nohup python ", "output": "nohup python server.py &"}
+{"input": "git pull ", "output": "git pull --rebase"}
+{"input": "git branch --merged | grep -v", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "kubectl logs -f deployment/mya", "output": "kubectl logs -f deployment/myapp"}
+{"input": "git merge --no-ff feature-branc", "output": "git merge --no-ff feature-branch"}
+{"input": "nohup", "output": "nohup python server.py &"}
+{"input": "git checkout ", "output": "git checkout -- ."}
+{"input": "du -sh", "output": "du -sh *"}
+{"input": "env", "output": "env | sort"}
+{"input": "docker pull nginx:", "output": "docker pull nginx:latest"}
+{"input": "fg %", "output": "fg %1"}
+{"input": "kubectl logs -f mypo", "output": "kubectl logs -f mypod"}
+{"input": "bun ", "output": "bun add hono"}
+{"input": "kubectl delete -f", "output": "kubectl delete -f deployment.yaml"}
+{"input": "go run", "output": "go run main.go"}
+{"input": "npm outda", "output": "npm outdated"}
+{"input": "kubectl config", "output": "kubectl config get-contexts"}
+{"input": "rsync -av --exclude='node_modules' src/ user@host:/var/www", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "terraform output ", "output": "terraform output -json"}
+{"input": "npx ts-node src/index.t", "output": "npx ts-node src/index.ts"}
+{"input": "make ", "output": "make -j4"}
+{"input": "pip install ", "output": "pip install -e ."}
+{"input": "cd", "output": "cd -"}
+{"input": "docker rm -f mycontain", "output": "docker rm -f mycontainer"}
+{"input": "flask run --d", "output": "flask run --debug"}
+{"input": "rg 'TODO' --type", "output": "rg 'TODO' --type=py"}
+{"input": "terraform apply -auto-appr", "output": "terraform apply -auto-approve"}
+{"input": "git clone --depth 1 https://github.com/user/repo.g", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "kubectl logs -f my", "output": "kubectl logs -f mypod"}
+{"input": "poetry instal", "output": "poetry install"}
+{"input": "git add ", "output": "git add -p"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -2", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "find . -type f -newer packag", "output": "find . -type f -newer package.json"}
+{"input": "flask run --deb", "output": "flask run --debug"}
+{"input": "git log --author=\"$(git config ", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "curl -s https://api.github.com/users/torvalds ", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "fastapi dev ", "output": "fastapi dev app/main.py"}
+{"input": "npx create-next-app@latest myap", "output": "npx create-next-app@latest myapp"}
+{"input": "lsof -i :8", "output": "lsof -i :8080"}
+{"input": "npm instal", "output": "npm install"}
+{"input": "git fetch --all --prun", "output": "git fetch --all --prune"}
+{"input": "watch ", "output": "watch -n 2 kubectl get pods"}
+{"input": "git stash push -m ", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "kubectl logs -f deployment/m", "output": "kubectl logs -f deployment/myapp"}
+{"input": "git fetch --all --pru", "output": "git fetch --all --prune"}
+{"input": "chown -R $(whoami):$(whoami) /var", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "kubectl describe pod mypod ", "output": "kubectl describe pod mypod -n default"}
+{"input": "code --diff ", "output": "code --diff a.py b.py"}
+{"input": "kubectl get pods -o wi", "output": "kubectl get pods -o wide"}
+{"input": "docker build -t", "output": "docker build -t myapp:latest ."}
+{"input": "kubectl get no", "output": "kubectl get nodes"}
+{"input": "export PATH=$PATH:/usr/lo", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "docker run -d ", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "grep -r 'TODO' src/ ", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "git commit --amend --no-e", "output": "git commit --amend --no-edit"}
+{"input": "rm -rf node_modules", "output": "rm -rf node_modules/"}
+{"input": "tar -xzf archive.tar.g", "output": "tar -xzf archive.tar.gz"}
+{"input": "go build ./.", "output": "go build ./..."}
+{"input": "chmod +x scripts/depl", "output": "chmod +x scripts/deploy.sh"}
+{"input": "source ", "output": "source .venv/bin/activate"}
+{"input": "chmod 600", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "python manage.py migr", "output": "python manage.py migrate"}
+{"input": "kubectl delete -f deployment.", "output": "kubectl delete -f deployment.yaml"}
+{"input": "awk '{print $1}' access.log", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "poetry add reque", "output": "poetry add requests"}
+{"input": "terraform in", "output": "terraform init"}
+{"input": "git push origin ma", "output": "git push origin main"}
+{"input": "git push --force-w", "output": "git push --force-with-lease"}
+{"input": "git stash push -m \"wip: in-progress ", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "git diff --sta", "output": "git diff --staged"}
+{"input": "poetry run pyte", "output": "poetry run pytest"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "kubectl get configm", "output": "kubectl get configmaps"}
+{"input": "cp file.txt file.b", "output": "cp file.txt file.bak"}
+{"input": "docker volume ", "output": "docker volume ls"}
+{"input": "git commit -m \"fix: ", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "kubectl top nod", "output": "kubectl top nodes"}
+{"input": "python -c \"import", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "wget -q -O -", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "python manage.py collectstatic", "output": "python manage.py collectstatic --no-input"}
+{"input": "cargo build --re", "output": "cargo build --release"}
+{"input": "kubectl describe pod mypod -n ", "output": "kubectl describe pod mypod -n default"}
+{"input": "wc -l", "output": "wc -l src/**/*.py"}
+{"input": "git merge --no-ff ", "output": "git merge --no-ff feature-branch"}
+{"input": "jq -r ", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "pip show nump", "output": "pip show numpy"}
+{"input": "jobs", "output": "jobs -l"}
+{"input": "yarn run buil", "output": "yarn run build"}
+{"input": "scp", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "git stash push -m \"wip: in-progress wor", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "make tes", "output": "make test"}
+{"input": "uv pip sync requirem", "output": "uv pip sync requirements.txt"}
+{"input": "zip -r ", "output": "zip -r dist.zip dist/"}
+{"input": "find . -path '*/node_modules' -prune -o -name '*.ts'", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "env | ", "output": "env | sort"}
+{"input": "tmux new-session", "output": "tmux new-session -s main"}
+{"input": "docker exec", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "git clone --depth 1", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "fzf --preview 'bat", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "npm test -- --watc", "output": "npm test -- --watch"}
+{"input": "cargo cli", "output": "cargo clippy"}
+{"input": "kubectl describe pod", "output": "kubectl describe pod mypod -n default"}
+{"input": "git rebase -i", "output": "git rebase -i HEAD~3"}
+{"input": "docker ps -", "output": "docker ps -a"}
+{"input": "mkdir -p ", "output": "mkdir -p src/components"}
+{"input": "kill -9 $(lsof -t -i:808", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "chmod +x scripts/deploy.", "output": "chmod +x scripts/deploy.sh"}
+{"input": "git branch --merged | grep -v main | xargs", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "git rebase ", "output": "git rebase -i HEAD~3"}
+{"input": "kubectl describe", "output": "kubectl describe pod mypod -n default"}
+{"input": "git commit --amend --no-edi", "output": "git commit --amend --no-edit"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 app:applicatio", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "docker compose", "output": "docker compose up --build"}
+{"input": "git log --oneline -2", "output": "git log --oneline -20"}
+{"input": "terraform pl", "output": "terraform plan"}
+{"input": "scp -r dist/ user@host:/var/www/htm", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "code", "output": "code --diff a.py b.py"}
+{"input": "kubectl get pods -n defaul", "output": "kubectl get pods -n default"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "docker rmi myimage:late", "output": "docker rmi myimage:latest"}
+{"input": "npm run lin", "output": "npm run lint"}
+{"input": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "zip -r dist.zip dist", "output": "zip -r dist.zip dist/"}
+{"input": "kubectl delete", "output": "kubectl delete pod mypod"}
+{"input": "docker build -t myapp:latest", "output": "docker build -t myapp:latest ."}
+{"input": "lsof -i", "output": "lsof -i :8080"}
+{"input": "npm install -g typescr", "output": "npm install -g typescript"}
+{"input": "type -a", "output": "type -a python"}
+{"input": "tail -n 200 /var/log/syslo", "output": "tail -n 200 /var/log/syslog"}
+{"input": "docker push myrepo/myi", "output": "docker push myrepo/myimage:latest"}
+{"input": "python -m pytest -x", "output": "python -m pytest -xvs"}
+{"input": "xargs -I{}", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "docker pull nginx:lates", "output": "docker pull nginx:latest"}
+{"input": "ssh -L", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "jq ", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "gunicorn -w", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "git clone", "output": "git clone https://github.com/user/repo.git"}
+{"input": "pnpm run d", "output": "pnpm run dev"}
+{"input": "printenv | grep ", "output": "printenv | grep AWS"}
+{"input": "ps aux | sort -k4 ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "docker exec -it mycontainer /bin/bas", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "sed -i 's/old/new/g' ", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "docker exec -it mycontainer /bin", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "kubectl get secr", "output": "kubectl get secrets"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm ins", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "docker build -t ", "output": "docker build -t myapp:latest --no-cache ."}
+{"input": "curl -o file.zip https://example.com/f", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "git branch -d", "output": "git branch -d feature/old-branch"}
+{"input": "git tag -a ", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "git cherry-pick ", "output": "git cherry-pick abc1234"}
+{"input": "poetry add --group dev pytes", "output": "poetry add --group dev pytest"}
+{"input": "tmux new-session -s ma", "output": "tmux new-session -s main"}
+{"input": "git stash", "output": "git stash list"}
+{"input": "kubectl port-forward svc/myservice", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "kubectl apply -f deployment.yam", "output": "kubectl apply -f deployment.yaml"}
+{"input": "docker images --format 'table ", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "git pull --reba", "output": "git pull --rebase"}
+{"input": "docker network inspect ", "output": "docker network inspect bridge"}
+{"input": "wc ", "output": "wc -l src/**/*.py"}
+{"input": "docker pull nginx:late", "output": "docker pull nginx:latest"}
+{"input": "git clone --depth 1 https://github.com/user/repo.gi", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "git branch --merged | grep -v main | xargs ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "ls", "output": "ls -lah --color=auto"}
+{"input": "source .venv/bin/activa", "output": "source .venv/bin/activate"}
+{"input": "pnpm add ", "output": "pnpm add vite --save-dev"}
+{"input": "chmod +x ", "output": "chmod +x scripts/deploy.sh"}
+{"input": "kubectl apply -f k", "output": "kubectl apply -f k8s/"}
+{"input": "code --diff a.py", "output": "code --diff a.py b.py"}
+{"input": "source", "output": "source .venv/bin/activate"}
+{"input": "uv pip install -r requirements.t", "output": "uv pip install -r requirements.txt"}
+{"input": "tmux attach-session -t m", "output": "tmux attach-session -t main"}
+{"input": "docker stats --no-str", "output": "docker stats --no-stream"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 app:applicat", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "tmux attach-session ", "output": "tmux attach-session -t main"}
+{"input": "kubectl scale deployment myapp", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "git stash po", "output": "git stash pop"}
+{"input": "yarn add ", "output": "yarn add --dev @types/node"}
+{"input": "kubectl config use-context ", "output": "kubectl config use-context staging"}
+{"input": "ls -lah ", "output": "ls -lah --color=auto"}
+{"input": "docker volume prune -", "output": "docker volume prune -f"}
+{"input": "xargs -P4 -I{} sh ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "flask run --debu", "output": "flask run --debug"}
+{"input": "poetry add --group ", "output": "poetry add --group dev pytest"}
+{"input": "terraform workspace select ", "output": "terraform workspace select production"}
+{"input": "docker compose logs", "output": "docker compose logs -f"}
+{"input": "kubectl scale deployment myapp --repl", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "alias ll='ls -la", "output": "alias ll='ls -la'"}
+{"input": "ps aux ", "output": "ps aux | grep python"}
+{"input": "du -sh * | sort ", "output": "du -sh * | sort -h"}
+{"input": "jq -r '.dependencies ", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "watch -n 2 ", "output": "watch -n 2 kubectl get pods"}
+{"input": "tail -f /var/log/nginx/access.l", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "kubectl apply", "output": "kubectl apply -f k8s/"}
+{"input": "pnpm add vite --save-", "output": "pnpm add vite --save-dev"}
+{"input": "xargs -I{} mv {} ", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "curl -s", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "docker inspect mycontainer | jq '.[0].NetworkSet", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "pnpm instal", "output": "pnpm install"}
+{"input": "xargs -P4 -I{} sh -c '...'", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "history | grep docker | ", "output": "history | grep docker | tail -20"}
+{"input": "rsync", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "chmod 600 ~/.ssh/id", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "grep ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "docker logs -f mycontaine", "output": "docker logs -f mycontainer"}
+{"input": "npm publish --access ", "output": "npm publish --access public"}
+{"input": "ln -sf /usr/local/bin/python3 /usr/local/bin/", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "rm -rf ", "output": "rm -rf node_modules/"}
+{"input": "curl -X POST", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "git stash push", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "npm publish --access pub", "output": "npm publish --access public"}
+{"input": "pip install -r requirements.tx", "output": "pip install -r requirements.txt"}
+{"input": "git rev-parse --abbrev-ref", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "kubectl delete pod my", "output": "kubectl delete pod mypod"}
+{"input": "kubectl get ingres", "output": "kubectl get ingress"}
+{"input": "mkdir -p src/component", "output": "mkdir -p src/components"}
+{"input": "npm install -g types", "output": "npm install -g typescript"}
+{"input": "kubectl rollout restart ", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "docker logs --tail 100 mycontaine", "output": "docker logs --tail 100 mycontainer"}
+{"input": "npm publish --access publi", "output": "npm publish --access public"}
+{"input": "docker images --format", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "git remote add origin ", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "terraform workspace lis", "output": "terraform workspace list"}
+{"input": "awk '{print $1}' ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "cp", "output": "cp file.txt file.bak"}
+{"input": "cp file.txt file.", "output": "cp file.txt file.bak"}
+{"input": "kubectl scale", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "make insta", "output": "make install"}
+{"input": "cargo clipp", "output": "cargo clippy"}
+{"input": "docker build", "output": "docker build -t myapp:latest --no-cache ."}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "make te", "output": "make test"}
+{"input": "kill -9", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "git rebase", "output": "git rebase -i HEAD~3"}
+{"input": "bun insta", "output": "bun install"}
+{"input": "docker ps --format", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 ", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "poetry bui", "output": "poetry build"}
+{"input": "pip uninstall mypackage", "output": "pip uninstall mypackage -y"}
+{"input": "kubectl get pods -o", "output": "kubectl get pods -o wide"}
+{"input": "yarn insta", "output": "yarn install"}
+{"input": "git shortlog -", "output": "git shortlog -sn"}
+{"input": "go vet ./..", "output": "go vet ./..."}
+{"input": "ln -sf /usr/local/bin/python3", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "tmux attach-session", "output": "tmux attach-session -t main"}
+{"input": "npm outdate", "output": "npm outdated"}
+{"input": "kubectl exec -it mypod --", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "tmux new-session ", "output": "tmux new-session -s main"}
+{"input": "docker network ", "output": "docker network inspect bridge"}
+{"input": "sed", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "terraform apply", "output": "terraform apply -auto-approve"}
+{"input": "git branch --merged | grep -v main", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "sed -i 's/old/new/g' file.tx", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "git push origin ", "output": "git push origin main"}
+{"input": "xargs -P4 -I{} sh -c '...' --", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "kill -9 $(lsof -t -i:8", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "npm run", "output": "npm run lint"}
+{"input": "curl --head https://example.", "output": "curl --head https://example.com"}
+{"input": "docker volume", "output": "docker volume prune -f"}
+{"input": "git clone https://github.com/user/repo.", "output": "git clone https://github.com/user/repo.git"}
+{"input": "git log --author=\"$(git", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "docker system", "output": "docker system prune -af"}
+{"input": "python manage.py makemigrati", "output": "python manage.py makemigrations"}
+{"input": "python manage.py makemigrat", "output": "python manage.py makemigrations"}
+{"input": "git branch --merged | grep -v main | xargs git", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "poetry add --group dev pyt", "output": "poetry add --group dev pytest"}
+{"input": "git cherry-pick abc123", "output": "git cherry-pick abc1234"}
+{"input": "curl --head https://example.c", "output": "curl --head https://example.com"}
+{"input": "xargs -I{} mv {} {}.", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "yarn instal", "output": "yarn install"}
+{"input": "grep -E '^(export|import)' src/index.t", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "grep -rn 'def ' src/ | wc", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "scp -r dist/ user@host:/var/www/ht", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "docker logs", "output": "docker logs --tail 100 mycontainer"}
+{"input": "git commit -m \"feat: initial commit", "output": "git commit -m \"feat: initial commit\""}
+{"input": "tail -f /var/log/ngi", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "docker run --rm -v $(pwd):/app -w ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "type", "output": "type -a python"}
+{"input": "find . -path '*/node_modules' -prune -o -name ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "pip install -", "output": "pip install -e ."}
+{"input": "touch .env.", "output": "touch .env.local"}
+{"input": "kubectl port-forward svc/myservice 808", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "httpie", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "pip install -r ", "output": "pip install -r requirements.txt"}
+{"input": "git branch -d feature/old-b", "output": "git branch -d feature/old-branch"}
+{"input": "npm run t", "output": "npm run test"}
+{"input": "history | grep ", "output": "history | grep docker | tail -20"}
+{"input": "npm test -- ", "output": "npm test -- --watch"}
+{"input": "docker logs --tail 100 mycon", "output": "docker logs --tail 100 mycontainer"}
+{"input": "unzip ", "output": "unzip -o file.zip -d output/"}
+{"input": "kubectl top p", "output": "kubectl top pods"}
+{"input": "git merge --no-ff feature", "output": "git merge --no-ff feature-branch"}
+{"input": "history | ", "output": "history | grep docker | tail -20"}
+{"input": "docker imag", "output": "docker images"}
+{"input": "tar -xzf archive.ta", "output": "tar -xzf archive.tar.gz"}
+{"input": "python -c \"import sys; print(sys.versio", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "docker compose up -", "output": "docker compose up -d"}
+{"input": "git clone --depth 1 https://github.com/user/", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "xargs -P4 ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "docker logs -f ", "output": "docker logs -f mycontainer"}
+{"input": "uvicorn app.main:app --re", "output": "uvicorn app.main:app --reload"}
+{"input": "chown -R", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "tail -n 200 /var/log/sys", "output": "tail -n 200 /var/log/syslog"}
+{"input": "cargo clip", "output": "cargo clippy"}
+{"input": "git diff --st", "output": "git diff --staged"}
+{"input": "lsof", "output": "lsof -i :8080"}
+{"input": "git submodule update --init --recursiv", "output": "git submodule update --init --recursive"}
+{"input": "ls -lah --color=au", "output": "ls -lah --color=auto"}
+{"input": "poetry ins", "output": "poetry install"}
+{"input": "jq '.users[] | select(.active)'", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm inst", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "cd ~/.conf", "output": "cd ~/.config"}
+{"input": "ls -lah --colo", "output": "ls -lah --color=auto"}
+{"input": "docker ima", "output": "docker images"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "git commit --amend --no", "output": "git commit --amend --no-edit"}
+{"input": "docker images ", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "python -c \"import sys; print(sys.version)", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "python manage.py collectstatic --no-in", "output": "python manage.py collectstatic --no-input"}
+{"input": "unzip -o ", "output": "unzip -o file.zip -d output/"}
+{"input": "git remote add origin https://github.com/user/repo.", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "bun run ", "output": "bun run dev"}
+{"input": "git tag -a v1.0.0 -m \"Release 1.0", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "terraform ini", "output": "terraform init"}
+{"input": "git branch -d feature/old-bran", "output": "git branch -d feature/old-branch"}
+{"input": "uv ve", "output": "uv venv"}
+{"input": "jq -r '.dependencies | keys[]' package.j", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "docker run -it --rm ", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "poetry insta", "output": "poetry install"}
+{"input": "pip freeze ", "output": "pip freeze > requirements.txt"}
+{"input": "git fetch --all --p", "output": "git fetch --all --prune"}
+{"input": "tmux attach-session -t", "output": "tmux attach-session -t main"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "python -m pytest --cov=s", "output": "python -m pytest --cov=src"}
+{"input": "docker pull", "output": "docker pull nginx:latest"}
+{"input": "ps aux | sort -k4", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "chown", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "yarn add react reac", "output": "yarn add react react-dom"}
+{"input": "docker run --rm ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "pip list ", "output": "pip list --outdated"}
+{"input": "rsync -av --exclude='node_modules' src/ user@host:/var/ww", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "kubectl rollout restart deployment/m", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "npx create-react-app", "output": "npx create-react-app myapp"}
+{"input": "curl --head", "output": "curl --head https://example.com"}
+{"input": "git branch --merged |", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "tar -czf archive.tar.gz s", "output": "tar -czf archive.tar.gz src/"}
+{"input": "npx create-next-app@latest mya", "output": "npx create-next-app@latest myapp"}
+{"input": "make cle", "output": "make clean"}
+{"input": "git remote", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "python manage.py collectstatic --no-inp", "output": "python manage.py collectstatic --no-input"}
+{"input": "tail -f /var/log/nginx/acc", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "git checkout -", "output": "git checkout -- ."}
+{"input": "git checkout -b feature/n", "output": "git checkout -b feature/new-feature"}
+{"input": "npm install --save-dev ", "output": "npm install --save-dev eslint"}
+{"input": "docker exec -it ", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "git pull origin main --re", "output": "git pull origin main --rebase"}
+{"input": "git show HE", "output": "git show HEAD"}
+{"input": "rm -rf node_module", "output": "rm -rf node_modules/"}
+{"input": "fd -e ", "output": "fd -e ts -e tsx src/"}
+{"input": "tmux new-session -s", "output": "tmux new-session -s main"}
+{"input": "docker rmi ", "output": "docker rmi myimage:latest"}
+{"input": "python -m venv", "output": "python -m venv .venv"}
+{"input": "find . -name '*.log' -dele", "output": "find . -name '*.log' -delete"}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "mv old-name.txt", "output": "mv old-name.txt new-name.txt"}
+{"input": "poetry run ", "output": "poetry run pytest"}
+{"input": "grep -rn ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "gunicorn -w 4 -b ", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "docker images --format ", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "cp -r src/ ", "output": "cp -r src/ dist/"}
+{"input": "git push --force-with-", "output": "git push --force-with-lease"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "fastapi dev app/main.p", "output": "fastapi dev app/main.py"}
+{"input": "git add --a", "output": "git add --all"}
+{"input": "docker push myrepo/myimage:", "output": "docker push myrepo/myimage:latest"}
+{"input": "curl -s http://localhost:8080/health ", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "docker run --rm -v $(pwd):/app", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "jq -r '.dependencies", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "terraform apply -auto-app", "output": "terraform apply -auto-approve"}
+{"input": "vim ", "output": "vim src/main.py"}
+{"input": "yarn", "output": "yarn add --dev @types/node"}
+{"input": "cargo t", "output": "cargo test"}
+{"input": "npm install -g typescri", "output": "npm install -g typescript"}
+{"input": "docker run -d", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "zip -r dist.zip ", "output": "zip -r dist.zip dist/"}
+{"input": "fg", "output": "fg %1"}
+{"input": "uvicorn", "output": "uvicorn app.main:app --reload"}
+{"input": "yarn workspace myapp d", "output": "yarn workspace myapp dev"}
+{"input": "git diff main..feature-b", "output": "git diff main..feature-branch"}
+{"input": "go test", "output": "go test ./..."}
+{"input": "git rev-parse --abbrev-ref H", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}'", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "httpie GET http://localhos", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "docker logs --tail ", "output": "docker logs --tail 100 mycontainer"}
+{"input": "flask run ", "output": "flask run --debug"}
+{"input": "chmod 600 ~/.ssh/id_rs", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "ln -sf /usr/local/bin/python3 ", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "kubectl rollout undo", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "docker inspect mycontainer | jq", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "ps aux | sort -k4 -rn | ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "grep -rn", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "grep -r 'TODO' src/", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "python -m pytest", "output": "python -m pytest -xvs"}
+{"input": "wc -l ", "output": "wc -l src/**/*.py"}
+{"input": "docker compose up", "output": "docker compose up -d"}
+{"input": "docker build -t myapp:latest --no-cach", "output": "docker build -t myapp:latest --no-cache ."}
+{"input": "uvicorn app.main:app ", "output": "uvicorn app.main:app --reload"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "docker run -d --name myapp -p 8080:80 nginx:", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "git branch --merged | grep -v main | xargs git branch -", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "kubectl get serv", "output": "kubectl get services"}
+{"input": "poetry pub", "output": "poetry publish"}
+{"input": "bun add ho", "output": "bun add hono"}
+{"input": "go test ./.", "output": "go test ./..."}
+{"input": "cargo build --rele", "output": "cargo build --release"}
+{"input": "unzip -o file.zip -d outpu", "output": "unzip -o file.zip -d output/"}
+{"input": "git branch --merged | ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "git rev-parse --abbrev-ref ", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "alias ll='ls -", "output": "alias ll='ls -la'"}
+{"input": "docker stop mycon", "output": "docker stop mycontainer"}
+{"input": "curl -o file.zip https://example.com/file.z", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "docker rm ", "output": "docker rm -f mycontainer"}
+{"input": "docker run -it --rm ubuntu:latest ", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "terraform i", "output": "terraform init"}
+{"input": "docker network inspect bri", "output": "docker network inspect bridge"}
+{"input": "top -o cp", "output": "top -o cpu"}
+{"input": "git commit -m \"fix: resolve merge conflict", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "env | so", "output": "env | sort"}
+{"input": "python manage.py migra", "output": "python manage.py migrate"}
+{"input": "pip freeze >", "output": "pip freeze > requirements.txt"}
+{"input": "watch -n 2 kubectl get p", "output": "watch -n 2 kubectl get pods"}
+{"input": "ps aux | sort -k4 -rn | head ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "wget -q ", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "curl -X", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "nohup python server.py", "output": "nohup python server.py &"}
+{"input": "python -c \"import sys; ", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "cp file.txt file.ba", "output": "cp file.txt file.bak"}
+{"input": "grep -r 'TODO' src/ --include='*.py", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "npm install -g typescrip", "output": "npm install -g typescript"}
+{"input": "chmod ", "output": "chmod 600 ~/.ssh/id_rsa"}
+{"input": "pip show num", "output": "pip show numpy"}
+{"input": "docker logs --tail", "output": "docker logs --tail 100 mycontainer"}
+{"input": "uv pip install -r", "output": "uv pip install -r requirements.txt"}
+{"input": "go vet ./", "output": "go vet ./..."}
+{"input": "mv old-name.txt ", "output": "mv old-name.txt new-name.txt"}
+{"input": "kill -9 $(lsof -t -i:8080", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "git remote add ", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "fastapi dev app/m", "output": "fastapi dev app/main.py"}
+{"input": "kubectl get sec", "output": "kubectl get secrets"}
+{"input": "poetry add --group dev pyte", "output": "poetry add --group dev pytest"}
+{"input": "kubectl get pods -o ", "output": "kubectl get pods -o wide"}
+{"input": "kubectl port-forward svc/myservice 8080", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "git log --author=\"$(git config", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "xargs -P4 -I{} sh -c '...' ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "chown -R $(whoami):$(whoami) /var/ww", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "docker inspect", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "npm publish", "output": "npm publish --access public"}
+{"input": "kubectl describe pod mypod -n defa", "output": "kubectl describe pod mypod -n default"}
+{"input": "uv v", "output": "uv venv"}
+{"input": "awk '{print $1}' access.log ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "npx ts-node src/index", "output": "npx ts-node src/index.ts"}
+{"input": "git diff main..feature-bra", "output": "git diff main..feature-branch"}
+{"input": "pip install -r requirements.", "output": "pip install -r requirements.txt"}
+{"input": "python manage.py collectstatic ", "output": "python manage.py collectstatic --no-input"}
+{"input": "docker push ", "output": "docker push myrepo/myimage:latest"}
+{"input": "unzip", "output": "unzip -o file.zip -d output/"}
+{"input": "cargo ru", "output": "cargo run"}
+{"input": "docker build -t myapp:latest --no-cache ", "output": "docker build -t myapp:latest --no-cache ."}
+{"input": "terraform apply -auto-appro", "output": "terraform apply -auto-approve"}
+{"input": "uvicorn ", "output": "uvicorn app.main:app --reload"}
+{"input": "awk '{print $1}' access.log | sort | ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git submodule update --init --recursi", "output": "git submodule update --init --recursive"}
+{"input": "kubectl apply -f deployment.ya", "output": "kubectl apply -f deployment.yaml"}
+{"input": "docker compose up --buil", "output": "docker compose up --build"}
+{"input": "git commit -m \"fix: resolve", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "which python", "output": "which python3"}
+{"input": "curl -o file.zip https://example.com/file.zi", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "docker compose up --bui", "output": "docker compose up --build"}
+{"input": "free -", "output": "free -h"}
+{"input": "tmux attach-session -t ma", "output": "tmux attach-session -t main"}
+{"input": "pip install --upgrade p", "output": "pip install --upgrade pip"}
+{"input": "kubectl describe pod mypod -n def", "output": "kubectl describe pod mypod -n default"}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000 app:applica", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "xargs -I{} mv {} {}.ba", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "docker run -d --name ", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "awk '{print $1}' access.log | sort |", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "terraform apply -auto-approv", "output": "terraform apply -auto-approve"}
+{"input": "curl --head https://example.co", "output": "curl --head https://example.com"}
+{"input": "xargs -I{} mv", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "git merge --no-ff feature-bra", "output": "git merge --no-ff feature-branch"}
+{"input": "watch -n 2 kubectl ", "output": "watch -n 2 kubectl get pods"}
+{"input": "git commit -m \"feat: initial commi", "output": "git commit -m \"feat: initial commit\""}
+{"input": "terraform apply -auto-", "output": "terraform apply -auto-approve"}
+{"input": "touch .env.loc", "output": "touch .env.local"}
+{"input": "uv pip install -r requirem", "output": "uv pip install -r requirements.txt"}
+{"input": "uv pip install ", "output": "uv pip install -r requirements.txt"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/ap", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "git pull origin main --reba", "output": "git pull origin main --rebase"}
+{"input": "pnpm inst", "output": "pnpm install"}
+{"input": "git commit -m \"feat: initial ", "output": "git commit -m \"feat: initial commit\""}
+{"input": "curl -o ", "output": "curl -o file.zip https://example.com/file.zip"}
+{"input": "git branch -d feature/old-bra", "output": "git branch -d feature/old-branch"}
+{"input": "kubectl rollout status deployment/m", "output": "kubectl rollout status deployment/myapp"}
+{"input": "touch ", "output": "touch .env.local"}
+{"input": "awk ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "docker stats ", "output": "docker stats --no-stream"}
+{"input": "history | grep docker |", "output": "history | grep docker | tail -20"}
+{"input": "docker run -it --rm ubuntu:latest", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "zip -r", "output": "zip -r dist.zip dist/"}
+{"input": "docker exec -it mycontainer sh", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "kill -9 $(lsof ", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "source ~/.zsh", "output": "source ~/.zshrc"}
+{"input": "jq -r '.dependencies | keys[]' package.jso", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "npx ", "output": "npx ts-node src/index.ts"}
+{"input": "python -c \"import sys;", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "kubectl logs -f myp", "output": "kubectl logs -f mypod"}
+{"input": "git commit -m \"fix: resolve merge ", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "history | grep docker | tail -2", "output": "history | grep docker | tail -20"}
+{"input": "pip uninstall ", "output": "pip uninstall mypackage -y"}
+{"input": "kubectl top po", "output": "kubectl top pods"}
+{"input": "git clone --depth 1 https://github.c", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "cp ", "output": "cp -r src/ dist/"}
+{"input": "kubectl exec -it mypod -- ", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "nohup python", "output": "nohup python server.py &"}
+{"input": "python manage.py migrat", "output": "python manage.py migrate"}
+{"input": "kubectl delete -f deployment.yam", "output": "kubectl delete -f deployment.yaml"}
+{"input": "git commit -m \"fix: resolve merge conflic", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "kubectl config get-co", "output": "kubectl config get-contexts"}
+{"input": "docker logs --tail 100 mycontai", "output": "docker logs --tail 100 mycontainer"}
+{"input": "docker run -d --name myapp -p 8080:80", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "pip install -e ", "output": "pip install -e ."}
+{"input": "wget", "output": "wget https://example.com/installer.sh"}
+{"input": "pnpm run ", "output": "pnpm run dev"}
+{"input": "mv old-name.txt new-name.", "output": "mv old-name.txt new-name.txt"}
+{"input": "mkdir", "output": "mkdir -p src/components"}
+{"input": "scp ", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "alias", "output": "alias ll='ls -la'"}
+{"input": "kubectl delete -f deployment.y", "output": "kubectl delete -f deployment.yaml"}
+{"input": "touch .env.loca", "output": "touch .env.local"}
+{"input": "docker pull nginx:lat", "output": "docker pull nginx:latest"}
+{"input": "kubectl get pods -n defau", "output": "kubectl get pods -n default"}
+{"input": "git status --sh", "output": "git status --short"}
+{"input": "jq '.users[]", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "python -m venv .ven", "output": "python -m venv .venv"}
+{"input": "find . -name '*.log' -del", "output": "find . -name '*.log' -delete"}
+{"input": "git commit -m \"feat: initial com", "output": "git commit -m \"feat: initial commit\""}
+{"input": "gunicorn -w ", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "source .venv/bin/act", "output": "source .venv/bin/activate"}
+{"input": "kubectl delete -f deployment.ya", "output": "kubectl delete -f deployment.yaml"}
+{"input": "kubectl rollout status", "output": "kubectl rollout status deployment/myapp"}
+{"input": "chown -R $(whoami):$(whoami) /var/www", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "docker ps --format 'table {{.Names}}\\t{{.Status}", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "kubectl rollout restart deployme", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "pnpm add vite --sav", "output": "pnpm add vite --save-dev"}
+{"input": "docker volume prune", "output": "docker volume prune -f"}
+{"input": "kubectl rollout restart", "output": "kubectl rollout restart deployment/myapp"}
+{"input": "history | grep", "output": "history | grep docker | tail -20"}
+{"input": "terraform apply ", "output": "terraform apply -auto-approve"}
+{"input": "fastapi dev", "output": "fastapi dev app/main.py"}
+{"input": "git remote add", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "gunicorn", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "jq '.users[] ", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 npm", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "fzf --preview 'bat --color=always {", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "git branch -d feature/old-branc", "output": "git branch -d feature/old-branch"}
+{"input": "docker system prune -a", "output": "docker system prune -af"}
+{"input": "docker logs --tail 100 ", "output": "docker logs --tail 100 mycontainer"}
+{"input": "printenv | ", "output": "printenv | grep AWS"}
+{"input": "ls -lah --color=a", "output": "ls -lah --color=auto"}
+{"input": "kubectl config use-context", "output": "kubectl config use-context staging"}
+{"input": "poetry inst", "output": "poetry install"}
+{"input": "find . -path '*/node_modules' -prune -o", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "docker stop mycontaine", "output": "docker stop mycontainer"}
+{"input": "poetry run", "output": "poetry run pytest"}
+{"input": "df -", "output": "df -h"}
+{"input": "docker build -f Dockerfile.prod ", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "touch", "output": "touch .env.local"}
+{"input": "npm inst", "output": "npm install"}
+{"input": "git clone https://github.c", "output": "git clone https://github.com/user/repo.git"}
+{"input": "tar -xzf", "output": "tar -xzf archive.tar.gz"}
+{"input": "chown -R $(whoami):$(whoami)", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "go run mai", "output": "go run main.go"}
+{"input": "npm init -", "output": "npm init -y"}
+{"input": "rsync -av --exclude='node_modules' src/ user@host:/var/w", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "pip freeze > requirements.t", "output": "pip freeze > requirements.txt"}
+{"input": "npx create-react-app my", "output": "npx create-react-app myapp"}
+{"input": "python manage.py mig", "output": "python manage.py migrate"}
+{"input": "kill -9 $(lsof -t", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "sed -i", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "git rebase -i HEAD", "output": "git rebase -i HEAD~3"}
+{"input": "kubectl get ingre", "output": "kubectl get ingress"}
+{"input": "jq '.users[] | select(.active)' data", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "free", "output": "free -h"}
+{"input": "docker build -f Dockerfile.prod -t myapp:prod ", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "xargs -P4 -I{} sh -c '...' -- ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "kubectl get configmap", "output": "kubectl get configmaps"}
+{"input": "yarn ins", "output": "yarn install"}
+{"input": "gunicorn -w 4", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "sed -i 's/old/new/g' file.t", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "git bisect", "output": "git bisect start"}
+{"input": "docker run -d --name myapp ", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "printenv | grep AW", "output": "printenv | grep AWS"}
+{"input": "find . -path '*/node_modules' -prune -o -name", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "git log --author=\"$(git config user.name)\"", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "find . -type f -newer ", "output": "find . -type f -newer package.json"}
+{"input": "httpie ", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "mkdir -p src/componen", "output": "mkdir -p src/components"}
+{"input": "git status --shor", "output": "git status --short"}
+{"input": "nohup python server.p", "output": "nohup python server.py &"}
+{"input": "uv pip sync", "output": "uv pip sync requirements.txt"}
+{"input": "git stash l", "output": "git stash list"}
+{"input": "curl -s https://api.github.com/users/torvalds | jq ", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "kubectl delete pod myp", "output": "kubectl delete pod mypod"}
+{"input": "gunicorn -w 4 ", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "ls -lt | head ", "output": "ls -lt | head -20"}
+{"input": "git submodule ", "output": "git submodule update --init --recursive"}
+{"input": "python -m venv .ve", "output": "python -m venv .venv"}
+{"input": "poetry add reques", "output": "poetry add requests"}
+{"input": "git checkout --", "output": "git checkout -- ."}
+{"input": "find . -type ", "output": "find . -type f -newer package.json"}
+{"input": "pip freeze > requirem", "output": "pip freeze > requirements.txt"}
+{"input": "git push --force-with-leas", "output": "git push --force-with-lease"}
+{"input": "curl -s http://localhost:8080/health |", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "git stash lis", "output": "git stash list"}
+{"input": "python manage.py makemigration", "output": "python manage.py makemigrations"}
+{"input": "mkdir -p src/compone", "output": "mkdir -p src/components"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "docker system prune -", "output": "docker system prune -af"}
+{"input": "pip list --outda", "output": "pip list --outdated"}
+{"input": "poetry add --group", "output": "poetry add --group dev pytest"}
+{"input": "python manage.py runs", "output": "python manage.py runserver"}
+{"input": "docker rmi", "output": "docker rmi myimage:latest"}
+{"input": "git branch --merged ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "uv pip sync requirements.", "output": "uv pip sync requirements.txt"}
+{"input": "git tag -a", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "httpie GET ", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "grep -rn 'def ' src/ | ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "npm ins", "output": "npm install"}
+{"input": "npm audit ", "output": "npm audit fix"}
+{"input": "docker run -it --rm ubuntu:latest /bin/bas", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "kubectl config use-context stag", "output": "kubectl config use-context staging"}
+{"input": "uv ", "output": "uv pip sync requirements.txt"}
+{"input": "pip install --upgrade ", "output": "pip install --upgrade pip"}
+{"input": "grep -r 'TODO' src/ --includ", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "docker rmi myimage:lat", "output": "docker rmi myimage:latest"}
+{"input": "docker push myrepo/myimage:lat", "output": "docker push myrepo/myimage:latest"}
+{"input": "ln", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "kubectl exec -it mypod -- /bin/bas", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "docker push", "output": "docker push myrepo/myimage:latest"}
+{"input": "pip show nu", "output": "pip show numpy"}
+{"input": "xargs -P4 -I{} sh", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "tar", "output": "tar -xzf archive.tar.gz"}
+{"input": "mkdir -p", "output": "mkdir -p src/components"}
+{"input": "python manage.py createsuperus", "output": "python manage.py createsuperuser"}
+{"input": "kubectl apply -f k8", "output": "kubectl apply -f k8s/"}
+{"input": "python manage.py runserve", "output": "python manage.py runserver"}
+{"input": "kubectl rollout status ", "output": "kubectl rollout status deployment/myapp"}
+{"input": "git rev-parse --abbrev-ref HE", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "source .venv/bin/activat", "output": "source .venv/bin/activate"}
+{"input": "bun add", "output": "bun add hono"}
+{"input": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size", "output": "docker images --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'"}
+{"input": "gunicorn -w 4 -b", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "kubectl exec -it ", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "go vet ", "output": "go vet ./..."}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh ", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "npm publish --access", "output": "npm publish --access public"}
+{"input": "tar -czf archive.tar.gz", "output": "tar -czf archive.tar.gz src/"}
+{"input": "git merge --no-ff feature-br", "output": "git merge --no-ff feature-branch"}
+{"input": "du -sh * | sort -", "output": "du -sh * | sort -h"}
+{"input": "ssh user@hostname -p 2", "output": "ssh user@hostname -p 22"}
+{"input": "bat src/main", "output": "bat src/main.py"}
+{"input": "fzf --preview ", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "python manage.py runser", "output": "python manage.py runserver"}
+{"input": "git checkout mai", "output": "git checkout main"}
+{"input": "kubectl port-forward svc/myservice ", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "jq '.users[] | select(.active)' data.j", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "mv *.log", "output": "mv *.log /tmp/"}
+{"input": "rm -rf node_modu", "output": "rm -rf node_modules/"}
+{"input": "ls -lt | head -2", "output": "ls -lt | head -20"}
+{"input": "pnpm insta", "output": "pnpm install"}
+{"input": "awk '{print", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git stat", "output": "git status"}
+{"input": "ssh user@hostname -p ", "output": "ssh user@hostname -p 22"}
+{"input": "fzf ", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "printenv | grep A", "output": "printenv | grep AWS"}
+{"input": "docker exec -it mycontainer /bin/b", "output": "docker exec -it mycontainer /bin/bash"}
+{"input": "git rev-parse ", "output": "git rev-parse --abbrev-ref HEAD"}
+{"input": "tar -czf ", "output": "tar -czf archive.tar.gz src/"}
+{"input": "npm audit f", "output": "npm audit fix"}
+{"input": "pip install --upgrade", "output": "pip install --upgrade pip"}
+{"input": "kubectl config get-conte", "output": "kubectl config get-contexts"}
+{"input": "grep -r 'TODO' src/ --include='*", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "docker inspect mycontainer | jq '.[0].NetworkSettings.IP", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "git log --author=\"$(git config user.name)\" --onelin", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "git push origin m", "output": "git push origin main"}
+{"input": "docker logs -f", "output": "docker logs -f mycontainer"}
+{"input": "docker exec -it mycontainer sh -c", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "tail -f", "output": "tail -f /var/log/nginx/access.log"}
+{"input": "git diff --stag", "output": "git diff --staged"}
+{"input": "git commit -m \"fix: resolve merge conf", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "curl -s https://api.github.com/users/torvalds", "output": "curl -s https://api.github.com/users/torvalds | jq ."}
+{"input": "docker volume prune ", "output": "docker volume prune -f"}
+{"input": "yarn workspace myapp de", "output": "yarn workspace myapp dev"}
+{"input": "kubectl logs -f deployment/my", "output": "kubectl logs -f deployment/myapp"}
+{"input": "poetry she", "output": "poetry shell"}
+{"input": "kubectl get pods -n def", "output": "kubectl get pods -n default"}
+{"input": "printenv ", "output": "printenv | grep AWS"}
+{"input": "git checkout ma", "output": "git checkout main"}
+{"input": "wget https://example.", "output": "wget https://example.com/installer.sh"}
+{"input": "docker volume l", "output": "docker volume ls"}
+{"input": "kubectl logs -f deployment/myap", "output": "kubectl logs -f deployment/myapp"}
+{"input": "code --diff", "output": "code --diff a.py b.py"}
+{"input": "docker run --rm -v $(pwd):/app ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "lsof -i ", "output": "lsof -i :8080"}
+{"input": "grep -rn 'def ' src/ | wc -", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "fd -e ts", "output": "fd -e ts -e tsx src/"}
+{"input": "rsync -av", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c | sort -rn ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "docker run -d --name myapp -p 8080:80 nginx:lates", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "ps aux | sort ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "tmux new-session -s m", "output": "tmux new-session -s main"}
+{"input": "lsof -i :80", "output": "lsof -i :8080"}
+{"input": "kubectl delete pod", "output": "kubectl delete pod mypod"}
+{"input": "jq '.users[] | select(.active)' data.jso", "output": "jq '.users[] | select(.active)' data.json"}
+{"input": "flask", "output": "flask run --debug"}
+{"input": "grep -r 'TODO' src/ --include='*.p", "output": "grep -r 'TODO' src/ --include='*.py'"}
+{"input": "which pytho", "output": "which python3"}
+{"input": "docker logs -f mycontai", "output": "docker logs -f mycontainer"}
+{"input": "docker build -f Dockerfile.prod -t ", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "curl -s http://localhost:8080/health | j", "output": "curl -s http://localhost:8080/health | jq ."}
+{"input": "mv old-name.txt new-name.tx", "output": "mv old-name.txt new-name.txt"}
+{"input": "terraform workspace l", "output": "terraform workspace list"}
+{"input": "kubectl scale deployment myapp --replicas=", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "ssh user@hostname -p", "output": "ssh user@hostname -p 22"}
+{"input": "history | grep docker ", "output": "history | grep docker | tail -20"}
+{"input": "git cherry-pick", "output": "git cherry-pick abc1234"}
+{"input": "git commit -m \"fix:", "output": "git commit -m \"fix: resolve merge conflict\""}
+{"input": "kubectl scale deployment myapp --replicas", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "tail -n", "output": "tail -n 200 /var/log/syslog"}
+{"input": "git bisect st", "output": "git bisect start"}
+{"input": "awk '{print $1}' access.log | sort ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "grep -E '^(export|import)' src/index.", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "kill ", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "ssh user@hostname", "output": "ssh user@hostname -p 22"}
+{"input": "scp -r dist/", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "git remote add origin https://github.c", "output": "git remote add origin https://github.com/user/repo.git"}
+{"input": "mkdir -p src/com", "output": "mkdir -p src/components"}
+{"input": "kubectl exec -it mypod -- /bin/ba", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "top -o ", "output": "top -o cpu"}
+{"input": "tail -n 200 /var/log/sy", "output": "tail -n 200 /var/log/syslog"}
+{"input": "npx create-react-app myap", "output": "npx create-react-app myapp"}
+{"input": "find . -path '*/node_modules' -prune -o -name '*.ts' ", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "nohup ", "output": "nohup python server.py &"}
+{"input": "docker run -it ", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "kubectl get pods --all-namespac", "output": "kubectl get pods --all-namespaces"}
+{"input": "tar ", "output": "tar -czf archive.tar.gz src/"}
+{"input": "ps aux | sort -k4 -rn ", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "wget -q", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "tar -czf", "output": "tar -czf archive.tar.gz src/"}
+{"input": "git push origin HE", "output": "git push origin HEAD"}
+{"input": "kubectl port-forward", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "bun run d", "output": "bun run dev"}
+{"input": "kubectl describe pod mypod -n defau", "output": "kubectl describe pod mypod -n default"}
+{"input": "ln -sf", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "pnpm run", "output": "pnpm run dev"}
+{"input": "tar -xzf ", "output": "tar -xzf archive.tar.gz"}
+{"input": "uvicorn app.main:app", "output": "uvicorn app.main:app --reload"}
+{"input": "tail -n 200 ", "output": "tail -n 200 /var/log/syslog"}
+{"input": "curl -X POST ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "history ", "output": "history | grep docker | tail -20"}
+{"input": "fastapi ", "output": "fastapi dev app/main.py"}
+{"input": "bun run", "output": "bun run dev"}
+{"input": "kubectl config use-context stagin", "output": "kubectl config use-context staging"}
+{"input": "rm -rf node_m", "output": "rm -rf node_modules/"}
+{"input": "go mod tid", "output": "go mod tidy"}
+{"input": "httpie GET", "output": "httpie GET http://localhost:8000/api/users"}
+{"input": "find . -type f -newer package.j", "output": "find . -type f -newer package.json"}
+{"input": "docker system ", "output": "docker system prune -af"}
+{"input": "git status", "output": "git status --short"}
+{"input": "export", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "chown ", "output": "chown -R $(whoami):$(whoami) /var/www/"}
+{"input": "git show HEA", "output": "git show HEAD"}
+{"input": "git log --oneline --graph --a", "output": "git log --oneline --graph --all"}
+{"input": "npm test -- --wa", "output": "npm test -- --watch"}
+{"input": "yarn add --dev @types/n", "output": "yarn add --dev @types/node"}
+{"input": "python manage.py collectstatic --no-inpu", "output": "python manage.py collectstatic --no-input"}
+{"input": "kubectl rollout status deployme", "output": "kubectl rollout status deployment/myapp"}
+{"input": "docker run -it --rm ubuntu:latest /bin/ba", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "docker run --rm -v $(pwd):/app -w /app node:18 ", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "nohup python server.py ", "output": "nohup python server.py &"}
+{"input": "docker ps --format 'table {{.Names}}\\t{{.Status", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "pip install -r requirements", "output": "pip install -r requirements.txt"}
+{"input": "bat", "output": "bat src/main.py"}
+{"input": "docker compose down -", "output": "docker compose down -v"}
+{"input": "python -m http.server ", "output": "python -m http.server 8000"}
+{"input": "mv *.log /tmp", "output": "mv *.log /tmp/"}
+{"input": "git stash push -m", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "gunicorn -w 4 -b 0.0.0.0:8000", "output": "gunicorn -w 4 -b 0.0.0.0:8000 app:application"}
+{"input": "go test ./..", "output": "go test ./..."}
+{"input": "kubectl rollout undo deployme", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "git stash li", "output": "git stash list"}
+{"input": "unzip -o file.zip -d outp", "output": "unzip -o file.zip -d output/"}
+{"input": "git commit -m \"feat: initial", "output": "git commit -m \"feat: initial commit\""}
+{"input": "go vet ./.", "output": "go vet ./..."}
+{"input": "unzip -o file.zip -d", "output": "unzip -o file.zip -d output/"}
+{"input": "pip install -r requirements.t", "output": "pip install -r requirements.txt"}
+{"input": "docker exec -it mycontainer sh -c \"e", "output": "docker exec -it mycontainer sh -c \"env\""}
+{"input": "grep -rn 'def ' ", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "yarn run ", "output": "yarn run build"}
+{"input": "npm install --save-dev", "output": "npm install --save-dev eslint"}
+{"input": "kubectl scale ", "output": "kubectl scale deployment myapp --replicas=3"}
+{"input": "yarn add react", "output": "yarn add react react-dom"}
+{"input": "ln -sf /usr/local/bin/python3 /usr/local/bin/pyt", "output": "ln -sf /usr/local/bin/python3 /usr/local/bin/python"}
+{"input": "git clone --depth ", "output": "git clone --depth 1 https://github.com/user/repo.git"}
+{"input": "git branch -d ", "output": "git branch -d feature/old-branch"}
+{"input": "awk '{print $1}'", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git stash push ", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "git clone https://github.com/user/repo.g", "output": "git clone https://github.com/user/repo.git"}
+{"input": "go run main", "output": "go run main.go"}
+{"input": "docker compose down", "output": "docker compose down -v"}
+{"input": "git log --oneline --graph", "output": "git log --oneline --graph --all"}
+{"input": "kubectl config ", "output": "kubectl config get-contexts"}
+{"input": "python -c \"import sys; print(sys.vers", "output": "python -c \"import sys; print(sys.version)\""}
+{"input": "kubectl apply -f k8s", "output": "kubectl apply -f k8s/"}
+{"input": "wget -q -O", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "du -sh * |", "output": "du -sh * | sort -h"}
+{"input": "python -m http.server 80", "output": "python -m http.server 8000"}
+{"input": "zip -r dist.zip di", "output": "zip -r dist.zip dist/"}
+{"input": "yarn run", "output": "yarn run build"}
+{"input": "find . -path '*/node_modules' -prune -o -name '*.ts' -pri", "output": "find . -path '*/node_modules' -prune -o -name '*.ts' -print"}
+{"input": "git status ", "output": "git status --short"}
+{"input": "find . -name '*.py' ", "output": "find . -name '*.py' -type f"}
+{"input": "sed -i ", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "kubectl rollout undo deployment/myap", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "awk '{print $1}' access.log | sort | uniq ", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git shortlog", "output": "git shortlog -sn"}
+{"input": "git log --oneline --graph --", "output": "git log --oneline --graph --all"}
+{"input": "git submodule update --init", "output": "git submodule update --init --recursive"}
+{"input": "cat ", "output": "cat /etc/hosts"}
+{"input": "npm test --", "output": "npm test -- --watch"}
+{"input": "scp -r ", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "rg", "output": "rg 'TODO' --type=py"}
+{"input": "kubectl describe pod mypod", "output": "kubectl describe pod mypod -n default"}
+{"input": "xargs -P4 -I{} ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "docker rm -f ", "output": "docker rm -f mycontainer"}
+{"input": "xargs -I{} mv {} {}.b", "output": "xargs -I{} mv {} {}.bak"}
+{"input": "jq -r '.dependencies |", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "kubectl delete pod ", "output": "kubectl delete pod mypod"}
+{"input": "npm run l", "output": "npm run lint"}
+{"input": "docker run -d --name myapp", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "awk", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "git submodule update --init --rec", "output": "git submodule update --init --recursive"}
+{"input": "git log --author=\"$(git config user.name)\" --onel", "output": "git log --author=\"$(git config user.name)\" --oneline"}
+{"input": "ssh -L ", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "chmod +x scripts/", "output": "chmod +x scripts/deploy.sh"}
+{"input": "du -sh * | sort", "output": "du -sh * | sort -h"}
+{"input": "fastapi dev app/main.", "output": "fastapi dev app/main.py"}
+{"input": "ps aux | sort -k4 -rn | head", "output": "ps aux | sort -k4 -rn | head -10"}
+{"input": "git submodule", "output": "git submodule update --init --recursive"}
+{"input": "awk '{print $1}' access.log | sort | uniq -c |", "output": "awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -20"}
+{"input": "curl -X POST -H ", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "curl -X POST -H", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "kubectl rollout undo deployment/my", "output": "kubectl rollout undo deployment/myapp"}
+{"input": "wget https://example.com/installer", "output": "wget https://example.com/installer.sh"}
+{"input": "fd ", "output": "fd -e ts -e tsx src/"}
+{"input": "uv ven", "output": "uv venv"}
+{"input": "git add --al", "output": "git add --all"}
+{"input": "watch -n 2 kubectl", "output": "watch -n 2 kubectl get pods"}
+{"input": "kubectl get secre", "output": "kubectl get secrets"}
+{"input": "git push origin HEA", "output": "git push origin HEAD"}
+{"input": "python manage.py creates", "output": "python manage.py createsuperuser"}
+{"input": "kubectl get servi", "output": "kubectl get services"}
+{"input": "terraform destroy -target=modul", "output": "terraform destroy -target=module.vpc"}
+{"input": "rm -f *.py", "output": "rm -f *.pyc"}
+{"input": "grep -E '^(export|import)' ", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "pip uninstall mypackage ", "output": "pip uninstall mypackage -y"}
+{"input": "kubectl exec -it", "output": "kubectl exec -it mypod -- /bin/bash"}
+{"input": "du -sh * | ", "output": "du -sh * | sort -h"}
+{"input": "jq -r", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://local", "output": "curl -X POST -H 'Content-Type: application/json' -d '{\"key\":\"val\"}' http://localhost:8000/api"}
+{"input": "fd", "output": "fd -e ts -e tsx src/"}
+{"input": "git stash push -m \"wip:", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "git tag -a v1.0.0 ", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "type -a pytho", "output": "type -a python"}
+{"input": "npm install -g", "output": "npm install -g typescript"}
+{"input": "git diff --stage", "output": "git diff --staged"}
+{"input": "npm install --save-dev esli", "output": "npm install --save-dev eslint"}
+{"input": "pip show ", "output": "pip show numpy"}
+{"input": "cp -r src/", "output": "cp -r src/ dist/"}
+{"input": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | ba", "output": "wget -q -O - https://raw.githubusercontent.com/user/repo/main/install.sh | bash"}
+{"input": "git sta", "output": "git status"}
+{"input": "jq -r '.dependencies | keys[]' package.js", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "fzf --preview 'bat --color=always {}", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "mkdir ", "output": "mkdir -p src/components"}
+{"input": "watch -n 2 kubectl get ", "output": "watch -n 2 kubectl get pods"}
+{"input": "vim src/main", "output": "vim src/main.py"}
+{"input": "docker run -it --rm ubuntu:latest /bin", "output": "docker run -it --rm ubuntu:latest /bin/bash"}
+{"input": "go run main.g", "output": "go run main.go"}
+{"input": "kubectl get pods --all-namespace", "output": "kubectl get pods --all-namespaces"}
+{"input": "yarn add --dev", "output": "yarn add --dev @types/node"}
+{"input": "zip ", "output": "zip -r dist.zip dist/"}
+{"input": "kill -9 $(lsof -t -i:80", "output": "kill -9 $(lsof -t -i:8080)"}
+{"input": "python -m pytest --co", "output": "python -m pytest --cov=src"}
+{"input": "xargs -P4 -I{} sh -c '...' -- {", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "watch", "output": "watch -n 2 kubectl get pods"}
+{"input": "bat src/main.", "output": "bat src/main.py"}
+{"input": "docker run --rm -v $(pwd):/app -w /app", "output": "docker run --rm -v $(pwd):/app -w /app node:18 npm install"}
+{"input": "jq -r '.dependencies | keys[]'", "output": "jq -r '.dependencies | keys[]' package.json"}
+{"input": "ssh -L 5432:localhost:5432 user@hos", "output": "ssh -L 5432:localhost:5432 user@host"}
+{"input": "find . -name '*.log' ", "output": "find . -name '*.log' -delete"}
+{"input": "find . -type f -newer", "output": "find . -type f -newer package.json"}
+{"input": "docker run -d --name myapp -p", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
+{"input": "git cherry-pick abc1", "output": "git cherry-pick abc1234"}
+{"input": "make cl", "output": "make clean"}
+{"input": "go mod t", "output": "go mod tidy"}
+{"input": "docker stop mycontai", "output": "docker stop mycontainer"}
+{"input": "grep -E '^(export|import)' src/in", "output": "grep -E '^(export|import)' src/index.ts"}
+{"input": "fzf --preview 'bat --color=always ", "output": "fzf --preview 'bat --color=always {}'"}
+{"input": "npm run tes", "output": "npm run test"}
+{"input": "xargs -P4 -I{} sh -c ", "output": "xargs -P4 -I{} sh -c '...' -- {}"}
+{"input": "docker rmi myimage:lates", "output": "docker rmi myimage:latest"}
+{"input": "rsync ", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "grep -rn 'def '", "output": "grep -rn 'def ' src/ | wc -l"}
+{"input": "cargo tes", "output": "cargo test"}
+{"input": "poetry add requ", "output": "poetry add requests"}
+{"input": "kubectl rollout status deployment/myap", "output": "kubectl rollout status deployment/myapp"}
+{"input": "git rebase -i ", "output": "git rebase -i HEAD~3"}
+{"input": "yarn workspace myapp ", "output": "yarn workspace myapp dev"}
+{"input": "sed -i 's/old/new/g'", "output": "sed -i 's/old/new/g' file.txt"}
+{"input": "git checkout -b", "output": "git checkout -b feature/new-feature"}
+{"input": "git diff HEAD", "output": "git diff HEAD~1"}
+{"input": "env | s", "output": "env | sort"}
+{"input": "find . -name '*.py' -type ", "output": "find . -name '*.py' -type f"}
+{"input": "scp -r", "output": "scp -r dist/ user@host:/var/www/html/"}
+{"input": "npm run bu", "output": "npm run build"}
+{"input": "fd -e ts -e", "output": "fd -e ts -e tsx src/"}
+{"input": "docker inspect mycontainer", "output": "docker inspect mycontainer | jq '.[0].NetworkSettings.IPAddress'"}
+{"input": "yarn workspace", "output": "yarn workspace myapp dev"}
+{"input": "ls -l", "output": "ls -la"}
+{"input": "rm -rf", "output": "rm -rf node_modules/"}
+{"input": "docker network inspect brid", "output": "docker network inspect bridge"}
+{"input": "cp file.txt ", "output": "cp file.txt file.bak"}
+{"input": "zip", "output": "zip -r dist.zip dist/"}
+{"input": "kill %", "output": "kill %2"}
+{"input": "jobs -", "output": "jobs -l"}
+{"input": "git clone https://github.com/user/", "output": "git clone https://github.com/user/repo.git"}
+{"input": "python -m pyte", "output": "python -m pytest"}
+{"input": "kubectl get ing", "output": "kubectl get ingress"}
+{"input": "git branch --merged | grep -v main | xargs git ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "git stash push -m \"wip: ", "output": "git stash push -m \"wip: in-progress work\""}
+{"input": "kubectl delete pod mypo", "output": "kubectl delete pod mypod"}
+{"input": "export ", "output": "export PATH=$PATH:/usr/local/bin"}
+{"input": "docker build -f Dockerfile.prod -t myapp:pro", "output": "docker build -f Dockerfile.prod -t myapp:prod ."}
+{"input": "bat src/m", "output": "bat src/main.py"}
+{"input": "rsync -av ", "output": "rsync -av --exclude='node_modules' src/ user@host:/var/www/"}
+{"input": "git branch --merged | grep ", "output": "git branch --merged | grep -v main | xargs git branch -d"}
+{"input": "yarn add --dev @types/no", "output": "yarn add --dev @types/node"}
+{"input": "ls -lt | head", "output": "ls -lt | head -20"}
+{"input": "git show H", "output": "git show HEAD"}
+{"input": "docker ps --format 'table", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "python manage.py makemigratio", "output": "python manage.py makemigrations"}
+{"input": "kubectl port-forward ", "output": "kubectl port-forward svc/myservice 8080:80"}
+{"input": "docker compose up --b", "output": "docker compose up --build"}
+{"input": "bun add hon", "output": "bun add hono"}
+{"input": "python manage.py sh", "output": "python manage.py shell"}
+{"input": "du -sh * ", "output": "du -sh * | sort -h"}
+{"input": "docker compose logs -", "output": "docker compose logs -f"}
+{"input": "bun add h", "output": "bun add hono"}
+{"input": "kubectl config use-context sta", "output": "kubectl config use-context staging"}
+{"input": "df", "output": "df -h"}
+{"input": "vim src/main.p", "output": "vim src/main.py"}
+{"input": "kubectl logs -f deployme", "output": "kubectl logs -f deployment/myapp"}
+{"input": "alias ll='ls", "output": "alias ll='ls -la'"}
+{"input": "git pull origin main --reb", "output": "git pull origin main --rebase"}
+{"input": "go test ", "output": "go test ./..."}
+{"input": "kubectl get configma", "output": "kubectl get configmaps"}
+{"input": "kubectl config get-contex", "output": "kubectl config get-contexts"}
+{"input": "git shortlog ", "output": "git shortlog -sn"}
+{"input": "git fetch --all ", "output": "git fetch --all --prune"}
+{"input": "git tag -a v1.0.0 -m \"Release 1.0.", "output": "git tag -a v1.0.0 -m \"Release 1.0.0\""}
+{"input": "vim src/main.", "output": "vim src/main.py"}
+{"input": "docker ps --format 'table ", "output": "docker ps --format 'table {{.Names}}\\t{{.Status}}'"}
+{"input": "docker rm", "output": "docker rm -f mycontainer"}
+{"input": "npm run bui", "output": "npm run build"}
+{"input": "bun inst", "output": "bun install"}
+{"input": "git pull origin ", "output": "git pull origin main --rebase"}
+{"input": "docker run -d --name myapp -p 8080:80 nginx:late", "output": "docker run -d --name myapp -p 8080:80 nginx:latest"}
