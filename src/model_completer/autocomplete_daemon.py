@@ -49,81 +49,60 @@ def _looks_like_commit_request(inp: str) -> bool:
     )
 
 
-def _normalize_commit_completion(inp: str, completion: str, ctx: dict) -> str:
-    """
-    Keep smart-commit model-driven, but enforce output shape:
-      git commit -m "type: concise subject"
-    """
-    c = (completion or "").strip()
-    if not c:
-        c = inp
-
-    # Try to extract quoted message first.
-    m = re.search(r'git\s+commit\b.*?-m\s*"(.*?)"', c)
-    if m:
-        msg = m.group(1).strip()
-    else:
-        # Or recover from raw "type: subject" style output.
-        m2 = re.search(r"\b(feat|fix|docs|refactor|test|chore)\s*:\s*(.+)$", c, re.I)
-        if m2:
-            msg = f"{m2.group(1).lower()}: {m2.group(2).strip()}"
-        else:
-            msg = _fallback_commit_message(ctx)
-
-    msg = msg.replace('"', "").strip()
-    # enforce "<type>: <subject>" minimal structure
-    if ":" not in msg:
-        msg = f"chore: {msg}" if msg else "chore: update changes"
-    t, s = msg.split(":", 1)
-    t = t.strip().lower()
-    if t not in {"feat", "fix", "docs", "refactor", "test", "chore"}:
-        t = "chore"
-    s = re.sub(r"\s+", " ", s).strip()
-    s = re.sub(r"^(feat|fix|docs|refactor|test|chore)\s*:\s*", "", s, flags=re.I)
-    s = s[:80]
-    if not s:
-        s = "update changes"
-    if str(ctx.get("git_diff", "")).strip():
-        generic = {
-            "initial commit",
-            "resolve merge conflict",
-            "merge branch",
-            "update changes",
-            "update staged changes",
-        }
-        if s.lower() in generic:
-            fb = _fallback_commit_message(ctx)
-            mfb = re.match(
-                r"^(feat|fix|docs|refactor|test|chore)\s*:\s*(.+)$", fb, re.I
-            )
-            if mfb:
-                if t == "chore":
-                    t = mfb.group(1).lower()
-                s = mfb.group(2).strip()
-    return f'git commit -m "{t}: {s}"'
+def _infer_commit_type(diff_text: str) -> str:
+    t = diff_text.lower()
+    if any(x in t for x in (".md", "readme", "docs/")):
+        return "docs"
+    if any(x in t for x in ("test_", "/test", "tests/", "spec")):
+        return "test"
+    if any(x in t for x in ("fix", "error", "bug", "hotfix")):
+        return "fix"
+    if any(x in t for x in ("refactor", "cleanup", "rename")):
+        return "refactor"
+    return "feat"
 
 
-def _fallback_commit_message(ctx: dict) -> str:
-    diff = str(ctx.get("git_diff", "")).strip()
-    git_log = str(ctx.get("git_log", "")).strip()
-    ctype = "chore"
-    if git_log:
-        first = git_log.splitlines()[0].strip()
-        m = re.match(r"^(feat|fix|docs|refactor|test|chore)\s*:", first, re.I)
-        if m:
-            ctype = m.group(1).lower()
+def _extract_changed_files(diff_text: str) -> list[str]:
+    files: list[str] = []
+    for line in diff_text.splitlines():
+        if "|" not in line:
+            continue
+        left = line.split("|", 1)[0].strip()
+        if "/" in left or "." in left:
+            files.append(left)
+    return files
 
-    subject = "update staged changes"
-    if diff:
-        for line in diff.splitlines():
-            if "|" in line:
-                path = line.split("|", 1)[0].strip().split("/")[-1]
-                path = re.sub(r"\.[a-zA-Z0-9]+$", "", path)
-                path = path.replace("_", " ").replace("-", " ").strip()
-                if path:
-                    subject = f"update {path}"
-                    break
-    return f"{ctype}: {subject}"
+
+def _commit_subject_from_diff(diff_text: str) -> str:
+    files = _extract_changed_files(diff_text)
+    if not files:
+        return "update project changes"
+
+    first = files[0].split("/")[-1]
+    first = re.sub(r"\.[a-zA-Z0-9]+$", "", first)
+    first = first.replace("_", " ").replace("-", " ").strip()
+
+    lowered = " ".join(files).lower()
+    if "autocomplete_daemon" in lowered:
+        return "improve autocomplete daemon behavior"
+    if "zsh_autocomplete.plugin" in lowered:
+        return "improve zsh ghost completion behavior"
+    if "install.sh" in lowered:
+        return "improve install workflow for model setup"
+    if "requirements" in lowered:
+        return "update runtime dependencies"
+
+    if len(files) == 1:
+        return f"update {first}"
+    return f"update {first} and related files"
+
+
+def _deterministic_commit_completion(inp: str, ctx: dict) -> str:
+    diff_text = str(ctx.get("git_diff", "")).strip()
+    ctype = _infer_commit_type(diff_text)
+    subject = _commit_subject_from_diff(diff_text)
+    message = f"{ctype}: {subject}"
+    return f'git commit -m "{message}"'
 
 
 def _adapter_base_model() -> str:
@@ -283,6 +262,23 @@ def _similar_from_commands(commands: list[str], prefix: str, k: int = 5) -> list
                 if len(results) >= k:
                     break
     return results
+
+
+def _history_based_completion(inp: str, ctx: dict) -> str:
+    """
+    Directly reuse recent user command patterns when confidence is high.
+    This makes history adaptation visible even with a small model.
+    """
+    if len(inp.strip()) < 3:
+        return ""
+    commands = _blended_commands(ctx)
+    matches = _similar_from_commands(commands, inp.strip(), k=3)
+    if not matches:
+        return ""
+    top = matches[0].strip()
+    if top.startswith(inp.strip()) and top != inp.strip():
+        return top
+    return ""
 
 
 def _transition_stats_from_commands(
@@ -637,6 +633,15 @@ class AutocompleteDaemon:
         if not inp:
             return ""
 
+        # Restore stable smart-commit behavior from previous working version.
+        if _looks_like_commit_request(inp):
+            return _deterministic_commit_completion(inp, ctx)
+
+        # Strong user-history adaptation path before model generation.
+        hist = _history_based_completion(inp, ctx)
+        if hist:
+            return _sanitize_completion(inp, hist)
+
         loop = asyncio.get_running_loop()
         system = _build_system(inp, ctx)
 
@@ -644,16 +649,10 @@ class AutocompleteDaemon:
             result = await loop.run_in_executor(None, _claude_complete, inp, system)
             if result:
                 logger.info("Claude: %r → %r", inp, result)
-                cleaned = _sanitize_completion(inp, result)
-                if _looks_like_commit_request(inp):
-                    return _normalize_commit_completion(inp, cleaned, ctx)
-                return cleaned
+                return _sanitize_completion(inp, result)
 
         raw = await loop.run_in_executor(None, _backend.complete, inp, system)
-        cleaned = _sanitize_completion(inp, raw)
-        if _looks_like_commit_request(inp):
-            return _normalize_commit_completion(inp, cleaned, ctx)
-        return cleaned
+        return _sanitize_completion(inp, raw)
 
 
 def main() -> None:

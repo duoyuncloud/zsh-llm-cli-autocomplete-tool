@@ -54,10 +54,38 @@ echo "[3/4] Downloading pre-trained LoRA adapter from HuggingFace..."
 echo "      (repo: $HF_REPO  base: Qwen2.5-1.5B-Instruct)"
 "$PY" - <<PYEOF
 from huggingface_hub import snapshot_download
+import socket
 import os
+
+def hf_reachable(host: str = "huggingface.co", port: int = 443, timeout: float = 5.0) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
 adapter_dir = os.path.expanduser("$ADAPTER_DIR")
-snapshot_download(repo_id="$HF_REPO", local_dir=adapter_dir)
-print(f"      Adapter saved to {adapter_dir}")
+os.makedirs(adapter_dir, exist_ok=True)
+
+# Prefer local cache first so offline installs still work if previously downloaded.
+try:
+    snapshot_download(
+        repo_id="$HF_REPO",
+        local_dir=adapter_dir,
+        local_files_only=True,
+    )
+    print(f"      Adapter already cached at {adapter_dir}")
+except Exception:
+    if not hf_reachable():
+        raise SystemExit(
+            "      ERROR: huggingface.co unreachable and adapter not in local cache.\n"
+            "      Retry on a network that can reach Hugging Face."
+        )
+    snapshot_download(
+        repo_id="$HF_REPO",
+        local_dir=adapter_dir,
+    )
+    print(f"      Adapter saved to {adapter_dir}")
 PYEOF
 
 # ---------------------------------------------------------------------------
@@ -72,9 +100,17 @@ import json
 from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
+import socket
 
 ADAPTER  = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
 MERGED   = Path.home() / ".local/share/zsh-autocomplete/merged-model"
+
+def hf_reachable(host: str = "huggingface.co", port: int = 443, timeout: float = 5.0) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
 
 adapter_cfg = ADAPTER / "adapter_config.json"
 if not adapter_cfg.exists():
@@ -90,7 +126,7 @@ else:
         torch.backends.mps.is_available() or torch.cuda.is_available()
     ) else torch.float32
     print("      Loading base model...")
-    # Prefer local cache first; fallback to network if needed.
+    # Prefer local cache first; fallback to network only if HF is reachable.
     try:
         tokenizer = AutoTokenizer.from_pretrained(
             MODEL_ID, trust_remote_code=True, local_files_only=True
@@ -103,6 +139,11 @@ else:
             local_files_only=True,
         )
     except Exception:
+        if not hf_reachable():
+            raise SystemExit(
+                "      ERROR: base model not cached and huggingface.co unreachable.\n"
+                "      Re-run install on a network that can access Hugging Face."
+            )
         tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
         base = AutoModelForCausalLM.from_pretrained(
             MODEL_ID, torch_dtype=dtype, device_map="cpu", trust_remote_code=True
