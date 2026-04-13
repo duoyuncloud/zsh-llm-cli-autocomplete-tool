@@ -1,0 +1,1 @@
+This file is to test if our model can generate smart commit message and autocomplete user's commands.
