@@ -12,8 +12,9 @@ export AXOLOTL_DO_NOT_TRACK=1
 echo "Env: PYTORCH_MPS_DISABLE=1 (CPU only), AXOLOTL_DO_NOT_TRACK=1"
 echo ""
 
+PYTHONPATH="$(pwd)/src${PYTHONPATH:+:$PYTHONPATH}" \
 venv/bin/python -m training.qwen3_axolotl_trainer \
-  --base-model Qwen/Qwen2-0.5B \
+  --base-model "${BASE_MODEL_ID:-Qwen/Qwen2.5-1.5B-Instruct}" \
   --epochs 2 \
   --low-memory \
   "$@"

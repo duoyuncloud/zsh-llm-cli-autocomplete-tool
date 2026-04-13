@@ -27,7 +27,7 @@ This doc summarizes how IDE-style inline completion (e.g. Cursor, GitHub Copilot
 | Grey preview        | Ghost text inline           | Zsh `region_highlight` (grey suffix)  |
 | Accept              | Tab                         | Tab                                    |
 | Dismiss             | Esc                         | Keep typing / normal completion        |
-| Speed                | Daemon + streaming/debounce | **Daemon** (optional) + Ollama        |
+| Speed                | Daemon + streaming/debounce | **Daemon** (optional) with local merged model |
 | One suggestion      | Yes                         | Yes (one completed command line)      |
 
 ### Making Tab “very quick”
@@ -41,7 +41,7 @@ This doc summarizes how IDE-style inline completion (e.g. Cursor, GitHub Copilot
 python -m model_completer.daemon
 ```
 
-Leave it running in a terminal or run it in the background. The Zsh plugin will use it when it’s available and fall back to the Python CLI otherwise.
+Leave it running in a terminal or run it in the background. The Zsh plugin uses this Unix-socket daemon for low-latency inline completion.
 
 ### Flow (with daemon)
 

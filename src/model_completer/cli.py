@@ -77,7 +77,7 @@ def main():
         from model_completer.hf_prefetch import PrefetchSpec, prefetch_base_and_adapter
 
         base_model_id = os.environ.get("ZAC_BASE_MODEL_ID", "Qwen/Qwen2.5-1.5B-Instruct")
-        lora_repo_id = config.get("hf_lora_repo", "") or "duoyuncloud/zsh-cli-lora"
+        lora_repo_id = config.get("hf_lora_repo", "") or "duoyuncloud/zsh-autocomplete-lora"
         from pathlib import Path
 
         adapter_dir = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"

@@ -3,7 +3,7 @@
 #
 # 1. Creates a venv and installs dependencies
 # 2. Downloads the pre-trained LoRA adapter from HuggingFace
-# 3. Merges the adapter into Qwen2.5-1.5B-Instruct (one-time, ~60s)
+# 3. Merges the adapter into its base model (one-time, ~60s)
 # 4. Adds the plugin to ~/.zshrc and starts the daemon
 
 set -euo pipefail
@@ -51,7 +51,7 @@ echo "[2/4] Installing dependencies..."
 # ---------------------------------------------------------------------------
 
 echo "[3/4] Downloading pre-trained LoRA adapter from HuggingFace..."
-echo "      (repo: $HF_REPO  base: Qwen2.5-1.5B-Instruct)"
+echo "      (repo: $HF_REPO)"
 "$PY" - <<PYEOF
 from huggingface_hub import snapshot_download
 import socket
@@ -92,8 +92,8 @@ PYEOF
 # 4. Merge adapter into base model
 # ---------------------------------------------------------------------------
 
-echo "[4/4] Merging LoRA adapter into Qwen2.5-1.5B-Instruct..."
-echo "      Downloads ~3 GB base model on first run; merge takes ~60s."
+echo "[4/4] Merging LoRA adapter into its base model..."
+echo "      Downloads base model on first run; merge takes ~60s."
 "$PY" - <<PYEOF
 import torch
 import json
