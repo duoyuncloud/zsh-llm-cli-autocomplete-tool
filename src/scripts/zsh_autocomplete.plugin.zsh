@@ -67,7 +67,10 @@ _zac_start_daemon() {
         kill -0 "$_pid" 2>/dev/null && return 0
     fi
     [[ -f "$_ZAC_DAEMON" ]] || return 1
-    nohup "$_ZAC_PY" "$_ZAC_DAEMON" >> "$(_zac_log)" 2>&1 &!
+    # Prefer module entrypoint so imports resolve consistently.
+    # Keep file path fallback (`$_ZAC_DAEMON`) for backwards compatibility.
+    PYTHONPATH="$_ZAC_ROOT/src${PYTHONPATH:+:$PYTHONPATH}" \
+      nohup "$_ZAC_PY" -m model_completer.daemon >> "$(_zac_log)" 2>&1 &!
 }
 
 _zac_stop_daemon() {

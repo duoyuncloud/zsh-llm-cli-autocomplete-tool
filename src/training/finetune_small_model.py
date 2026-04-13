@@ -10,8 +10,12 @@ Output: LoRA adapter saved to ~/.local/share/zsh-autocomplete/lora-adapter/
 
 import json
 import logging
+import os
 import sys
 from pathlib import Path
+
+# Allow MPS to use all available unified memory (avoids OOM on 8 GB Macs)
+os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
 
 MODEL_ID    = "Qwen/Qwen2.5-1.5B-Instruct"
 ADAPTER_DIR = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
@@ -47,7 +51,7 @@ def _check_deps() -> None:
 # Dataset
 # ---------------------------------------------------------------------------
 
-def _build_dataset(tokenizer, max_length: int = 256):
+def _build_dataset(tokenizer, max_length: int = 128):
     """Return a pre-tokenized Dataset with input_ids and labels."""
     from datasets import Dataset
 
@@ -77,8 +81,9 @@ def _build_dataset(tokenizer, max_length: int = 256):
 
 def _device_dtype():
     import torch
-    if torch.backends.mps.is_available():
-        return "mps", torch.float16
+    # MPS crashes during backprop on 8 GB Macs with 1.5B model.
+    # CPU training is safe: only the 18M LoRA params get gradients.
+    # Use float32 on CPU for numerical stability.
     if torch.cuda.is_available():
         return "cuda", torch.float16
     return "cpu", torch.float32
@@ -166,19 +171,18 @@ def _run_trainer(model, tokenizer, use_bf16: bool) -> None:
     tmp_dir = str(ADAPTER_DIR) + "-tmp"
     dataset = _build_dataset(tokenizer)
 
-    # MPS doesn't support fp16/bf16 training flags via accelerate —
-    # use full float32 precision on MPS, fp16 on CUDA only.
-    use_mps = torch.backends.mps.is_available() and not torch.cuda.is_available()
     cfg = SFTConfig(
         output_dir=tmp_dir,
         num_train_epochs=3,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=16,
         learning_rate=2e-4,
         warmup_ratio=0.05,
         lr_scheduler_type="cosine",
-        fp16=(not use_bf16 and not use_mps and torch.cuda.is_available()),
+        fp16=(use_bf16 is False and torch.cuda.is_available()),
         bf16=(use_bf16 and torch.cuda.is_available()),
+        use_cpu=not torch.cuda.is_available(),  # Force CPU on Apple Silicon
+        dataloader_pin_memory=False,
         logging_steps=20,
         save_strategy="no",
         optim="adamw_torch",
@@ -218,6 +222,12 @@ if __name__ == "__main__":
     if not DATA_PATH.exists():
         logger.error(f"Training data not found: {DATA_PATH}")
         logger.error("Run: python generate_shell_data.py")
+        sys.exit(1)
+
+    train()
+    print(f"\nDone. Adapter at: {ADAPTER_DIR}")
+    print("Restart the daemon to load the fine-tuned model: ai-restart")
+: python generate_shell_data.py")
         sys.exit(1)
 
     train()

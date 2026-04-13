@@ -41,6 +41,7 @@ def main():
     parser.add_argument('command', nargs='?', help='Command to complete')
     parser.add_argument('--list-models', action='store_true', help='List available models')
     parser.add_argument('--test', action='store_true', help='Test completions')
+    parser.add_argument('--prefetch-hf', action='store_true', help='Download base model + LoRA adapter from Hugging Face')
     parser.add_argument('--train', action='store_true', help='Start LoRA training')
     parser.add_argument('--generate-data', action='store_true', help='Generate training data')
     parser.add_argument('--import-to-ollama', action='store_true', help='Import fine-tuned LoRA model to Ollama')
@@ -71,6 +72,36 @@ def main():
                 print("No models found")
         else:
             print("Could not connect to Ollama server")
+    elif args.prefetch_hf:
+        # Prefetch base model + adapter so the daemon can start offline.
+        from model_completer.hf_prefetch import PrefetchSpec, prefetch_base_and_adapter
+
+        base_model_id = os.environ.get("ZAC_BASE_MODEL_ID", "Qwen/Qwen2.5-1.5B-Instruct")
+        lora_repo_id = config.get("hf_lora_repo", "") or "duoyuncloud/zsh-cli-lora"
+        from pathlib import Path
+
+        adapter_dir = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
+        token = args.hf_token or os.environ.get("HF_TOKEN")
+
+        print("Downloading base model from Hugging Face...")
+        print(f"  base  : {base_model_id}")
+        print(f"  adapter: {lora_repo_id}")
+        print(f"  to    : {adapter_dir}")
+        try:
+            prefetch_base_and_adapter(
+                PrefetchSpec(
+                    base_model_id=base_model_id,
+                    lora_repo_id=lora_repo_id,
+                    adapter_target_dir=adapter_dir,
+                ),
+                hf_token=token,
+            )
+            print("✅ Prefetch complete.")
+        except Exception as e:
+            print("❌ Prefetch failed.")
+            print("   This usually means Hugging Face is unreachable from this machine/network.")
+            print(f"   Error: {e}")
+            sys.exit(1)
     elif args.train:
         from model_completer.training import create_trainer
         print("🚀 Starting LoRA training...")
@@ -145,7 +176,6 @@ def main():
     elif args.upload_to_hf:
         print(f"📤 Uploading LoRA adapter to Hugging Face: {args.upload_to_hf}")
         from model_completer.hf_uploader import upload_lora_to_hf
-        import os
         
         # Set token if provided
         if args.hf_token:

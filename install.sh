@@ -42,8 +42,9 @@ PY="$DIR/venv/bin/python3"
 
 echo "[2/4] Installing dependencies..."
 "$PY" -m pip install -q --upgrade pip
+"$PY" -m pip install -q -r "$DIR/requirements.txt"
 "$PY" -m pip install -q \
-    torch transformers peft sentencepiece huggingface_hub
+    torch transformers peft sentencepiece huggingface_hub protobuf
 
 # ---------------------------------------------------------------------------
 # 3. Download pre-trained adapter from HuggingFace
@@ -67,13 +68,20 @@ echo "[4/4] Merging LoRA adapter into Qwen2.5-1.5B-Instruct..."
 echo "      Downloads ~3 GB base model on first run; merge takes ~60s."
 "$PY" - <<PYEOF
 import torch
+import json
 from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
-MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 ADAPTER  = Path.home() / ".local/share/zsh-autocomplete/lora-adapter"
 MERGED   = Path.home() / ".local/share/zsh-autocomplete/merged-model"
+
+adapter_cfg = ADAPTER / "adapter_config.json"
+if not adapter_cfg.exists():
+    raise SystemExit(f"adapter_config.json not found in {ADAPTER}")
+cfg = json.loads(adapter_cfg.read_text())
+MODEL_ID = cfg.get("base_model_name_or_path", "Qwen/Qwen2.5-1.5B-Instruct")
+print(f"      Adapter base model: {MODEL_ID}")
 
 if MERGED.exists() and (MERGED / "config.json").exists():
     print("      Merged model already exists, skipping.")
@@ -82,10 +90,23 @@ else:
         torch.backends.mps.is_available() or torch.cuda.is_available()
     ) else torch.float32
     print("      Loading base model...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
-    base = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID, torch_dtype=dtype, device_map="cpu", trust_remote_code=True
-    )
+    # Prefer local cache first; fallback to network if needed.
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            MODEL_ID, trust_remote_code=True, local_files_only=True
+        )
+        base = AutoModelForCausalLM.from_pretrained(
+            MODEL_ID,
+            torch_dtype=dtype,
+            device_map="cpu",
+            trust_remote_code=True,
+            local_files_only=True,
+        )
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+        base = AutoModelForCausalLM.from_pretrained(
+            MODEL_ID, torch_dtype=dtype, device_map="cpu", trust_remote_code=True
+        )
     print("      Applying LoRA adapter...")
     merged = PeftModel.from_pretrained(base, str(ADAPTER)).merge_and_unload()
     MERGED.mkdir(parents=True, exist_ok=True)
@@ -122,7 +143,7 @@ fi
 echo "      Starting autocomplete daemon..."
 pkill -f autocomplete_daemon.py 2>/dev/null || true
 sleep 0.3
-nohup "$PY" "$DIR/src/daemon/autocomplete_daemon.py" \
+PYTHONPATH="$DIR/src${PYTHONPATH:+:$PYTHONPATH}" nohup "$PY" -m model_completer.daemon \
     >> "$HOME/.cache/zsh-autocomplete.log" 2>&1 &
 disown
 

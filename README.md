@@ -83,7 +83,6 @@ Like Cursor or Copilot: the model predicts the rest of the command and shows it 
 
 ```bash
 python -m model_completer.daemon
-# or: ./scripts/run_completion_daemon.sh
 ```
 
 Leave it running; the plugin will use it when available. See [docs/INLINE_COMPLETION.md](docs/INLINE_COMPLETION.md) for how this matches Cursor-style inline completion.

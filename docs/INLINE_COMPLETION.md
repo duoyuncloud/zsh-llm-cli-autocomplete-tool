@@ -32,14 +32,13 @@ This doc summarizes how IDE-style inline completion (e.g. Cursor, GitHub Copilot
 
 ### Making Tab “very quick”
 
-- **Without daemon**: each Tab runs a new Python process and then calls Ollama. That adds ~0.5–1 s of startup before the model runs.
-- **With daemon**: a single long-lived process listens on a port (default `11435`). When you press Tab, the plugin sends the current line to the daemon (e.g. `curl -X POST` with the buffer). The daemon calls Ollama and returns the completion. No Python startup per Tab, so latency is dominated by Ollama (often ~0.2–0.5 s for a small model).
+- **Without daemon**: each keystroke/completion may spawn a Python process; startup dominates.
+- **With daemon**: one long-lived Python process keeps the base model + LoRA adapter loaded and answers requests over a **Unix domain socket**. This avoids Python startup and avoids HTTP overhead.
 
-**Start the daemon (optional but recommended):**
+**Start the daemon (recommended):**
 
 ```bash
 python -m model_completer.daemon
-# or: MODEL_COMPLETION_DAEMON_PORT=11435 python -m model_completer.daemon
 ```
 
 Leave it running in a terminal or run it in the background. The Zsh plugin will use it when it’s available and fall back to the Python CLI otherwise.
@@ -48,8 +47,8 @@ Leave it running in a terminal or run it in the background. The Zsh plugin will 
 
 1. User types e.g. `git ad`.
 2. User presses **Tab**.
-3. Plugin sends `git ad` to `http://127.0.0.1:11435/complete` (POST body = buffer).
-4. Daemon calls Ollama (merged model) with the same system prompt and returns e.g. `git add .`.
+3. Plugin sends `git ad` to `~/.cache/zsh-autocomplete.sock` (JSON over Unix socket).
+4. Daemon runs the **base model + LoRA adapter** (merging once on first boot for speed) and returns e.g. `git add .`.
 5. Plugin shows `git add .` as grey text (suffix after `git ad`); second Tab or Enter accepts it.
 
 So the behavior is “model predicts the next bit of the command; it’s shown as grey; Tab turns it into real typing,” just like Cursor’s inline completion for code.

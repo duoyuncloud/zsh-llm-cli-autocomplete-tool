@@ -5,7 +5,7 @@ ollama:
 model: "zsh-assistant"
 
 # Hugging Face repository ID for pre-trained LoRA adapter
-hf_lora_repo: "duoyuncloud/zsh-cli-lora"
+hf_lora_repo: "duoyuncloud/zsh-autocomplete-lora"
 
 cache:
   enabled: true

@@ -4,6 +4,8 @@ transformers>=4.40.0
 peft>=0.10.0
 sentencepiece>=0.1.99
 huggingface_hub>=0.16.0
+requests>=2.31.0
+pyyaml>=6.0.0
 
 # Optional: Claude API for high-quality complex completions
 # Install: pip install anthropic
