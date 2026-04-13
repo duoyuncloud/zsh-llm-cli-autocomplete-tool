@@ -1,0 +1,1 @@
+Test smart commit message generation
