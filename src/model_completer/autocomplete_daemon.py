@@ -264,6 +264,22 @@ def _similar_from_commands(commands: list[str], prefix: str, k: int = 5) -> list
     return results
 
 
+def _is_ambiguous_input(inp: str) -> bool:
+    s = inp.strip()
+    if not s:
+        return True
+    toks = s.split()
+    if not toks:
+        return True
+    if toks[0] != "git":
+        return len(s) < 4
+    if len(toks) == 1:
+        return True
+    sub = toks[1]
+    # Ambiguous when user only typed a short/partial git subcommand token.
+    return len(sub) <= 2
+
+
 def _history_based_completion(inp: str, ctx: dict) -> str:
     """
     Directly reuse recent user command patterns when confidence is high.
@@ -272,11 +288,27 @@ def _history_based_completion(inp: str, ctx: dict) -> str:
     if len(inp.strip()) < 3:
         return ""
     commands = _blended_commands(ctx)
-    matches = _similar_from_commands(commands, inp.strip(), k=3)
+    typed = inp.strip()
+    matches = _similar_from_commands(commands, typed, k=5)
     if not matches:
         return ""
+
+    # Workflow-aware tie-breaker:
+    # when user just ran "git commit", prefer "git push..." for next short git prefixes.
+    prev_key = _command_key(commands[-1]) if commands else ""
+    if prev_key and typed.startswith("git ") and _is_ambiguous_input(typed):
+        total, top_next = _transition_stats_from_commands(commands, prev_key, top_k=2)
+        if total >= 3 and top_next:
+            next_key, cnt = top_next[0]
+            confidence = cnt / total
+            if confidence >= 0.5:
+                for cand in matches:
+                    c = cand.strip()
+                    if c.startswith(next_key):
+                        return c
+
     top = matches[0].strip()
-    if top.startswith(inp.strip()) and top != inp.strip():
+    if top.startswith(typed) and top != typed:
         return top
     return ""
 
