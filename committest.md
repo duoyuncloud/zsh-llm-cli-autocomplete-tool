@@ -1,0 +1,1 @@
+test smart commit message
