@@ -68,18 +68,7 @@ def _normalize_commit_completion(inp: str, completion: str, ctx: dict) -> str:
         if m2:
             msg = f"{m2.group(1).lower()}: {m2.group(2).strip()}"
         else:
-            # Last-resort from diff context; generic but valid.
-            diff_text = str(ctx.get("git_diff", "")).strip()
-            msg = "chore: update changes"
-            if diff_text:
-                if any(x in diff_text.lower() for x in (".md", "readme", "docs/")):
-                    msg = "docs: update documentation"
-                elif any(x in diff_text.lower() for x in ("test", "spec")):
-                    msg = "test: update tests"
-                elif any(x in diff_text.lower() for x in ("fix", "error", "bug")):
-                    msg = "fix: resolve issues in changed code"
-                else:
-                    msg = "feat: update project functionality"
+            msg = _fallback_commit_message(ctx)
 
     msg = msg.replace('"', "").strip()
     # enforce "<type>: <subject>" minimal structure
@@ -95,18 +84,46 @@ def _normalize_commit_completion(inp: str, completion: str, ctx: dict) -> str:
     if not s:
         s = "update changes"
     if str(ctx.get("git_diff", "")).strip():
-        low = s.lower()
-        if low in {"initial commit", "resolve merge conflict", "merge branch"}:
-            diff_text = str(ctx.get("git_diff", "")).lower()
-            if any(x in diff_text for x in (".md", "readme", "docs/")):
-                t, s = "docs", "update documentation"
-            elif any(x in diff_text for x in ("test", "spec")):
-                t, s = "test", "update tests"
-            elif any(x in diff_text for x in ("fix", "error", "bug")):
-                t, s = "fix", "resolve issues in changed code"
-            else:
-                s = "update project functionality"
+        generic = {
+            "initial commit",
+            "resolve merge conflict",
+            "merge branch",
+            "update changes",
+            "update staged changes",
+        }
+        if s.lower() in generic:
+            fb = _fallback_commit_message(ctx)
+            mfb = re.match(
+                r"^(feat|fix|docs|refactor|test|chore)\s*:\s*(.+)$", fb, re.I
+            )
+            if mfb:
+                if t == "chore":
+                    t = mfb.group(1).lower()
+                s = mfb.group(2).strip()
     return f'git commit -m "{t}: {s}"'
+
+
+def _fallback_commit_message(ctx: dict) -> str:
+    diff = str(ctx.get("git_diff", "")).strip()
+    git_log = str(ctx.get("git_log", "")).strip()
+    ctype = "chore"
+    if git_log:
+        first = git_log.splitlines()[0].strip()
+        m = re.match(r"^(feat|fix|docs|refactor|test|chore)\s*:", first, re.I)
+        if m:
+            ctype = m.group(1).lower()
+
+    subject = "update staged changes"
+    if diff:
+        for line in diff.splitlines():
+            if "|" in line:
+                path = line.split("|", 1)[0].strip().split("/")[-1]
+                path = re.sub(r"\.[a-zA-Z0-9]+$", "", path)
+                path = path.replace("_", " ").replace("-", " ").strip()
+                if path:
+                    subject = f"update {path}"
+                    break
+    return f"{ctype}: {subject}"
 
 
 def _adapter_base_model() -> str:
@@ -233,7 +250,58 @@ def _history_transition_stats(current_key: str, top_k: int = 3) -> tuple[int, li
     return total, transitions.most_common(top_k)
 
 
-def _workflow_hint(inp: str) -> str:
+def _context_recent_commands(ctx: dict) -> list[str]:
+    raw = ctx.get("recent_commands")
+    if isinstance(raw, list):
+        return [str(x).strip() for x in raw if str(x).strip()]
+    if isinstance(raw, str):
+        return [line.strip() for line in raw.splitlines() if line.strip()]
+    return []
+
+
+def _blended_commands(ctx: dict) -> list[str]:
+    _history.refresh()
+    cmds = list(_history._commands)
+    recent = _context_recent_commands(ctx)
+    if not recent:
+        return cmds
+    for cmd in recent:
+        if not cmds or cmds[-1] != cmd:
+            cmds.append(cmd)
+    return cmds[-5000:]
+
+
+def _similar_from_commands(commands: list[str], prefix: str, k: int = 5) -> list[str]:
+    prefix_lower = prefix.lower()
+    seen: set[str] = set()
+    results: list[str] = []
+    for cmd in reversed(commands):
+        if cmd.lower().startswith(prefix_lower) and cmd != prefix:
+            if cmd not in seen:
+                seen.add(cmd)
+                results.append(cmd)
+                if len(results) >= k:
+                    break
+    return results
+
+
+def _transition_stats_from_commands(
+    commands: list[str], current_key: str, top_k: int = 3
+) -> tuple[int, list[tuple[str, int]]]:
+    if not current_key:
+        return 0, []
+    transitions: Counter[str] = Counter()
+    total = 0
+    for i in range(len(commands) - 1):
+        cur = _command_key(commands[i])
+        nxt = _command_key(commands[i + 1])
+        if cur == current_key and nxt:
+            transitions[nxt] += 1
+            total += 1
+    return total, transitions.most_common(top_k)
+
+
+def _workflow_hint(inp: str, ctx: dict) -> str:
     """
     Build prompt-only workflow guidance (no hard override).
     Priority:
@@ -243,12 +311,14 @@ def _workflow_hint(inp: str) -> str:
     key = _command_key(inp.strip())
     if not key:
         return ""
+    commands = _blended_commands(ctx)
+    if not commands:
+        return ""
 
     # Cross-command workflow hint: use the last executed command as state.
-    _history.refresh()
-    prev_key = _command_key(_history._commands[-1]) if _history._commands else ""
+    prev_key = _command_key(commands[-1])
     if prev_key:
-        prev_total, prev_top = _history_transition_stats(prev_key, top_k=2)
+        prev_total, prev_top = _transition_stats_from_commands(commands, prev_key, top_k=2)
         if prev_total >= 3 and prev_top:
             prev_parts = [f"{nxt} ({cnt}/{prev_total})" for nxt, cnt in prev_top]
             cross = (
@@ -260,7 +330,7 @@ def _workflow_hint(inp: str) -> str:
     else:
         cross = ""
 
-    total, top = _history_transition_stats(key, top_k=3)
+    total, top = _transition_stats_from_commands(commands, key, top_k=3)
     if total >= 3 and top:
         parts = [f"{nxt} ({cnt}/{total})" for nxt, cnt in top]
         direct = (
@@ -303,18 +373,18 @@ def _build_system(input_text: str, context: dict) -> str:
     """Build a context-enriched system prompt."""
     parts: list[str] = []
 
-    _history.refresh()
-    examples = _history.similar(input_text, k=5)
+    commands = _blended_commands(context)
+    examples = _similar_from_commands(commands, input_text, k=5)
     if not examples:
         tokens = input_text.split()
         short = " ".join(tokens[:2]) if len(tokens) >= 2 else input_text
         if short != input_text:
-            examples = _history.similar(short, k=5)
+            examples = _similar_from_commands(commands, short, k=5)
     if examples:
         parts.append("Recent matching commands from your history:")
         parts.extend(f"  {ex}" for ex in examples)
 
-    hint = _workflow_hint(input_text)
+    hint = _workflow_hint(input_text, context)
     if hint:
         parts.append(f"\nWorkflow hint: {hint}")
 

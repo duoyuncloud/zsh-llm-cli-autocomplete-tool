@@ -94,8 +94,10 @@ _zac_stop_daemon() {
 # Data is passed via environment variables to avoid shell injection.
 _zac_query() {
     local input="$1"
+    local recent_history=""
+    recent_history="$(fc -ln -30 2>/dev/null | sed '/^[[:space:]]*$/d' | tail -n 30)"
     [[ -S "$(_zac_sock)" ]] || return
-    ZAC_SOCK="$(_zac_sock)" ZAC_INPUT="$input" ZAC_CWD="$PWD" \
+    ZAC_SOCK="$(_zac_sock)" ZAC_INPUT="$input" ZAC_CWD="$PWD" ZAC_RECENT_HISTORY="$recent_history" \
     "$_ZAC_PY" - 2>/dev/null <<'EOF'
 import json, os, re, socket, subprocess
 from pathlib import Path
@@ -104,6 +106,11 @@ sock_path = os.environ["ZAC_SOCK"]
 text      = os.environ["ZAC_INPUT"]
 cwd       = os.environ["ZAC_CWD"]
 ctx: dict = {"cwd": cwd}
+recent = os.environ.get("ZAC_RECENT_HISTORY", "")
+if recent.strip():
+    cmds = [line.strip() for line in recent.splitlines() if line.strip()]
+    if cmds:
+        ctx["recent_commands"] = cmds[-30:]
 
 # --- git context ---
 try:

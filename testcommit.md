@@ -1,1 +1,1 @@
-test commit 
+test smart commit message: this file is changed
