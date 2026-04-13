@@ -119,8 +119,8 @@ try:
         if branch:
             ctx["git_branch"] = branch
         # For commit messages: staged diff + recent log style.
-        # Trigger early on partial "git comm" so first Tab already has context.
-        if re.search(r'git\s+comm', text):
+        # Trigger early on partial intent: git co / git com / git comm / ...
+        if re.search(r'^git\s+c(o(m(m(i(t)?)?)?)?)?(\s|$)', text):
             diff = subprocess.run(
                 ["git", "diff", "--staged", "--stat"],
                 cwd=cwd, capture_output=True, timeout=2, text=True
