@@ -118,8 +118,9 @@ try:
         ).stdout.strip()
         if branch:
             ctx["git_branch"] = branch
-        # For commit messages: staged diff + recent log style
-        if re.search(r'git commit', text):
+        # For commit messages: staged diff + recent log style.
+        # Trigger early on partial "git comm" so first Tab already has context.
+        if re.search(r'git\s+comm', text):
             diff = subprocess.run(
                 ["git", "diff", "--staged", "--stat"],
                 cwd=cwd, capture_output=True, timeout=2, text=True

@@ -35,6 +35,71 @@ logger = logging.getLogger(__name__)
 _DUMMY_MODE = os.environ.get("ZAC_DAEMON_DUMMY") == "1"
 
 
+def _looks_like_commit_request(inp: str) -> bool:
+    s = inp.strip()
+    return (
+        s.startswith("git comm")
+        or s.startswith("git commit")
+        or re.match(r'git\s+commit\b.*-m\s*["\']?$', s) is not None
+    )
+
+
+def _infer_commit_type(diff_text: str) -> str:
+    t = diff_text.lower()
+    if any(x in t for x in (".md", "readme", "docs/")):
+        return "docs"
+    if any(x in t for x in ("test_", "/test", "tests/", "spec")):
+        return "test"
+    if any(x in t for x in ("fix", "error", "bug", "hotfix")):
+        return "fix"
+    if any(x in t for x in ("refactor", "cleanup", "rename")):
+        return "refactor"
+    return "feat"
+
+
+def _extract_changed_files(diff_text: str) -> list[str]:
+    files: list[str] = []
+    for line in diff_text.splitlines():
+        if "|" not in line:
+            continue
+        left = line.split("|", 1)[0].strip()
+        if "/" in left or "." in left:
+            files.append(left)
+    return files
+
+
+def _commit_subject_from_diff(diff_text: str) -> str:
+    files = _extract_changed_files(diff_text)
+    if not files:
+        return "update project changes"
+
+    first = files[0].split("/")[-1]
+    first = re.sub(r"\.[a-zA-Z0-9]+$", "", first)
+    first = first.replace("_", " ").replace("-", " ").strip()
+
+    lowered = " ".join(files).lower()
+    if "autocomplete_daemon" in lowered:
+        return "improve autocomplete daemon behavior"
+    if "zsh_autocomplete.plugin" in lowered:
+        return "improve zsh ghost completion behavior"
+    if "install.sh" in lowered:
+        return "improve install workflow for model setup"
+    if "requirements" in lowered:
+        return "update runtime dependencies"
+
+    if len(files) == 1:
+        return f"update {first}"
+    return f"update {first} and related files"
+
+
+def _deterministic_commit_completion(inp: str, ctx: dict) -> str:
+    diff_text = str(ctx.get("git_diff", "")).strip()
+    ctype = _infer_commit_type(diff_text)
+    subject = _commit_subject_from_diff(diff_text)
+    message = f"{ctype}: {subject}"
+    return f'git commit -m "{message}"'
+
+
 def _adapter_base_model() -> str:
     cfg = ADAPTER_DIR / "adapter_config.json"
     if not cfg.exists():
@@ -360,6 +425,12 @@ class AutocompleteDaemon:
     async def _complete(inp: str, ctx: dict) -> str:
         if not inp:
             return ""
+
+        # Deterministic smart-commit path:
+        # keeps output stable and avoids malformed/placeholder messages.
+        if _looks_like_commit_request(inp):
+            return _deterministic_commit_completion(inp, ctx)
+
         loop = asyncio.get_running_loop()
         system = _build_system(inp, ctx)
 
