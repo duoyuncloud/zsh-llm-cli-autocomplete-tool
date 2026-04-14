@@ -10,7 +10,7 @@ This project ships a ready-to-use runtime and also includes training utilities f
 
 ## Demo
 
-**[Watch the trailer](https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/blob/main/docs/demo/Trailer.mov)** — opens on GitHub with the built-in player (README inline `<video>` is unreliable for `.mov`).
+https://github.com/user-attachments/assets/a5f967e6-716a-45a2-895a-26e8a53e452f
 
 [Download `Trailer.mov` (raw file)](https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/raw/main/docs/demo/Trailer.mov) · [Try the demo in your browser](docs/demo/trailer-stage.html) — same flow as the trailer; press **Space** to advance, **←** to go back.
 
