@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI interface for AI command completion."""
+"""CLI and maintenance tools for the Zsh LLM CLI Autocomplete Plugin (daemon, HF prefetch, training)."""
 
 import argparse
 import sys
@@ -37,7 +37,9 @@ def get_ai_completion(command: str, config: Optional[Dict] = None) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='AI Command Completion - Simple Tab completion with personalized predictions')
+    parser = argparse.ArgumentParser(
+        description="Zsh LLM CLI Autocomplete Plugin — local runtime: completion daemon, model prefetch, and training/import helpers."
+    )
     parser.add_argument('command', nargs='?', help='Command to complete')
     parser.add_argument('--list-models', action='store_true', help='List available models')
     parser.add_argument('--test', action='store_true', help='Test completions')

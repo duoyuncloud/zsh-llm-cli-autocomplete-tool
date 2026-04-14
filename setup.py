@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="model-cli-autocomplete",
     version="0.1.0",
-    description="AI-powered Zsh inline command autocomplete with local model + LoRA",
+    description="Zsh LLM CLI Autocomplete Plugin — local ghost-text shell completions (base model + LoRA), daemon, and training utilities.",
     author="duoyuncloud",
     license="MIT",
     packages=find_packages(where="src"),
