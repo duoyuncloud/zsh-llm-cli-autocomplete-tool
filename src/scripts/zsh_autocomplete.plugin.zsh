@@ -52,6 +52,25 @@ _zac_sock()    { echo "$HOME/.cache/zsh-autocomplete.sock" }
 _zac_pidfile() { echo "$HOME/.cache/zsh-autocomplete.pid"  }
 _zac_log()     { echo "$HOME/.cache/zsh-autocomplete.log"  }
 _zac_state()   { echo "$HOME/.cache/zsh-autocomplete.state" }
+_zac_adapter_cfg() { echo "$HOME/.local/share/zsh-autocomplete/lora-adapter/adapter_config.json" }
+
+_zac_adapter_base_model() {
+    local cfg="$(_zac_adapter_cfg)"
+    [[ -f "$cfg" ]] || { echo "unknown base model"; return 0; }
+    local base
+    base=$("$_ZAC_PY" - <<PYEOF 2>/dev/null
+import json
+from pathlib import Path
+cfg = Path(r"$cfg")
+try:
+    data = json.loads(cfg.read_text())
+    print(data.get("base_model_name_or_path", "").strip() or "unknown base model")
+except Exception:
+    print("unknown base model")
+PYEOF
+)
+    echo "${base:-unknown base model}"
+}
 
 _zac_enabled() {
     local f="$(_zac_state)"
@@ -353,7 +372,7 @@ precmd_functions+=(_zac_init_once)
 
 ai-setup() {
     echo "Setting up zsh-autocomplete..."
-    echo "Model: Qwen2.5-1.5B-Instruct + LoRA adapter (from HuggingFace)"
+    echo "Model: base model + LoRA adapter (from HuggingFace)"
     echo ""
 
     local adapter_dir="$HOME/.local/share/zsh-autocomplete/lora-adapter"
@@ -368,7 +387,7 @@ ai-setup() {
 
     # 2. Download pre-trained adapter
     echo "[2/3] Downloading LoRA adapter from HuggingFace..."
-    echo "      (repo: $hf_repo  base: Qwen2.5-1.5B-Instruct)"
+    echo "      (repo: $hf_repo)"
     "$_ZAC_PY" - <<PYEOF
 from huggingface_hub import snapshot_download
 snapshot_download(repo_id="$hf_repo", local_dir="$adapter_dir")
@@ -404,12 +423,13 @@ ai-status() {
     else
         echo "  daemon : stopped  (run: ai-setup)"
     fi
-    local adapter="$HOME/.local/share/zsh-autocomplete/lora-adapter/adapter_config.json"
+    local adapter="$(_zac_adapter_cfg)"
     local merged="$HOME/.local/share/zsh-autocomplete/merged-model/config.json"
+    local base_model="$(_zac_adapter_base_model)"
     if [[ -f "$merged" ]]; then
-        echo "  model  : Qwen2.5-1.5B-Instruct + LoRA (merged, ready)"
+        echo "  model  : ${base_model} + LoRA (merged, ready)"
     elif [[ -f "$adapter" ]]; then
-        echo "  model  : Qwen2.5-1.5B-Instruct + LoRA adapter (merging on next start)"
+        echo "  model  : ${base_model} + LoRA adapter (merging on next start)"
     else
         echo "  model  : not trained yet (run: ai-setup)"
     fi
