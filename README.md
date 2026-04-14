@@ -1,6 +1,7 @@
-# Zsh LLM CLI Autocomplete Tool
+# Zsh LLM CLI Autocomplete Plugin
 
 Inline command completion for Zsh:
+
 - grey ghost text suggestions while you type
 - press `Tab` to accept
 - local inference with a base model + LoRA adapter
@@ -9,9 +10,11 @@ This project ships a ready-to-use runtime and also includes training utilities f
 
 ## Demo
 
-Trailer video (coming soon): `docs/demo/trailer.mp4`
+Trailer (inline player — works best in **Safari**; `.mov` may not play in Chrome/Firefox):
 
-> Keep this section for the release demo link/video embed.
+<video src="https://raw.githubusercontent.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/main/docs/demo/Trailer.mov" controls playsinline width="100%" style="max-width: 920px;"></video>
+
+[Download `Trailer.mov`](docs/demo/Trailer.mov) · [Try the demo in your browser](docs/demo/trailer-stage.html) — same flow as the trailer; press **Space** to advance, **←** to go back.
 
 ## What This Plugin Does
 
@@ -33,9 +36,10 @@ source ~/.zshrc
 ```
 
 Then type in your shell and press `Tab`, for example:
-- `git ad` -> `git add ...`
-- `git co` -> smart commit suggestion
-- `npm r` -> history/model-aware completion
+
+- `git ad` → `git add ...`
+- `git co` → smart commit suggestion
+- `npm r` → history/model-aware completion
 
 ## What `install.sh` Does
 
@@ -46,6 +50,8 @@ Then type in your shell and press `Tab`, for example:
 5. Merges base + adapter into a local merged model cache
 6. Adds plugin source lines into `~/.zshrc`
 7. Starts daemon: `python -m model_completer.daemon`
+
+`install.sh` edits your shell config. If you want completions off without uninstalling, use `ai-disable` (see below).
 
 ## Runtime Architecture
 
@@ -58,18 +64,20 @@ The plugin gathers lightweight context (`cwd`, git info, scripts/targets, recent
 
 ## User Commands
 
-After sourcing plugin:
+After sourcing the plugin:
 
-- `ai-setup` - install/download/start helpers
-- `ai-status` - show daemon/model status
-- `ai-restart` - restart daemon
-- `ai-debug` - quick diagnostics
+- `ai-setup` — install/download/start helpers
+- `ai-status` — show daemon/model/enabled state
+- `ai-enable` / `ai-disable` — turn completions on or off (no need to comment out `~/.zshrc` lines)
+- `ai-restart` — restart daemon
+- `ai-debug` — quick diagnostics
 
 ## Smart Commit Behavior
 
 Commit intent is detected early (for partial prefixes like `git c`, `git co`, `git com`).
 
 When commit intent is detected:
+
 - plugin sends staged diff + recent commit log style
 - daemon returns a structured commit command
 - output format: `git commit -m "type: subject"`
@@ -77,6 +85,7 @@ When commit intent is detected:
 ## History + Workflow Adaptation
 
 This repo uses both:
+
 - direct history prefix reuse (fast-path)
 - workflow-aware tie-breaker for ambiguous prefixes (example: after `git commit`, short ambiguous `git ...` inputs can prefer `git push` when transition confidence is strong)
 
@@ -96,9 +105,10 @@ ai-debug
 ai-restart
 ```
 
-## Training (Kept for Maintainers / Advanced Users)
+## Training (Maintainers / Advanced Users)
 
 Training-related files are intentionally kept in this repository:
+
 - `src/training/*`
 - `requirements-training.txt`
 - `run_training.sh`
@@ -113,17 +123,18 @@ pip install -r requirements-training.txt
 ```
 
 You can override base/repo through environment variables in scripts:
+
 - `BASE_MODEL_ID=...`
 - `HF_REPO_ID=...`
 - `ADAPTER_DIR=...`
 
 ## Project Layout
 
-- `src/scripts/` - Zsh plugin
-- `src/model_completer/` - daemon/runtime/CLI
-- `src/training/` - training and adapter utilities
-- `docs/` - usage and behavior docs
-- `config/default.yaml` - default config values
+- `src/scripts/` — Zsh plugin
+- `src/model_completer/` — daemon/runtime/CLI
+- `src/training/` — training and adapter utilities
+- `docs/` — usage and behavior docs
+- `config/default.yaml` — default config values
 
 ## License
 

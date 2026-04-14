@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool</title>
+  <style>
+    :root {
+      --mono: "SF Mono", ui-monospace, Menlo, Monaco, "Cascadia Code", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      --apple-fg: #f5f5f7;
+      --apple-muted: rgba(245, 245, 247, 0.58);
+      --apple-dim: rgba(245, 245, 247, 0.38);
+      --red-tint: rgba(180, 40, 40, 0.42);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 18px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      font-family: var(--mono);
+    }
+
+    .hud kbd {
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* Full-viewport scene */
+    .scene {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+      z-index: 1;
+    }
+
+    .scene.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .scene.is-out {
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    /* Typography: match install slide — sans for kickers, mono for body (install-caption style). */
+    /* Scene 1 — Cold open */
+    .cold-open {
+      background: #000;
+      font-family: var(--mono);
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 0.55em;
+      height: 1.1em;
+      background: #fff;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .type-line {
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.04em;
+      max-width: 90vw;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    /* Bridge — pain setup before problem clip */
+    .bridge-text {
+      background: #000;
+      font-family: var(--mono);
+      padding: 0 6vw;
+    }
+
+    .bridge-line {
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 38em;
+      margin: 0.35em 0;
+      letter-spacing: 0.04em;
+    }
+
+    .bridge-line.dim {
+      color: rgba(255,255,255,0.55);
+      font-size: clamp(14px, 2vw, 18px);
+      font-weight: 500;
+    }
+
+    /* Scene 2 — Problem clip */
+    .clip-frame {
+      position: relative;
+      width: min(920px, 92vw);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    .clip-frame video {
+      width: 100%;
+      display: block;
+      vertical-align: middle;
+      max-height: min(58vh, 560px);
+      object-fit: contain;
+      background: #0a0a0a;
+    }
+
+    .tint-red::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--red-tint);
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .caption {
+      margin-top: 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .caption-strong {
+      font-size: clamp(20px, 3vw, 28px);
+      letter-spacing: 0.08em;
+      color: #fff;
+      margin-top: 12px;
+    }
+
+    .problem-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-height: 100%;
+      padding: 4vh 0 5vh;
+      box-sizing: border-box;
+    }
+
+    .under-video-copy {
+      margin-top: 22px;
+      text-align: center;
+      max-width: 38em;
+      padding: 0 5vw;
+    }
+
+    .under-video-copy .bridge-line {
+      margin: 0.3em 0;
+    }
+
+    /* Scene 3 — Title card (Apple keynote / product-page typography) */
+    .flash-cut {
+      background: #000;
+    }
+
+    .title-card-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(22px, 4.5vh, 36px);
+      padding: 0 max(20px, 4vw);
+      max-width: min(720px, 94vw);
+      text-align: center;
+    }
+
+    .until-now-line {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: clamp(12px, 1.6vw, 15px);
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      line-height: 1.35;
+      color: var(--apple-muted);
+      min-height: 1.35em;
+    }
+
+    /* Same voice as outro title — not a hero headline */
+    .project-name-line {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      text-align: center;
+      color: rgba(255,255,255,0.85);
+      max-width: min(28em, 94vw);
+      min-height: 1.15em;
+    }
+
+    /* Scene 4 — Hero terminal + rim */
+    .hero-terminal-wrap {
+      position: relative;
+      width: min(920px, 92vw);
+      padding: 2px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.1));
+      box-shadow: 0 0 48px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-terminal-inner {
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .hero-terminal-inner video {
+      width: 100%;
+      max-height: min(50vh, 520px);
+      object-fit: contain;
+      display: block;
+    }
+
+    .beat-caption {
+      margin-top: 20px;
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+      min-height: 1.45em;
+      letter-spacing: 0.04em;
+      line-height: 1.35;
+      max-width: min(38em, 92vw);
+      padding: 0 16px;
+      transition: font-size 0.2s ease, font-weight 0.2s ease;
+    }
+
+    .beat-caption.beat-emphasis {
+      font-size: clamp(20px, 3.4vw, 30px);
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
+      line-height: 1.28;
+    }
+
+    /* Manifesto beats — black, pulse */
+    .manifesto {
+      background: #000;
+      font-family: var(--mono);
+    }
+
+    .manifesto-line {
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.5vw, 22px);
+      font-weight: 500;
+      text-align: center;
+      max-width: min(38em, 92vw);
+      line-height: 1.35;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.85);
+      opacity: 1;
+      min-height: 1.35em;
+      padding: 0 20px;
+    }
+
+    .pulse-bg {
+      animation: bgPulse 0.35s ease-out;
+    }
+
+    @keyframes bgPulse {
+      0% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+      40% { box-shadow: inset 0 0 120px 0 rgba(255,255,255,0.05); }
+      100% { box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+    }
+
+    /* Scene 5 — Install */
+    .install-kicker {
+      margin-top: 18px;
+      font-family: var(--sans);
+      font-size: clamp(12px, 1.6vw, 15px);
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--apple-muted);
+      min-height: 1.2em;
+    }
+
+    .install-caption {
+      margin-top: 10px;
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.85);
+      font-family: var(--mono);
+      min-height: 1.3em;
+    }
+
+    /* Scene 6 — Outro */
+    .outro-scene {
+      background: #000;
+      font-family: var(--mono);
+    }
+
+    .outro-title {
+      font-family: var(--mono);
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-align: center;
+      min-height: 1.4em;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .outro-url {
+      margin-top: 14px;
+      font-family: var(--mono);
+      font-size: clamp(12px, 1.5vw, 14px);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.55);
+      min-height: 1.3em;
+    }
+
+    .outro-wish {
+      margin-top: 22px;
+      font-family: var(--mono);
+      font-size: clamp(14px, 2vw, 18px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.04em;
+      min-height: 1.4em;
+    }
+
+    .black-hold {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .black-hold.is-on {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.85));
+      z-index: 10000;
+      transition: width 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud">
+    <span>github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool</span>
+    <span><kbd>Space</kbd> advance · <kbd>←</kbd> back · <kbd>0</kbd> reset</span>
+  </div>
+  <div class="progress" id="progress" style="width: 0%"></div>
+  <div class="black-hold" id="blackHold" aria-hidden="true"></div>
+
+  <!-- Scene 1: Cold open -->
+  <section class="scene cold-open" data-scene="0">
+    <div style="display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:6px;max-width:92vw">
+      <p class="type-line" id="coldType" style="margin:0"></p>
+      <span class="cursor-blink" id="coldCursor" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <!-- Scene 2: before.mov + pain copy only under the video (no separate bridge slide) -->
+  <section class="scene bridge-text" data-scene="1">
+    <div class="problem-layout">
+      <div class="clip-frame tint-red">
+        <video src="before.mov" data-playback-rate="1" controls playsinline preload="metadata"></video>
+      </div>
+      <div class="under-video-copy">
+        <p class="bridge-line" id="vidL1"></p>
+        <p class="bridge-line dim" id="vidL2"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scene 3: Until now → project name -->
+  <section class="scene flash-cut" data-scene="2">
+    <div class="title-card-stack">
+      <p class="until-now-line" id="titleUntil"></p>
+      <p class="project-name-line" id="projectName"></p>
+    </div>
+  </section>
+
+  <!-- Scene 4a: Smart commit + rotating lines under video (1×) -->
+  <section class="scene" data-scene="3">
+    <div class="hero-terminal-wrap">
+      <div class="hero-terminal-inner">
+        <video id="heroVideo" src="smart%20commit.mov" data-playback-rate="1.25" controls playsinline preload="metadata"></video>
+      </div>
+    </div>
+    <p class="beat-caption" id="beatCaption"></p>
+  </section>
+
+  <section class="scene manifesto" data-scene="4"><p class="manifesto-line" id="twM7"></p></section>
+  <section class="scene manifesto" data-scene="5"><p class="manifesto-line" id="twM8"></p></section>
+  <section class="scene manifesto" data-scene="6"><p class="manifesto-line" id="twM9"></p></section>
+
+  <!-- Install (3×) -->
+  <section class="scene" data-scene="7">
+    <div class="clip-frame">
+      <video src="installation.mov" data-playback-rate="3" controls playsinline preload="metadata"></video>
+    </div>
+    <p class="install-kicker" id="installKicker"></p>
+    <p class="install-caption" id="installCap"></p>
+  </section>
+
+  <!-- ai-status (1×) -->
+  <section class="scene" data-scene="8">
+    <div class="clip-frame">
+      <video src="ai%20status.mov" data-playback-rate="1" controls playsinline preload="metadata"></video>
+    </div>
+    <p class="beat-caption" id="aiStatusCap" style="margin-top: 18px"></p>
+  </section>
+
+  <section class="scene outro-scene" data-scene="9">
+    <p class="outro-title" id="outroTitle"></p>
+    <p class="outro-url" id="outroUrl"></p>
+    <p class="outro-wish" id="outroWish"></p>
+  </section>
+
+  <script>
+    (function () {
+      const scenes = Array.from(document.querySelectorAll(".scene"));
+      const total = scenes.length;
+      let idx = 0;
+      let beatTimer = null;
+      let twIntervals = [];
+      let outroFadeTimers = [];
+
+      const coldText = "Your shell doesn't know you.";
+      const coldType = document.getElementById("coldType");
+      const coldCursor = document.getElementById("coldCursor");
+      const vidL1 = document.getElementById("vidL1");
+      const vidL2 = document.getElementById("vidL2");
+      const titleUntil = document.getElementById("titleUntil");
+      const projectName = document.getElementById("projectName");
+      const beatCaption = document.getElementById("beatCaption");
+      const beats = [
+        "Local base model + LoRA — inference stays on your machine.",
+        "Grey ghost suggestions inline; Tab to accept.",
+        "This is your shell. Finally.",
+      ];
+      let beatIndex = 0;
+      const blackHold = document.getElementById("blackHold");
+      const progress = document.getElementById("progress");
+      const outroTitle = document.getElementById("outroTitle");
+      const outroUrl = document.getElementById("outroUrl");
+      const outroWish = document.getElementById("outroWish");
+      const installKicker = document.getElementById("installKicker");
+      const installCap = document.getElementById("installCap");
+
+      const BRIDGE_L1 = "You spend forever in the terminal.";
+      const BRIDGE_L2 = "Typos, forgotten flags, long commands you type again and again.";
+      const MANIFESTO = [
+        { id: "twM7", text: "Understands your context." },
+        { id: "twM8", text: "Remembers you and your workflow." },
+        { id: "twM9", text: "100% local. Zero latency." },
+      ];
+
+      function getPlaybackRate(video) {
+        const raw = video.getAttribute("data-playback-rate");
+        if (raw != null && raw !== "") {
+          const n = parseFloat(raw, 10);
+          if (n > 0 && isFinite(n)) return n;
+        }
+        return 1;
+      }
+
+      function applyVideoRate(video) {
+        const r = getPlaybackRate(video);
+        try {
+          video.defaultPlaybackRate = r;
+          video.playbackRate = r;
+        } catch (_) {}
+      }
+
+      document.querySelectorAll("video").forEach((video) => {
+        applyVideoRate(video);
+        video.addEventListener("loadedmetadata", () => applyVideoRate(video));
+        video.addEventListener("durationchange", () => applyVideoRate(video));
+      });
+
+      function clearTypewriters() {
+        twIntervals.forEach((id) => clearInterval(id));
+        twIntervals = [];
+      }
+
+      function typeChars(el, text, msPerChar, isCurrentScene, onDone) {
+        if (!el) {
+          if (onDone) onDone();
+          return;
+        }
+        el.textContent = "";
+        let n = 0;
+        const id = setInterval(() => {
+          if (!isCurrentScene()) {
+            clearInterval(id);
+            const j = twIntervals.indexOf(id);
+            if (j >= 0) twIntervals.splice(j, 1);
+            return;
+          }
+          n++;
+          el.textContent = text.slice(0, n);
+          if (n >= text.length) {
+            clearInterval(id);
+            const j = twIntervals.indexOf(id);
+            if (j >= 0) twIntervals.splice(j, 1);
+            if (onDone) onDone();
+          }
+        }, msPerChar);
+        twIntervals.push(id);
+      }
+
+      function setProgress() {
+        progress.style.width = (((idx + 1) / total) * 100) + "%";
+      }
+
+      function stopBeats() {
+        if (beatTimer) {
+          clearInterval(beatTimer);
+          beatTimer = null;
+        }
+      }
+
+      function clearOutroFade() {
+        outroFadeTimers.forEach((t) => clearTimeout(t));
+        outroFadeTimers = [];
+        outroTitle.textContent = "";
+        outroUrl.textContent = "";
+        outroWish.textContent = "";
+        [outroTitle, outroUrl, outroWish].forEach((el) => {
+          el.style.opacity = "";
+          el.style.transform = "";
+          el.style.transition = "";
+        });
+      }
+
+      function showScene(i) {
+        stopBeats();
+        clearTypewriters();
+        if (i !== 9) clearOutroFade();
+        scenes.forEach((s, j) => {
+          s.classList.remove("is-active", "is-out");
+          if (j === i) s.classList.add("is-active");
+          else if (j < i) s.classList.add("is-out");
+        });
+        setProgress();
+
+        if (i === 0) {
+          coldCursor.style.visibility = "visible";
+          typeChars(coldType, coldText, 52, () => idx === 0, null);
+        } else {
+          coldCursor.style.visibility = "hidden";
+        }
+
+        if (i === 1) {
+          vidL1.textContent = "";
+          vidL2.textContent = "";
+          typeChars(vidL1, BRIDGE_L1, 42, () => idx === 1, () => {
+            typeChars(vidL2, BRIDGE_L2, 34, () => idx === 1, null);
+          });
+        }
+
+        if (i === 2) {
+          titleUntil.textContent = "";
+          projectName.textContent = "";
+          const fullName = "Zsh LLM CLI Autocomplete Plugin";
+          typeChars(titleUntil, "Until now.", 44, () => idx === 2, () => {
+            typeChars(projectName, fullName, 22, () => idx === 2, null);
+          });
+        }
+
+        scenes[i].querySelectorAll("video").forEach(applyVideoRate);
+
+        if (i === 3) {
+          beatCaption.textContent = "";
+          beatCaption.classList.remove("beat-emphasis");
+          beatIndex = 0;
+          const runBeat = (bi) => {
+            clearTypewriters();
+            typeChars(beatCaption, beats[bi], 26, () => idx === 3, null);
+          };
+          runBeat(0);
+          beatTimer = setInterval(() => {
+            if (idx !== 3) {
+              clearInterval(beatTimer);
+              beatTimer = null;
+              return;
+            }
+            beatIndex++;
+            if (beatIndex < beats.length) {
+              runBeat(beatIndex);
+            } else {
+              clearInterval(beatTimer);
+              beatTimer = null;
+            }
+          }, 3400);
+        } else {
+          beatCaption.textContent = "";
+          beatCaption.classList.remove("beat-emphasis");
+        }
+
+        if (i >= 4 && i <= 6) {
+          const row = MANIFESTO[i - 4];
+          if (row) {
+            const el = document.getElementById(row.id);
+            if (el) {
+              el.textContent = "";
+              typeChars(el, row.text, 28, () => idx === i, null);
+            }
+          }
+        }
+
+        if (i === 7) {
+          installKicker.textContent = "";
+          installCap.textContent = "";
+          typeChars(installKicker, "Installation", 38, () => idx === 7, () => {
+            typeChars(installCap, "One command. That's all.", 34, () => idx === 7, null);
+          });
+        }
+
+        if (i === 8) {
+          const aiCap = document.getElementById("aiStatusCap");
+          if (aiCap) {
+            aiCap.textContent = "";
+            typeChars(
+              aiCap,
+              "ai-status, ai-enable, ai-disable — control the plugin from your shell.",
+              26,
+              () => idx === 8,
+              null
+            );
+          }
+        }
+
+        if (i === 9) {
+          const titleEn = "Zsh LLM CLI Autocomplete Plugin";
+          const url = "github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool";
+          const wish = "Hope this helps.";
+          outroTitle.textContent = titleEn;
+          outroUrl.textContent = url;
+          outroWish.textContent = wish;
+          [outroTitle, outroUrl, outroWish].forEach((el) => {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(10px)";
+            el.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+          });
+          const schedule = (delay, fn) => {
+            outroFadeTimers.push(
+              setTimeout(() => {
+                if (idx !== 9) return;
+                fn();
+              }, delay)
+            );
+          };
+          schedule(30, () => {
+            outroTitle.style.opacity = "1";
+            outroTitle.style.transform = "translateY(0)";
+          });
+          schedule(200, () => {
+            outroUrl.style.opacity = "1";
+            outroUrl.style.transform = "translateY(0)";
+          });
+          schedule(380, () => {
+            outroWish.style.opacity = "1";
+            outroWish.style.transform = "translateY(0)";
+          });
+        }
+      }
+
+      function flashBlack(ms, then) {
+        blackHold.classList.add("is-on");
+        setTimeout(() => {
+          blackHold.classList.remove("is-on");
+          if (then) then();
+        }, ms);
+      }
+
+      function go(delta) {
+        const next = idx + delta;
+        if (next < 0 || next >= total) return;
+
+        if (delta > 0 && idx === 0) {
+          flashBlack(200, () => {
+            idx = next;
+            showScene(idx);
+          });
+          return;
+        }
+        if (delta > 0 && idx === 1) {
+          flashBlack(350, () => {
+            idx = next;
+            showScene(idx);
+          });
+          return;
+        }
+        if (delta > 0 && idx === 3) {
+          stopBeats();
+          flashBlack(280, () => {
+            idx = next;
+            showScene(idx);
+          });
+          return;
+        }
+
+        idx = next;
+        showScene(idx);
+      }
+
+      function reset() {
+        stopBeats();
+        clearTypewriters();
+        coldType.textContent = "";
+        scenes.forEach((s) => s.classList.remove("is-active", "is-out"));
+        blackHold.classList.remove("is-on");
+        progress.style.width = "0%";
+        idx = 0;
+        showScene(0);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          go(1);
+        } else if (e.code === "ArrowLeft") {
+          e.preventDefault();
+          if (idx > 0) {
+            idx--;
+            showScene(idx);
+          }
+        } else if (e.code === "Digit0") {
+          e.preventDefault();
+          reset();
+        }
+      });
+
+      idx = 0;
+      showScene(0);
+    })();
+  </script>
+</body>
+</html>

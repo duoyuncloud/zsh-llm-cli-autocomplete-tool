@@ -51,6 +51,13 @@ typeset -g _zac_pending=""
 _zac_sock()    { echo "$HOME/.cache/zsh-autocomplete.sock" }
 _zac_pidfile() { echo "$HOME/.cache/zsh-autocomplete.pid"  }
 _zac_log()     { echo "$HOME/.cache/zsh-autocomplete.log"  }
+_zac_state()   { echo "$HOME/.cache/zsh-autocomplete.state" }
+
+_zac_enabled() {
+    local f="$(_zac_state)"
+    [[ ! -f "$f" ]] && return 0
+    [[ "$(cat "$f" 2>/dev/null)" != "disabled" ]]
+}
 
 _zac_alive() {
     local sock="$(_zac_sock)"
@@ -60,6 +67,7 @@ _zac_alive() {
 }
 
 _zac_start_daemon() {
+    _zac_enabled || return 0
     _zac_alive && return 0
     local _pid_file="$(_zac_pidfile)"
     if [[ -f "$_pid_file" ]]; then
@@ -232,6 +240,7 @@ _zac_on_result() {
 # ---------------------------------------------------------------------------
 
 _zac_fetch() {
+    _zac_enabled || { _zac_clear_ghost; return; }
     local input="$BUFFER"
     if (( ${#input} < 2 )); then
         _zac_clear_ghost
@@ -385,6 +394,11 @@ PYEOF
 
 ai-status() {
     echo "zsh-autocomplete"
+    if _zac_enabled; then
+        echo "  enabled: yes"
+    else
+        echo "  enabled: no (run: ai-enable)"
+    fi
     if _zac_alive; then
         echo "  daemon : running"
     else
@@ -408,10 +422,25 @@ ai-status() {
 }
 
 ai-restart() {
+    _zac_enabled || { echo "Autocomplete is disabled (run: ai-enable)"; return 0; }
     _zac_stop_daemon
     sleep 0.3
     _zac_start_daemon
     echo "Daemon restarted"
+}
+
+ai-disable() {
+    echo "disabled" > "$(_zac_state)"
+    _zac_clear_ghost
+    _zac_stop_daemon
+    echo "Autocomplete disabled."
+    echo "Run 'ai-enable' to enable again."
+}
+
+ai-enable() {
+    echo "enabled" > "$(_zac_state)"
+    _zac_start_daemon
+    echo "Autocomplete enabled."
 }
 
 ai-debug() {
