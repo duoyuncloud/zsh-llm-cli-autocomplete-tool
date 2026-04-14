@@ -519,6 +519,25 @@ PYEOF
     echo "=== done ==="
 }
 
+ai-help() {
+    cat <<'EOF'
+zsh-autocomplete commands
+
+  ai-help      Show this help message
+  ai-setup     Install/download dependencies and start daemon
+  ai-status    Show enabled state, daemon state, model state, and log path
+  ai-enable    Enable autocomplete and start daemon
+  ai-disable   Disable autocomplete and stop daemon
+  ai-restart   Restart daemon
+  ai-debug     Run quick diagnostics for completion pipeline
+EOF
+}
+
+# Convenience alias for users who expect a "commands" verb.
+ai-commands() {
+    ai-help
+}
+
 # ---------------------------------------------------------------------------
 # Auto-start daemon at shell init (silent, non-blocking)
 # ---------------------------------------------------------------------------

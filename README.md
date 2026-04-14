@@ -64,6 +64,7 @@ The plugin gathers lightweight context (`cwd`, git info, scripts/targets, recent
 
 After sourcing the plugin:
 
+- `ai-help` — list available `ai-*` commands and what they do
 - `ai-setup` — install/download/start helpers
 - `ai-status` — show daemon/model/enabled state
 - `ai-enable` / `ai-disable` — turn completions on or off (no need to comment out `~/.zshrc` lines)
