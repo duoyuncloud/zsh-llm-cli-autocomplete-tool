@@ -10,11 +10,9 @@ This project ships a ready-to-use runtime and also includes training utilities f
 
 ## Demo
 
-Trailer (inline player — works best in **Safari**; `.mov` may not play in Chrome/Firefox):
+**[Watch the trailer](https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/blob/main/docs/demo/Trailer.mov)** — opens on GitHub with the built-in player (README inline `<video>` is unreliable for `.mov`).
 
-<video src="https://raw.githubusercontent.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/main/docs/demo/Trailer.mov" controls playsinline width="100%" style="max-width: 920px;"></video>
-
-[Download `Trailer.mov`](docs/demo/Trailer.mov) · [Try the demo in your browser](docs/demo/trailer-stage.html) — same flow as the trailer; press **Space** to advance, **←** to go back.
+[Download `Trailer.mov` (raw file)](https://github.com/duoyuncloud/zsh-llm-cli-autocomplete-tool/raw/main/docs/demo/Trailer.mov) · [Try the demo in your browser](docs/demo/trailer-stage.html) — same flow as the trailer; press **Space** to advance, **←** to go back.
 
 ## What This Plugin Does
 
