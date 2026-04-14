@@ -1,10 +1,14 @@
 """
-Model CLI Autocomplete - AI-powered command completion for Zsh
-Simple Tab completion with personalized predictions using LoRA fine-tuned models
+Zsh LLM CLI Autocomplete Plugin — Python runtime
+
+This package is the on-device side of the plugin: a completion daemon (Unix socket),
+model download/merge helpers, and optional training utilities. The Zsh layer shows grey ghost suggestions while you type; you press Tab to accept. Inference uses a
+local base model plus a LoRA adapter; nothing is sent to the cloud unless you
+opt in to optional cloud routes.
 """
 
 __version__ = "0.1.0"
-__author__ = "Model CLI Autocomplete Team"
+__author__ = "duoyuncloud"
 
 # Lightweight imports only (used by CLI fast path). Heavy modules (EnhancedCompleter,
 # training, ollama_lora_import) are imported lazily where needed so Tab completion
