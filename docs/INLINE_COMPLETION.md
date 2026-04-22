@@ -7,8 +7,8 @@ This doc summarizes how IDE-style inline completion (e.g. Cursor, GitHub Copilot
 1. **Ghost text**  
    The suggestion appears as grey (semi-transparent) text **inline** after the cursor. It’s a single completion, not a dropdown.
 
-2. **Tab to accept, Esc to dismiss**  
-   - **Tab**: the grey text is inserted as if the user typed it.  
+2. **Shift+. (`>`) to accept (this plugin), Esc to dismiss**  
+   - **Shift+.**: the grey text is inserted as if the user typed it (same key inserts `>` when there is no suggestion).  
    - **Esc**: the suggestion is discarded.
 
 3. **Very quick**  
@@ -25,7 +25,7 @@ This doc summarizes how IDE-style inline completion (e.g. Cursor, GitHub Copilot
 | Aspect              | Cursor/Copilot              | This CLI tool                          |
 |---------------------|-----------------------------|----------------------------------------|
 | Grey preview        | Ghost text inline           | Zsh `region_highlight` (grey suffix)  |
-| Accept              | Tab                         | Tab                                    |
+| Accept              | Tab                         | Shift+. (`>`); Tab = normal completion |
 | Dismiss             | Esc                         | Keep typing / normal completion        |
 | Speed                | Daemon + streaming/debounce | **Daemon** (optional) with local merged model |
 | One suggestion      | Yes                         | Yes (one completed command line)      |
@@ -46,9 +46,9 @@ Leave it running in a terminal or run it in the background. The Zsh plugin uses 
 ### Flow (with daemon)
 
 1. User types e.g. `git ad`.
-2. User presses **Tab**.
+2. User presses **Shift+.** (`>`).
 3. Plugin sends `git ad` to `~/.cache/zsh-autocomplete.sock` (JSON over Unix socket).
 4. Daemon runs the **base model + LoRA adapter** (merging once on first boot for speed) and returns e.g. `git add .`.
-5. Plugin shows `git add .` as grey text (suffix after `git ad`); second Tab or Enter accepts it.
+5. Plugin shows `git add .` as grey text (suffix after `git ad`); Shift+. or Enter accepts it.
 
-So the behavior is “model predicts the next bit of the command; it’s shown as grey; Tab turns it into real typing,” just like Cursor’s inline completion for code.
+So the behavior is “model predicts the next bit of the command; it’s shown as grey; Shift+. turns it into real typing,” just like Cursor’s inline completion for code.

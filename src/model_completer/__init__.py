@@ -2,7 +2,7 @@
 Zsh LLM CLI Autocomplete Plugin — Python runtime
 
 This package is the on-device side of the plugin: a completion daemon (Unix socket),
-model download/merge helpers, and optional training utilities. The Zsh layer shows grey ghost suggestions while you type; you press Tab to accept. Inference uses a
+model download/merge helpers, and optional training utilities. The Zsh layer shows grey ghost suggestions while you type; you press Shift+. (>) to accept. Inference uses a
 local base model plus a LoRA adapter; nothing is sent to the cloud unless you
 opt in to optional cloud routes.
 """

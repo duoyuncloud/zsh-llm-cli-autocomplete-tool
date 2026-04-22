@@ -2,7 +2,8 @@
 # zsh-autocomplete — AI ghost-text completions
 #
 # As you type, a grey suggestion appears after the cursor.
-# Press Tab to accept it.  That's all there is to it.
+# Press Shift+. (>) to accept it; otherwise `>` inserts normally.
+# Tab stays normal Zsh completion (expand-or-complete).
 #
 # First time: run  ai-setup  to download and fine-tune the model.
 
@@ -298,8 +299,14 @@ _zac_clear_ghost() {
 # Widgets
 # ---------------------------------------------------------------------------
 
-# Tab: accept ghost text or fall through to normal completion
-_zac_tab() {
+# Tab: dismiss ghost then normal Zsh completion only (never apply ghost via Tab)
+_zac_tab_complete() {
+    _zac_clear_ghost
+    zle expand-or-complete
+}
+
+# Shift+. (>): accept ghost text, or insert `>` when there is no suggestion
+_zac_gt() {
     if [[ -n "$_zac_suggestion" && "$_zac_suggestion" != "$BUFFER" ]]; then
         BUFFER="$_zac_suggestion"
         CURSOR=${#BUFFER}
@@ -308,8 +315,10 @@ _zac_tab() {
         _zac_suggestion=""
         _zac_last_input="$BUFFER"
     else
-        zle expand-or-complete
+        BUFFER="${BUFFER[1,CURSOR]}>${BUFFER[CURSOR+1,-1]}"
+        CURSOR=$((CURSOR + 1))
     fi
+    _zac_fetch
 }
 
 # Wraps self-insert — fires on every character typed
@@ -342,13 +351,16 @@ _zac_test_ghost() {
 _zac_do_init() {
     zle -N _zac_on_result
     zle -N _zac_apply_ghost
-    zle -N _zac_tab
+    zle -N _zac_tab_complete
+    zle -N _zac_gt
     zle -N _zac_test_ghost
     zle -N self-insert          _zac_self_insert
     zle -N backward-delete-char _zac_backward_delete
     zle -N accept-line          _zac_accept_line
 
-    bindkey '^I' _zac_tab       # Tab
+    bindkey -M emacs '^I' _zac_tab_complete
+    bindkey -M viins '^I' _zac_tab_complete
+    bindkey '>' _zac_gt              # Shift+. : accept ghost or insert `>`
     bindkey '^G' _zac_test_ghost # Ctrl-G: test ghost text rendering
     bindkey '^M' accept-line    # Enter (CR)
     bindkey '^J' accept-line    # Enter (LF)
@@ -404,7 +416,7 @@ PYEOF
     if _zac_alive; then
         echo ""
         echo "Ready. Start typing — grey completions appear after your cursor."
-        echo "Press Tab to accept."
+        echo "Press Shift+. (>) to accept ghost suggestions."
     else
         echo ""
         echo "Daemon failed to start. Check: $(_zac_log)"
@@ -501,9 +513,11 @@ PYEOF
     fi
 
     echo "[4] Keybinding"
-    local tab_binding
+    local tab_binding gt_binding
     tab_binding=$(bindkey "^I" 2>/dev/null | awk '{print $2}')
+    gt_binding=$(bindkey ">" 2>/dev/null | awk '{print $2}')
     echo "    Tab (^I) bound to : $tab_binding"
+    echo "    > (Shift+.) bound to : ${gt_binding:-<unbound>}"
 
     echo "[5] Claude API"
     if [[ -n "$ANTHROPIC_API_KEY" ]]; then

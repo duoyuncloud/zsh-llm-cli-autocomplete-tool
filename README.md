@@ -3,7 +3,7 @@
 Inline command completion for Zsh:
 
 - grey ghost text suggestions while you type
-- press `Tab` to accept
+- press **Shift+.** (the `>` key on a US layout) to accept — Tab stays normal Zsh completion
 - local inference with a base model + LoRA adapter
 
 This project ships a ready-to-use runtime and also includes training utilities for custom adapters.
@@ -33,7 +33,7 @@ cd zsh-llm-cli-autocomplete-tool
 source ~/.zshrc
 ```
 
-Then type in your shell and press `Tab`, for example:
+Then type in your shell; when a grey suggestion appears, press **Shift+.** (`>`) to accept it. For example:
 
 - `git ad` → `git add ...`
 - `git co` → smart commit suggestion
